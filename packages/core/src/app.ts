@@ -48,15 +48,30 @@ export function createApp(optionsOrRender: any): void {
     this: AppInstance,
     options: WechatMiniprogram.App.LaunchShowOption,
   ) {
-    setCurrentApp(this)
-    const bindings = render(options)
-    if (bindings !== undefined) {
-      Object.keys(bindings).forEach((key) => {
-        this[key] = bindings[key]
+    this[toHiddenField('render')] = () => {
+      ;[
+        AppLifecycle.ON_SHOW,
+        AppLifecycle.ON_HIDE,
+        AppLifecycle.ON_ERROR,
+        AppLifecycle.ON_PAGE_NOT_FOUND,
+        AppLifecycle.ON_UNHANDLED_REJECTION,
+        AppLifecycle.ON_THEME_CHANGE,
+      ].forEach((hook) => {
+        if (this[toHiddenField(hook)] !== undefined) {
+          this[toHiddenField(hook)].index = 0
+        }
       })
+      setCurrentApp(this)
+      const bindings = render(options)
+      if (bindings !== undefined) {
+        Object.keys(bindings).forEach((key) => {
+          this[key] = bindings[key]
+        })
+      }
+      unsetCurrentApp()
     }
 
-    unsetCurrentApp()
+    this[toHiddenField('render')]()
 
     if (originOnLaunch !== undefined) {
       originOnLaunch.call(this, options)

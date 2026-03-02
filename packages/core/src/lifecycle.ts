@@ -3,23 +3,23 @@ import { currentApp } from './instance'
 import { AppLifecycle } from './app'
 import { toHiddenField } from './utils'
 
-export const onAppShow: (
+export const useAppShow: (
   hook: (options: WechatMiniprogram.App.LaunchShowOption) => unknown,
 ) => void = createAppHook(AppLifecycle.ON_SHOW)
-export const onAppHide: (hook: () => unknown) => void = createAppHook(
+export const useAppHide: (hook: () => unknown) => void = createAppHook(
   AppLifecycle.ON_HIDE,
 )
-export const onAppError: (hook: (error: string) => unknown) => void =
+export const useAppError: (hook: (error: string) => unknown) => void =
   createAppHook(AppLifecycle.ON_ERROR)
-export const onPageNotFound: (
+export const usePageNotFound: (
   hook: (options: WechatMiniprogram.App.PageNotFoundOption) => unknown,
 ) => void = createAppHook(AppLifecycle.ON_PAGE_NOT_FOUND)
-export const onUnhandledRejection: (
+export const useUnhandledRejection: (
   hook: (
     options: WechatMiniprogram.OnUnhandledRejectionListenerResult,
   ) => unknown,
 ) => void = createAppHook(AppLifecycle.ON_UNHANDLED_REJECTION)
-export const onThemeChange: (
+export const useThemeChange: (
   hook: (options: WechatMiniprogram.OnThemeChangeListenerResult) => unknown,
 ) => void = createAppHook(AppLifecycle.ON_THEME_CHANGE)
 
@@ -44,7 +44,9 @@ function injectHook(
   const hiddenField = toHiddenField(lifecycle)
   if (currentInstance[hiddenField] === undefined) {
     currentInstance[hiddenField] = []
+    currentInstance[hiddenField].index = 0
   }
 
-  currentInstance[hiddenField].push(hook)
+  currentInstance[hiddenField][currentInstance[hiddenField].index] = hook
+  currentInstance[hiddenField].index += 1
 }

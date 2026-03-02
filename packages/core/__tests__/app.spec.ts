@@ -1,12 +1,12 @@
 import { describe, test, expect, vi } from 'vitest'
 import {
   createApp,
-  onAppShow,
-  onAppHide,
-  onAppError,
-  onPageNotFound,
-  onUnhandledRejection,
-  onThemeChange,
+  useAppShow,
+  useAppHide,
+  useAppError,
+  usePageNotFound,
+  useUnhandledRejection,
+  useThemeChange,
 } from '../src'
 
 // Mocks
@@ -45,8 +45,8 @@ describe('app', () => {
     createApp({
       onShow: fn,
       render() {
-        onAppShow(injectedFn1)
-        onAppShow(injectedFn2)
+        useAppShow(injectedFn1)
+        useAppShow(injectedFn2)
       },
     })
     app.onLaunch()
@@ -63,8 +63,8 @@ describe('app', () => {
     createApp({
       onHide: fn,
       render() {
-        onAppHide(injectedFn1)
-        onAppHide(injectedFn2)
+        useAppHide(injectedFn1)
+        useAppHide(injectedFn2)
       },
     })
     app.onLaunch()
@@ -82,8 +82,8 @@ describe('app', () => {
     createApp({
       onError: fn,
       render() {
-        onAppError(injectedFn1)
-        onAppError(injectedFn2)
+        useAppError(injectedFn1)
+        useAppError(injectedFn2)
       },
     })
     app.onLaunch()
@@ -101,8 +101,8 @@ describe('app', () => {
     createApp({
       onPageNotFound: fn,
       render() {
-        onPageNotFound(injectedFn1)
-        onPageNotFound(injectedFn2)
+        usePageNotFound(injectedFn1)
+        usePageNotFound(injectedFn2)
       },
     })
     app.onLaunch()
@@ -120,8 +120,8 @@ describe('app', () => {
     createApp({
       onUnhandledRejection: fn,
       render() {
-        onUnhandledRejection(injectedFn1)
-        onUnhandledRejection(injectedFn2)
+        useUnhandledRejection(injectedFn1)
+        useUnhandledRejection(injectedFn2)
       },
     })
     app.onLaunch()
@@ -139,8 +139,8 @@ describe('app', () => {
     createApp({
       onThemeChange: fn,
       render() {
-        onThemeChange(injectedFn1)
-        onThemeChange(injectedFn2)
+        useThemeChange(injectedFn1)
+        useThemeChange(injectedFn2)
       },
     })
     app.onLaunch()
@@ -151,7 +151,7 @@ describe('app', () => {
   })
 
   test('inject lifecycle outside render', () => {
-    onAppShow(() => {})
+    useAppShow(() => {})
     expect('App specific lifecycle').toHaveBeenWarned()
   })
 
@@ -173,7 +173,7 @@ describe('app', () => {
   test('only injected lifecycle', () => {
     const fn = vi.fn()
     createApp(() => {
-      onAppHide(fn)
+      useAppHide(fn)
     })
     app.onLaunch()
     app.onHide()

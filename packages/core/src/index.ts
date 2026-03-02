@@ -4,12 +4,12 @@
 
 export { createApp } from './app'
 export {
-  onAppShow,
-  onAppHide,
-  onAppError,
-  onPageNotFound,
-  onUnhandledRejection,
-  onThemeChange,
+  useAppShow,
+  useAppHide,
+  useAppError,
+  usePageNotFound,
+  useUnhandledRejection,
+  useThemeChange,
 } from './lifecycle'
 
 // Types -----------------------------------------------------------------------
