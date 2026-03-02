@@ -1,0 +1,37 @@
+{
+  "name": "rezor",
+  "version": "0.0.0",
+  "description": "基于 React 的小程序框架。简单，强大，高性能。 ",
+  "main": "dist/rezor.cjs.js",
+  "module": "dist/rezor.esm-bundler.js",
+  "types": "dist/rezor.d.ts",
+  "repository": "https://github.com/rezorjs/rezor.git",
+  "homepage": "https://rezor.dev",
+  "author": "Yang Mingshan <y.mingshan3@gmail.com>",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/rezor.d.ts",
+      "import": "./dist/rezor.esm-bundler.js",
+      "require": "./dist/rezor.cjs.js",
+      "default": "./dist/rezor.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "keywords": [
+    "react",
+    "mini",
+    "wechat",
+    "weixin",
+    "miniprogram",
+    "mp",
+    "微信",
+    "小程序"
+  ],
+  "dependencies": {
+    "miniprogram-api-typings": "~5.1.1"
+  }
+}
