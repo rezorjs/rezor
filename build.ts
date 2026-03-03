@@ -114,7 +114,7 @@ async function buildRezor() {
 
   await generateDeclaration({
     target,
-    fileName: 'vue-mini.d.ts',
+    fileName: 'rezor.d.ts',
   })
 
   await generateCode({
@@ -124,7 +124,7 @@ async function buildRezor() {
       __DEV__: 'true',
       'process.env.NODE_ENV': JSON.stringify('development'),
     },
-    fileName: 'vue-mini.cjs.js',
+    fileName: 'rezor.cjs.js',
     format: 'cjs',
   })
 
@@ -135,7 +135,7 @@ async function buildRezor() {
       __DEV__: 'false',
       'process.env.NODE_ENV': JSON.stringify('production'),
     },
-    fileName: 'vue-mini.cjs.prod.js',
+    fileName: 'rezor.cjs.prod.js',
     format: 'cjs',
   })
 
@@ -145,7 +145,7 @@ async function buildRezor() {
     replaces: {
       __DEV__: `(process.env.NODE_ENV !== 'production')`,
     },
-    fileName: 'vue-mini.esm-bundler.js',
+    fileName: 'rezor.esm-bundler.js',
     format: 'es',
   })
 }
