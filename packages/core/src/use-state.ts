@@ -19,11 +19,13 @@ export function useState<T>(
     }
 
     const setState = (newState: T | ((prevState: T) => T)) => {
-      if (isFunction(newState)) {
-        state[index] = newState(state[index])
-      } else {
-        state[index] = newState
+      const prevState = state[index]
+      const nextState = isFunction(newState) ? newState(prevState) : newState
+      if (Object.is(prevState, nextState)) {
+        return
       }
+
+      state[index] = nextState
       currentInstance[toHiddenField('render')]()
     }
 
