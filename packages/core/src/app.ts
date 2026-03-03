@@ -56,6 +56,9 @@ export function createApp(optionsOrRender: any): void {
         AppLifecycle.ON_PAGE_NOT_FOUND,
         AppLifecycle.ON_UNHANDLED_REJECTION,
         AppLifecycle.ON_THEME_CHANGE,
+        'ref',
+        'memo',
+        'state',
       ].forEach((hook) => {
         if (this[toHiddenField(hook)] !== undefined) {
           this[toHiddenField(hook)].index = 0
