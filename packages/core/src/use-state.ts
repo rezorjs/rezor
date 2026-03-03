@@ -1,36 +1,36 @@
-import { currentApp } from './instance'
+import type { StateHookSlot } from './instance'
+import { currentApp, getHooksStore, isHookKind } from './instance'
 import { isFunction, toHiddenField } from './utils'
 
 export function useState<T>(
   initialState: T | (() => T),
 ): [T, (newState: T | ((prevState: T) => T)) => void] {
+  const getState = () =>
+    isFunction(initialState) ? initialState() : initialState
+
   const currentInstance = currentApp
   if (currentInstance) {
-    const field = toHiddenField('state')
-    if (currentInstance[field] === undefined) {
-      currentInstance[field] = []
-      currentInstance[field].index = 0
-    }
+    const store = getHooksStore(currentInstance)
+    const index = store.cursor
+    let stateSlot = store.slots[index]
+    if (!isHookKind(stateSlot, 'state')) {
+      const setState = (newState: T | ((prevState: T) => T)) => {
+        const prevState = (stateSlot as StateHookSlot).value
+        const nextState = isFunction(newState) ? newState(prevState) : newState
+        if (Object.is(prevState, nextState)) {
+          return
+        }
 
-    const state = currentInstance[field]
-    const index = state.index
-    if (state[index] === undefined) {
-      state[index] = isFunction(initialState) ? initialState() : initialState
-    }
-
-    const setState = (newState: T | ((prevState: T) => T)) => {
-      const prevState = state[index]
-      const nextState = isFunction(newState) ? newState(prevState) : newState
-      if (Object.is(prevState, nextState)) {
-        return
+        ;(stateSlot as StateHookSlot).value = nextState
+        currentInstance[toHiddenField('render')]()
       }
 
-      state[index] = nextState
-      currentInstance[toHiddenField('render')]()
+      stateSlot = { kind: 'state', value: getState(), setState }
+      store.slots[index] = stateSlot
     }
 
-    state.index += 1
-    return [state[index], setState]
+    store.cursor += 1
+    return [stateSlot.value, stateSlot.setState]
   }
 
   if (__DEV__) {
@@ -39,5 +39,5 @@ export function useState<T>(
     )
   }
 
-  return [isFunction(initialState) ? initialState() : initialState, () => {}]
+  return [getState(), () => {}]
 }

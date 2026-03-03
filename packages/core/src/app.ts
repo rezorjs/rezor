@@ -1,5 +1,13 @@
 import type { Bindings, AppInstance } from './instance'
-import { setCurrentApp, unsetCurrentApp } from './instance'
+import {
+  resetHooksCursor,
+  resetLifecycleCursors,
+  setCurrentApp,
+  trimHooksStore,
+  trimLifecycleBuckets,
+  unsetCurrentApp,
+  getLifecycleHooks,
+} from './instance'
 import { exclude, isFunction, toHiddenField } from './utils'
 
 export type AppRender = (
@@ -20,6 +28,15 @@ export enum AppLifecycle {
   ON_UNHANDLED_REJECTION = 'onUnhandledRejection',
   ON_THEME_CHANGE = 'onThemeChange',
 }
+
+const appLifeHooks = [
+  AppLifecycle.ON_SHOW,
+  AppLifecycle.ON_HIDE,
+  AppLifecycle.ON_ERROR,
+  AppLifecycle.ON_PAGE_NOT_FOUND,
+  AppLifecycle.ON_UNHANDLED_REJECTION,
+  AppLifecycle.ON_THEME_CHANGE,
+]
 
 export function createApp(render: AppRender): void
 
@@ -49,29 +66,21 @@ export function createApp(optionsOrRender: any): void {
     options: WechatMiniprogram.App.LaunchShowOption,
   ) {
     this[toHiddenField('render')] = () => {
-      ;[
-        AppLifecycle.ON_SHOW,
-        AppLifecycle.ON_HIDE,
-        AppLifecycle.ON_ERROR,
-        AppLifecycle.ON_PAGE_NOT_FOUND,
-        AppLifecycle.ON_UNHANDLED_REJECTION,
-        AppLifecycle.ON_THEME_CHANGE,
-        'ref',
-        'memo',
-        'state',
-      ].forEach((hook) => {
-        if (this[toHiddenField(hook)] !== undefined) {
-          this[toHiddenField(hook)].index = 0
-        }
-      })
+      resetHooksCursor(this)
+      resetLifecycleCursors(this, appLifeHooks)
       setCurrentApp(this)
-      const bindings = render(options)
-      if (bindings !== undefined) {
-        Object.keys(bindings).forEach((key) => {
-          this[key] = bindings[key]
-        })
+      try {
+        const bindings = render(options)
+        if (bindings !== undefined) {
+          Object.keys(bindings).forEach((key) => {
+            this[key] = bindings[key]
+          })
+        }
+      } finally {
+        trimHooksStore(this)
+        trimLifecycleBuckets(this, appLifeHooks)
+        unsetCurrentApp()
       }
-      unsetCurrentApp()
     }
 
     this[toHiddenField('render')]()
@@ -109,10 +118,7 @@ function createLifecycle(
 ): (...args: any[]) => void {
   const originLifecycle = options[lifecycle] as Function
   return function (this: AppInstance, ...args: any[]) {
-    const hooks = this[toHiddenField(lifecycle)]
-    if (hooks) {
-      hooks.forEach((hook: Function) => hook(...args))
-    }
+    getLifecycleHooks(this, lifecycle).forEach((hook) => hook(...args))
 
     if (originLifecycle !== undefined) {
       originLifecycle.call(this, ...args)

@@ -1,23 +1,18 @@
-import { currentApp } from './instance'
-import { toHiddenField } from './utils'
+import { currentApp, getHooksStore, isHookKind } from './instance'
 
 export function useRef<T>(initialValue: T): { current: T } {
   const currentInstance = currentApp
   if (currentInstance) {
-    const field = toHiddenField('ref')
-    if (currentInstance[field] === undefined) {
-      currentInstance[field] = []
-      currentInstance[field].index = 0
+    const store = getHooksStore(currentInstance)
+    const index = store.cursor
+    let refSlot = store.slots[index]
+    if (!isHookKind(refSlot, 'ref')) {
+      refSlot = { kind: 'ref', ref: { current: initialValue } }
+      store.slots[index] = refSlot
     }
 
-    const ref = currentInstance[field]
-    const index = ref.index
-    if (ref[index] === undefined) {
-      ref[index] = { current: initialValue }
-    }
-
-    ref.index += 1
-    return ref[index]
+    store.cursor += 1
+    return refSlot.ref
   }
 
   if (__DEV__) {

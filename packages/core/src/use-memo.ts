@@ -1,8 +1,11 @@
-import { currentApp } from './instance'
-import { toHiddenField } from './utils'
+import { currentApp, getHooksStore, isHookKind } from './instance'
 
-function areHookInputsEqual(nextDeps: any[], prevDeps: any[]): boolean {
-  if (prevDeps === undefined || nextDeps.length !== prevDeps.length) {
+function areHookInputsEqual(prevDeps: unknown[], nextDeps: unknown[]): boolean {
+  if (prevDeps === undefined || nextDeps === undefined) {
+    return false
+  }
+
+  if (nextDeps.length !== prevDeps.length) {
     return false
   }
 
@@ -15,26 +18,22 @@ function areHookInputsEqual(nextDeps: any[], prevDeps: any[]): boolean {
   return true
 }
 
-export function useMemo<T>(factory: () => T, deps: any[]): T {
+export function useMemo<T>(factory: () => T, deps: unknown[]): T {
   const currentInstance = currentApp
   if (currentInstance) {
-    const field = toHiddenField('memo')
-    if (currentInstance[field] === undefined) {
-      currentInstance[field] = []
-      currentInstance[field].index = 0
-    }
-
-    const memo = currentInstance[field]
-    const index = memo.index
+    const store = getHooksStore(currentInstance)
+    const index = store.cursor
+    let memoSlot = store.slots[index]
     if (
-      memo[index] === undefined ||
-      !areHookInputsEqual(deps, memo[index].deps)
+      !isHookKind(memoSlot, 'memo') ||
+      !areHookInputsEqual(memoSlot.deps, deps)
     ) {
-      memo[index] = { value: factory(), deps }
+      memoSlot = { kind: 'memo', value: factory(), deps }
+      store.slots[index] = memoSlot
     }
 
-    memo.index += 1
-    return memo[index].value
+    store.cursor += 1
+    return memoSlot.value
   }
 
   if (__DEV__) {
@@ -46,6 +45,9 @@ export function useMemo<T>(factory: () => T, deps: any[]): T {
   return factory()
 }
 
-export function useCallback<T extends Function>(callback: T, deps: any[]): T {
+export function useCallback<T extends Function>(
+  callback: T,
+  deps: unknown[],
+): T {
   return useMemo(() => callback, deps)
 }

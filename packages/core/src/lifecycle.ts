@@ -1,7 +1,5 @@
-import type { AppInstance } from './instance'
-import { currentApp } from './instance'
+import { currentApp, registerLifecycleHook } from './instance'
 import { AppLifecycle } from './app'
-import { toHiddenField } from './utils'
 
 export const useAppShow: (
   hook: (options: WechatMiniprogram.App.LaunchShowOption) => unknown,
@@ -27,26 +25,11 @@ function createAppHook(lifecycle: AppLifecycle) {
   return (hook: Function): void => {
     /* istanbul ignore else -- @preserve  */
     if (currentApp) {
-      injectHook(currentApp, lifecycle, hook)
+      registerLifecycleHook(currentApp, lifecycle, hook)
     } else if (__DEV__) {
       console.warn(
         'App specific lifecycle injection APIs can only be used during execution of render() in createApp().',
       )
     }
   }
-}
-
-function injectHook(
-  currentInstance: AppInstance,
-  lifecycle: AppLifecycle,
-  hook: Function,
-): void {
-  const hiddenField = toHiddenField(lifecycle)
-  if (currentInstance[hiddenField] === undefined) {
-    currentInstance[hiddenField] = []
-    currentInstance[hiddenField].index = 0
-  }
-
-  currentInstance[hiddenField][currentInstance[hiddenField].index] = hook
-  currentInstance[hiddenField].index += 1
 }
