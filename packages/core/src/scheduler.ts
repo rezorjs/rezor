@@ -68,14 +68,21 @@ export function flushPostFlushCbs(): void {
     activePostJobs = postJobs
     postJobs = []
 
-    while (postFlushIndex < activePostJobs.length) {
-      const cb = activePostJobs[postFlushIndex++]
-      cb.flags! &= ~SchedulerJobFlags.QUEUED
-      cb()
-    }
+    try {
+      while (postFlushIndex < activePostJobs.length) {
+        const cb = activePostJobs[postFlushIndex++]
+        cb.flags! &= ~SchedulerJobFlags.QUEUED
+        cb()
+      }
+    } finally {
+      // If there was an error we still need to clear the QUEUED flags
+      while (postFlushIndex < activePostJobs.length) {
+        activePostJobs[postFlushIndex++].flags! &= ~SchedulerJobFlags.QUEUED
+      }
 
-    activePostJobs = null
-    postFlushIndex = 0
+      activePostJobs = null
+      postFlushIndex = 0
+    }
   }
 }
 
