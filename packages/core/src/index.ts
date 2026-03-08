@@ -2,6 +2,10 @@
 
 // Core API ------------------------------------------------------------------
 
+export { useRef } from './use-ref'
+export { useState } from './use-state'
+export { useMemo, useCallback } from './use-memo'
+export { nextTick } from './scheduler'
 export { createApp } from './app'
 export {
   useAppShow,
