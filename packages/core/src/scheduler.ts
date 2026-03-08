@@ -127,8 +127,8 @@ function checkRecursiveUpdates(seen: CountMap, fn: SchedulerJob) {
   if (count > RECURSION_LIMIT) {
     console.warn(
       `Maximum recursive updates exceeded. ` +
-        `This means you have a reactive effect that is mutating its own ` +
-        `dependencies and thus recursively triggering itself.`,
+        `This usually means a state update is being triggered inside render(), ` +
+        `causing an infinite loop.`,
     )
     return true
   }
