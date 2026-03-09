@@ -14,7 +14,7 @@ export function unsetCurrentApp(): void {
   currentApp = null
 }
 
-type HookKind = 'ref' | 'memo' | 'state' | 'effect'
+type HookKind = 'ref' | 'memo' | 'state' | 'effect' | 'effectEvent'
 type RefHookSlot = { kind: 'ref'; ref: { current: any } }
 type MemoHookSlot = { kind: 'memo'; value: any; deps: unknown[] }
 export type StateHookSlot = {
@@ -27,13 +27,23 @@ export type EffectHookSlot = {
   deps?: unknown[]
   cleanup: void | (() => void)
 }
-type HookSlot = StateHookSlot | RefHookSlot | MemoHookSlot | EffectHookSlot
+type EffectEventHookSlot = {
+  kind: 'effectEvent'
+  fn: Function
+}
+type HookSlot =
+  | StateHookSlot
+  | RefHookSlot
+  | MemoHookSlot
+  | EffectHookSlot
+  | EffectEventHookSlot
 type HooksStore = { cursor: number; slots: HookSlot[] }
 type HookSlotByKind = {
   ref: RefHookSlot
   memo: MemoHookSlot
   state: StateHookSlot
   effect: EffectHookSlot
+  effectEvent: EffectEventHookSlot
 }
 
 type LifecycleStore = Record<string, { cursor: number; handlers: Function[] }>

@@ -7,6 +7,7 @@ export { useState } from './use-state'
 export { useEffect } from './use-effect'
 export { useReducer } from './use-reducer'
 export { useMemo, useCallback } from './use-memo'
+export { useEffectEvent } from './use-effect-event'
 export { nextTick } from './scheduler'
 export { createApp } from './app'
 export {
