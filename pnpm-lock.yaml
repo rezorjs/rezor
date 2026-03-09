@@ -69,7 +69,7 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18(@types/node@25.3.2)(terser@5.46.0)(yaml@2.8.2)
 
-  packages/core:
+  packages/react:
     dependencies:
       miniprogram-api-typings:
         specifier: ~5.1.1
