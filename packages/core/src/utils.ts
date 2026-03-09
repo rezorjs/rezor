@@ -42,3 +42,24 @@ export function isFunction(x: unknown): x is Function {
 export function toHiddenField(name: string): string {
   return `__${name}__`
 }
+
+export function areHookDepsEqual(
+  prevDeps?: unknown[],
+  nextDeps?: unknown[],
+): boolean {
+  if (prevDeps === undefined || nextDeps === undefined) {
+    return false
+  }
+
+  if (nextDeps.length !== prevDeps.length) {
+    return false
+  }
+
+  for (let i = 0; i < nextDeps.length; i++) {
+    if (!Object.is(nextDeps[i], prevDeps[i])) {
+      return false
+    }
+  }
+
+  return true
+}

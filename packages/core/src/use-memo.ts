@@ -1,22 +1,5 @@
 import { currentApp, getHooksStore, isHookKind } from './instance'
-
-function areHookInputsEqual(prevDeps: unknown[], nextDeps: unknown[]): boolean {
-  if (prevDeps === undefined || nextDeps === undefined) {
-    return false
-  }
-
-  if (nextDeps.length !== prevDeps.length) {
-    return false
-  }
-
-  for (let i = 0; i < nextDeps.length; i++) {
-    if (!Object.is(nextDeps[i], prevDeps[i])) {
-      return false
-    }
-  }
-
-  return true
-}
+import { areHookDepsEqual } from './utils'
 
 export function useMemo<T>(factory: () => T, deps: unknown[]): T {
   const currentInstance = currentApp
@@ -24,12 +7,12 @@ export function useMemo<T>(factory: () => T, deps: unknown[]): T {
     const store = getHooksStore(currentInstance)
     const index = store.cursor
     let memoSlot = store.slots[index]
-    if (
-      !isHookKind(memoSlot, 'memo') ||
-      !areHookInputsEqual(memoSlot.deps, deps)
-    ) {
+    if (!isHookKind(memoSlot, 'memo')) {
       memoSlot = { kind: 'memo', value: factory(), deps }
       store.slots[index] = memoSlot
+    } else if (!areHookDepsEqual(memoSlot.deps, deps)) {
+      memoSlot.value = factory()
+      memoSlot.deps = deps
     }
 
     store.cursor += 1

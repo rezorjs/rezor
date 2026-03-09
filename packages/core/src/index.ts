@@ -4,6 +4,7 @@
 
 export { useRef } from './use-ref'
 export { useState } from './use-state'
+export { useEffect } from './use-effect'
 export { useReducer } from './use-reducer'
 export { useMemo, useCallback } from './use-memo'
 export { nextTick } from './scheduler'
