@@ -14,7 +14,7 @@ jobs:
       - run: pnpm format
       - run: pnpm lint
       - run: pnpm type
-      # - run: pnpm test --coverage
+      - run: pnpm test --coverage
       # - uses: codecov/codecov-action@v5
       #   with:
       #     fail_ci_if_error: true
