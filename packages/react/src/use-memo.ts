@@ -1,5 +1,6 @@
 import type { AppInstance } from './instance'
-import { currentApp, getHooksStore, isHookKind } from './instance'
+import { currentApp } from './instance'
+import { getHooksStore, isHookKind } from './store'
 import { areHookDepsEqual } from './utils'
 
 function memoImpl<T>(

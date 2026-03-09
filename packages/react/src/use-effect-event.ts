@@ -1,4 +1,5 @@
-import { currentApp, getHooksStore, isHookKind } from './instance'
+import { currentApp } from './instance'
+import { getHooksStore, isHookKind } from './store'
 
 export function useEffectEvent<T extends (...args: any[]) => any>(
   callback: T,

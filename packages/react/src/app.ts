@@ -1,13 +1,12 @@
 import type { Bindings, AppInstance } from './instance'
+import { setCurrentApp, unsetCurrentApp } from './instance'
 import {
   resetHooksCursor,
   resetLifecycleCursors,
-  setCurrentApp,
   trimHooksStore,
   trimLifecycleBuckets,
-  unsetCurrentApp,
   getLifecycleHooks,
-} from './instance'
+} from './store'
 import { exclude, isFunction, toHiddenField } from './utils'
 
 export type AppRender = (

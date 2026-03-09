@@ -1,5 +1,6 @@
-import type { EffectHookSlot } from './instance'
-import { currentApp, getHooksStore, isHookKind } from './instance'
+import { currentApp } from './instance'
+import type { EffectHookSlot } from './store'
+import { getHooksStore, isHookKind } from './store'
 import { queuePostFlushCb } from './scheduler'
 import { areHookDepsEqual } from './utils'
 

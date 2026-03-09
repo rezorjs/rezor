@@ -1,4 +1,5 @@
-import { currentApp, registerLifecycleHook } from './instance'
+import { currentApp } from './instance'
+import { registerLifecycleHook } from './store'
 import { AppLifecycle } from './app'
 
 export const useAppShow: (
