@@ -66,9 +66,10 @@ export function createApp(optionsOrRender: any): void {
     options: WechatMiniprogram.App.LaunchShowOption,
   ) {
     this[toHiddenField('render')] = () => {
+      setCurrentApp(this)
       resetHooksCursor(this)
       resetLifecycleCursors(this, appLifeHooks)
-      setCurrentApp(this)
+
       try {
         const bindings = render(options)
         if (bindings !== undefined) {
@@ -77,10 +78,11 @@ export function createApp(optionsOrRender: any): void {
           })
         }
       } finally {
-        trimHooksStore(this)
-        trimLifecycleBuckets(this, appLifeHooks)
         unsetCurrentApp()
       }
+
+      trimHooksStore(this)
+      trimLifecycleBuckets(this, appLifeHooks)
     }
 
     this[toHiddenField('render')]()
