@@ -108,7 +108,7 @@ async function generateCode({
 }
 
 async function buildRezor() {
-  const target = 'core'
+  const target = 'react'
 
   await fs.remove(path.join('packages', target, 'dist'))
 
