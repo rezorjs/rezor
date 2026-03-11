@@ -1,4 +1,4 @@
-import { currentApp } from './instance'
+import { getCurrentInstanceAll } from './instance'
 import type { StateHookSlot } from './store'
 import { getHooksStore, isHookKind } from './store'
 import { toHiddenField } from './utils'
@@ -21,7 +21,7 @@ export function useReducer<S, I, A>(
   const getState = () =>
     init === undefined ? (initialArg as S) : init(initialArg as I)
 
-  const currentInstance = currentApp
+  const currentInstance = getCurrentInstanceAll()
   if (currentInstance) {
     const store = getHooksStore(currentInstance)
     const index = store.cursor

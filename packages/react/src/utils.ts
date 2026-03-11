@@ -3,7 +3,7 @@
 
 // export const isArray: typeof Array.isArray = Array.isArray
 
-// export const extend: typeof Object.assign = Object.assign
+export const extend: typeof Object.assign = Object.assign
 
 export function exclude<T extends Record<string, unknown>, K extends keyof T>(
   obj: T,

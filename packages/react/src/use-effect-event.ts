@@ -1,10 +1,10 @@
-import { currentApp } from './instance'
+import { getCurrentInstanceAll } from './instance'
 import { getHooksStore, isHookKind } from './store'
 
 export function useEffectEvent<T extends (...args: any[]) => any>(
   callback: T,
 ): T {
-  const currentInstance = currentApp
+  const currentInstance = getCurrentInstanceAll()
   if (currentInstance) {
     const store = getHooksStore(currentInstance)
     const index = store.cursor

@@ -1,4 +1,4 @@
-import { currentApp } from './instance'
+import { getCurrentInstanceAll } from './instance'
 import type { EffectHookSlot } from './store'
 import { getHooksStore, isHookKind } from './store'
 import { queuePostFlushCb } from './scheduler'
@@ -8,7 +8,7 @@ export function useEffect(
   callback: () => void | (() => void),
   deps?: unknown[],
 ): void {
-  const currentInstance = currentApp
+  const currentInstance = getCurrentInstanceAll()
   if (currentInstance) {
     const store = getHooksStore(currentInstance)
     const index = store.cursor

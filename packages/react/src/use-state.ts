@@ -1,4 +1,4 @@
-import { currentApp } from './instance'
+import { getCurrentInstanceAll } from './instance'
 import type { StateHookSlot } from './store'
 import { getHooksStore, isHookKind } from './store'
 import { isFunction, toHiddenField } from './utils'
@@ -10,7 +10,7 @@ export function useState<T>(
   const getState = () =>
     isFunction(initialState) ? initialState() : initialState
 
-  const currentInstance = currentApp
+  const currentInstance = getCurrentInstanceAll()
   if (currentInstance) {
     const store = getHooksStore(currentInstance)
     const index = store.cursor
