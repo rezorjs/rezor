@@ -31,8 +31,8 @@ export {
   useShareTimeline,
   useAddToFavorites,
   useSaveExitState,
-  onMove,
-  onError,
+  useMove,
+  useError,
 } from './lifecycle'
 
 // Types -----------------------------------------------------------------------
