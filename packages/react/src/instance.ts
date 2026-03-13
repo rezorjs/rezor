@@ -26,10 +26,31 @@ export function unsetCurrentPage(): void {
   currentPage = null
 }
 
-export function getCurrentInstance(): PageInstance | null {
-  return currentPage
+export type ComponentInstance = WechatMiniprogram.Component.InstanceProperties &
+  WechatMiniprogram.Component.InstanceMethods<Record<string, unknown>> & {
+    [key: string]: any
+    __isInjectedShareToOthersHook__?: () => true
+    __isInjectedShareToTimelineHook__?: () => true
+    __isInjectedFavoritesHook__?: () => true
+    __isInjectedExitStateHook__?: () => true
+    __listenPageScroll__?: () => true
+  }
+export let currentComponent: ComponentInstance | null = null
+export function setCurrentComponent(component: ComponentInstance): void {
+  currentComponent = component
+}
+export function unsetCurrentComponent(): void {
+  currentComponent = null
 }
 
-export function getCurrentInstanceAll(): AppInstance | PageInstance | null {
-  return currentApp || currentPage
+export function getCurrentInstance(): PageInstance | ComponentInstance | null {
+  return currentPage || currentComponent
+}
+
+export function getCurrentInstanceAll():
+  | AppInstance
+  | PageInstance
+  | ComponentInstance
+  | null {
+  return currentApp || currentPage || currentComponent
 }

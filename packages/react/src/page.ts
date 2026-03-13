@@ -56,7 +56,7 @@ export enum PageLifecycle {
   ON_SAVE_EXIT_STATE = 'onSaveExitState',
 }
 
-const pageLifeHooks = [
+export const pageLifeHooks: PageLifecycle[] = [
   PageLifecycle.ON_SHOW,
   PageLifecycle.ON_HIDE,
   PageLifecycle.ON_ROUTE_DONE,
@@ -202,17 +202,10 @@ export function definePage(optionsOrRender: any, config?: Config): void {
     options[PageLifecycle.ON_SHARE_APP_MESSAGE] === undefined &&
     config.canShareToOthers
   ) {
-    options[PageLifecycle.ON_SHARE_APP_MESSAGE] = function (
-      this: PageInstance,
-      share: WechatMiniprogram.Page.IShareAppMessageOption,
-    ): WechatMiniprogram.Page.ICustomShareContent {
-      const [hook] = getLifecycleHooks(this, PageLifecycle.ON_SHARE_APP_MESSAGE)
-      if (hook) {
-        return hook(share)
-      }
-
-      return {}
-    }
+    options[PageLifecycle.ON_SHARE_APP_MESSAGE] = createReturnLifecycle(
+      PageLifecycle.ON_SHARE_APP_MESSAGE,
+      () => ({}),
+    )
 
     /* istanbul ignore next -- @preserve */
     options.__isInjectedShareToOthersHook__ = () => true
@@ -222,49 +215,30 @@ export function definePage(optionsOrRender: any, config?: Config): void {
     options[PageLifecycle.ON_SHARE_TIMELINE] === undefined &&
     config.canShareToTimeline
   ) {
-    options[PageLifecycle.ON_SHARE_TIMELINE] = function (
-      this: PageInstance,
-    ): WechatMiniprogram.Page.ICustomTimelineContent {
-      const [hook] = getLifecycleHooks(this, PageLifecycle.ON_SHARE_TIMELINE)
-      if (hook) {
-        return hook()
-      }
-
-      return {}
-    }
+    options[PageLifecycle.ON_SHARE_TIMELINE] = createReturnLifecycle(
+      PageLifecycle.ON_SHARE_TIMELINE,
+      () => ({}),
+    )
 
     /* istanbul ignore next -- @preserve */
     options.__isInjectedShareToTimelineHook__ = () => true
   }
 
   if (options[PageLifecycle.ON_ADD_TO_FAVORITES] === undefined) {
-    options[PageLifecycle.ON_ADD_TO_FAVORITES] = function (
-      this: PageInstance,
-      favorites: WechatMiniprogram.Page.IAddToFavoritesOption,
-    ): WechatMiniprogram.Page.IAddToFavoritesContent {
-      const [hook] = getLifecycleHooks(this, PageLifecycle.ON_ADD_TO_FAVORITES)
-      if (hook) {
-        return hook(favorites)
-      }
-
-      return {}
-    }
+    options[PageLifecycle.ON_ADD_TO_FAVORITES] = createReturnLifecycle(
+      PageLifecycle.ON_ADD_TO_FAVORITES,
+      () => ({}),
+    )
 
     /* istanbul ignore next -- @preserve */
     options.__isInjectedFavoritesHook__ = () => true
   }
 
   if (options[PageLifecycle.ON_SAVE_EXIT_STATE] === undefined) {
-    options[PageLifecycle.ON_SAVE_EXIT_STATE] = function (
-      this: PageInstance,
-    ): WechatMiniprogram.Page.ISaveExitState {
-      const [hook] = getLifecycleHooks(this, PageLifecycle.ON_SAVE_EXIT_STATE)
-      if (hook) {
-        return hook()
-      }
-
-      return { data: undefined }
-    }
+    options[PageLifecycle.ON_SAVE_EXIT_STATE] = createReturnLifecycle(
+      PageLifecycle.ON_SAVE_EXIT_STATE,
+      () => ({ data: undefined }),
+    )
 
     /* istanbul ignore next -- @preserve */
     options.__isInjectedExitStateHook__ = () => true
@@ -306,12 +280,26 @@ function createLifecycle(
   options: Options,
   lifecycle: PageLifecycle,
 ): (...args: any[]) => void {
-  const originLifecycle = options[lifecycle] as Function
+  const originLifecycle = options[lifecycle]
   return function (this: PageInstance, ...args: any[]) {
     getLifecycleHooks(this, lifecycle).forEach((hook) => hook(...args))
 
     if (originLifecycle !== undefined) {
       originLifecycle.call(this, ...args)
     }
+  }
+}
+
+function createReturnLifecycle(
+  lifecycle: PageLifecycle,
+  getDefaultValue: () => any,
+): (...args: any[]) => any {
+  return function (this: PageInstance, ...args: any[]) {
+    const [hook] = getLifecycleHooks(this, lifecycle)
+    if (hook) {
+      return hook(...args)
+    }
+
+    return getDefaultValue()
   }
 }

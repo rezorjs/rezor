@@ -11,6 +11,7 @@ export { useEffectEvent } from './use-effect-event'
 export { nextTick } from './scheduler'
 export { createApp } from './app'
 export { definePage } from './page'
+export { defineComponent } from './component'
 export {
   useAppShow,
   useAppHide,
@@ -30,6 +31,8 @@ export {
   useShareTimeline,
   useAddToFavorites,
   useSaveExitState,
+  onMove,
+  onError,
 } from './lifecycle'
 
 // Types -----------------------------------------------------------------------
@@ -42,3 +45,8 @@ export type {
   PageOptions,
   Config,
 } from './page'
+export type {
+  ComponentContext,
+  ComponentRender,
+  ComponentOptions,
+} from './component'

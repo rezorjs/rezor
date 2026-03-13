@@ -1,7 +1,8 @@
-import { currentApp, getCurrentInstance } from './instance'
+import { currentApp, currentComponent, getCurrentInstance } from './instance'
 import { getLifecycleCursor, registerLifecycleHook } from './store'
 import { AppLifecycle } from './app'
 import { PageLifecycle } from './page'
+import { ComponentLifecycle } from './component'
 
 const pageHookWarn =
   'Page specific lifecycle hooks can only be used during execution of render() in definePage() or defineComponent().'
@@ -202,6 +203,12 @@ export const useSaveExitState = (
   }
 }
 
+export const onMove: (hook: () => void) => void = createComponentHook(
+  ComponentLifecycle.MOVED,
+)
+export const onError: (hook: (error: Error) => void) => void =
+  createComponentHook(ComponentLifecycle.ERROR)
+
 function createAppHook(lifecycle: AppLifecycle) {
   return (hook: Function): void => {
     /* istanbul ignore else -- @preserve  */
@@ -223,6 +230,19 @@ function createPageHook(lifecycle: PageLifecycle) {
       registerLifecycleHook(currentInstance, lifecycle, hook)
     } else if (__DEV__) {
       console.warn(pageHookWarn)
+    }
+  }
+}
+
+function createComponentHook(lifecycle: ComponentLifecycle) {
+  return (hook: Function): void => {
+    /* istanbul ignore else -- @preserve  */
+    if (currentComponent) {
+      registerLifecycleHook(currentComponent, lifecycle, hook)
+    } else if (__DEV__) {
+      console.warn(
+        'Component specific lifecycle hooks can only be used during execution of render() in defineComponent().',
+      )
     }
   }
 }
