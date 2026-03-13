@@ -203,10 +203,10 @@ export const useSaveExitState = (
   }
 }
 
-export const onMove: (hook: () => void) => void = createComponentHook(
+export const useMove: (hook: () => void) => void = createComponentHook(
   ComponentLifecycle.MOVED,
 )
-export const onError: (hook: (error: Error) => void) => void =
+export const useError: (hook: (error: Error) => void) => void =
   createComponentHook(ComponentLifecycle.ERROR)
 
 function createAppHook(lifecycle: AppLifecycle) {
