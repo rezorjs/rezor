@@ -1,5 +1,6 @@
-import { toHiddenField } from './utils'
+import type { SchedulerJob } from './scheduler'
 import { AppInstance, PageInstance } from './instance'
+import { toHiddenField } from './utils'
 
 type HookKind = 'ref' | 'memo' | 'state' | 'effect' | 'effectEvent'
 type RefHookSlot = { kind: 'ref'; ref: { current: any } }
@@ -12,6 +13,7 @@ export type StateHookSlot = {
 export type EffectHookSlot = {
   kind: 'effect'
   deps?: unknown[]
+  job?: SchedulerJob
   cleanup: void | (() => void)
 }
 type EffectEventHookSlot = {

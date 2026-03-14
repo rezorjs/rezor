@@ -1,4 +1,5 @@
-import { flushPostFlushCbs } from './scheduler'
+import type { SchedulerJob } from './scheduler'
+import { flushPostFlushCbs, SchedulerJobFlags } from './scheduler'
 import type { Bindings, PageInstance } from './instance'
 import { setCurrentPage, unsetCurrentPage } from './instance'
 import {
@@ -178,10 +179,22 @@ export function definePage(optionsOrRender: any, config?: Config): void {
 
   const originOnUnload = options[PageLifecycle.ON_UNLOAD] as Function
   options[PageLifecycle.ON_UNLOAD] = function (this: PageInstance) {
+    const renderJob: SchedulerJob | undefined = this[toHiddenField('render')]
+    if (renderJob) {
+      renderJob.flags! |= SchedulerJobFlags.DISPOSED
+    }
+
     const store = getHooksStore(this)
     store.slots.forEach((slot) => {
-      if (slot.kind === 'effect' && slot.cleanup) {
-        slot.cleanup()
+      if (slot.kind === 'effect') {
+        if (slot.job) {
+          slot.job.flags! |= SchedulerJobFlags.DISPOSED
+          slot.job = undefined
+        }
+
+        if (slot.cleanup) {
+          slot.cleanup()
+        }
       }
     })
     if (originOnUnload !== undefined) {

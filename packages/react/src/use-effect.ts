@@ -16,17 +16,25 @@ export function useEffect(
     if (!isHookKind(effectSlot, 'effect')) {
       effectSlot = { kind: 'effect', deps, cleanup: undefined }
       store.slots[index] = effectSlot
-      queuePostFlushCb(() => {
+      const job = () => {
+        ;(effectSlot as EffectHookSlot).job = undefined
         ;(effectSlot as EffectHookSlot).cleanup = callback()
-      })
+      }
+      effectSlot.job = job
+      queuePostFlushCb(job)
     } else if (!areHookDepsEqual(effectSlot.deps, deps)) {
       effectSlot.deps = deps
-      queuePostFlushCb(() => {
+      const job = () => {
+        ;(effectSlot as EffectHookSlot).job = undefined
+
         if ((effectSlot as EffectHookSlot).cleanup) {
           ;(effectSlot as EffectHookSlot).cleanup!()
         }
+
         ;(effectSlot as EffectHookSlot).cleanup = callback()
-      })
+      }
+      effectSlot.job = job
+      queuePostFlushCb(job)
     }
 
     store.cursor += 1

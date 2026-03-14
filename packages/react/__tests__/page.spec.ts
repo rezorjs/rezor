@@ -79,8 +79,11 @@ describe('page', () => {
     })
   })
 
-  test('state update', async () => {
+  test('render', async () => {
+    const fn = vi.fn()
     definePage(() => {
+      fn()
+
       const [count, setCount] = useState(0)
       const double = count * 2
       const increment = (): void => {
@@ -94,13 +97,20 @@ describe('page', () => {
       }
     })
     page.onLoad()
+    expect(fn).toBeCalledTimes(1)
     expect(page.data.count).toBe(0)
     expect(page.data.double).toBe(0)
 
     page.increment()
     await nextTick()
+    expect(fn).toBeCalledTimes(2)
     expect(page.data.count).toBe(1)
     expect(page.data.double).toBe(2)
+
+    page.increment()
+    page.onUnload()
+    await nextTick()
+    expect(fn).toBeCalledTimes(2)
   })
 
   test('useEffect', async () => {
@@ -128,6 +138,13 @@ describe('page', () => {
 
     page.increment()
     await nextTick()
+    renderCb()
+    expect(fn).toBeCalledTimes(2)
+    expect(dummy!).toBe(1)
+
+    page.increment()
+    await nextTick()
+    page.onUnload()
     renderCb()
     expect(fn).toBeCalledTimes(2)
     expect(dummy!).toBe(1)

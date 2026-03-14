@@ -85,8 +85,11 @@ describe('component', () => {
     })
   })
 
-  test('state update', async () => {
+  test('render', async () => {
+    const fn = vi.fn()
     defineComponent(() => {
+      fn()
+
       const [count, setCount] = useState(0)
       const double = count * 2
       const increment = (): void => {
@@ -100,13 +103,20 @@ describe('component', () => {
       }
     })
     component.lifetimes.attached.call(component)
+    expect(fn).toBeCalledTimes(1)
     expect(component.data.count).toBe(0)
     expect(component.data.double).toBe(0)
 
     component.increment()
     await nextTick()
+    expect(fn).toBeCalledTimes(2)
     expect(component.data.count).toBe(1)
     expect(component.data.double).toBe(2)
+
+    component.increment()
+    component.lifetimes.detached.call(component)
+    await nextTick()
+    expect(fn).toBeCalledTimes(2)
   })
 
   test('useEffect', async () => {
@@ -134,6 +144,13 @@ describe('component', () => {
 
     component.increment()
     await nextTick()
+    renderCb()
+    expect(fn).toBeCalledTimes(2)
+    expect(dummy!).toBe(1)
+
+    component.increment()
+    await nextTick()
+    component.lifetimes.detached.call(component)
     renderCb()
     expect(fn).toBeCalledTimes(2)
     expect(dummy!).toBe(1)

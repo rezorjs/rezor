@@ -1,4 +1,5 @@
-import { queueJob, flushPostFlushCbs } from './scheduler'
+import type { SchedulerJob } from './scheduler'
+import { queueJob, flushPostFlushCbs, SchedulerJobFlags } from './scheduler'
 import type { Config } from './page'
 import { PageLifecycle, pageLifeHooks } from './page'
 import type { Bindings, ComponentInstance } from './instance'
@@ -224,10 +225,22 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
   options.lifetimes[ComponentLifecycle.DETACHED] = function (
     this: ComponentInstance,
   ) {
+    const renderJob: SchedulerJob | undefined = this[toHiddenField('render')]
+    if (renderJob) {
+      renderJob.flags! |= SchedulerJobFlags.DISPOSED
+    }
+
     const store = getHooksStore(this)
     store.slots.forEach((slot) => {
-      if (slot.kind === 'effect' && slot.cleanup) {
-        slot.cleanup()
+      if (slot.kind === 'effect') {
+        if (slot.job) {
+          slot.job.flags! |= SchedulerJobFlags.DISPOSED
+          slot.job = undefined
+        }
+
+        if (slot.cleanup) {
+          slot.cleanup()
+        }
       }
     })
     if (originDetached !== undefined) {

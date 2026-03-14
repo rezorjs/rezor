@@ -1,9 +1,11 @@
 import { describe, test, expect, vi } from 'vitest'
+import type { SchedulerJob } from '../src/scheduler'
 import {
   flushPostFlushCbs,
   nextTick,
   queueJob,
   queuePostFlushCb,
+  SchedulerJobFlags,
 } from '../src/scheduler'
 
 describe('scheduler', () => {
@@ -511,5 +513,21 @@ describe('scheduler', () => {
     queueJob(cb1)
     await nextTick()
     expect(calls).toEqual(['cb1', 'job1'])
+  })
+
+  test('disposed job should not execute', async () => {
+    const job = vi.fn() as SchedulerJob
+    queueJob(job)
+    job.flags! |= SchedulerJobFlags.DISPOSED
+    await nextTick()
+    expect(job).toBeCalledTimes(0)
+  })
+
+  test('disposed post job should not execute', () => {
+    const cb = vi.fn() as SchedulerJob
+    queuePostFlushCb(cb)
+    cb.flags! |= SchedulerJobFlags.DISPOSED
+    flushPostFlushCbs()
+    expect(cb).toBeCalledTimes(0)
   })
 })

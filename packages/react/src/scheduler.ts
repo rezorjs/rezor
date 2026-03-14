@@ -1,5 +1,6 @@
 export enum SchedulerJobFlags {
   QUEUED = 1 << 0,
+  DISPOSED = 1 << 1,
 }
 
 export interface SchedulerJob extends Function {
@@ -71,8 +72,10 @@ export function flushPostFlushCbs(): void {
     try {
       while (postFlushIndex < activePostJobs.length) {
         const cb = activePostJobs[postFlushIndex++]
-        cb.flags! &= ~SchedulerJobFlags.QUEUED
-        cb()
+        if (!(cb.flags! & SchedulerJobFlags.DISPOSED)) {
+          cb.flags! &= ~SchedulerJobFlags.QUEUED
+          cb()
+        }
       }
     } finally {
       // If there was an error we still need to clear the QUEUED flags
@@ -95,17 +98,19 @@ function flushJobs() {
       const job = jobs[flushIndex]
       jobs[flushIndex++] = undefined as any
 
-      // Conditional usage of checkRecursiveUpdate must be determined out of
-      // try ... catch block since Rollup by default de-optimizes treeshaking
-      // inside try-catch. This can leave all warning code unshaked. Although
-      // they would get eventually shaken by a minifier like terser, some minifiers
-      // would fail to do that (e.g. https://github.com/evanw/esbuild/issues/1610)
-      /* istanbul ignore if -- @preserve  */
-      if (__DEV__ && checkRecursiveUpdates(seen!, job)) {
-        continue
+      if (!(job.flags! & SchedulerJobFlags.DISPOSED)) {
+        // Conditional usage of checkRecursiveUpdate must be determined out of
+        // try ... catch block since Rollup by default de-optimizes treeshaking
+        // inside try-catch. This can leave all warning code unshaked. Although
+        // they would get eventually shaken by a minifier like terser, some minifiers
+        // would fail to do that (e.g. https://github.com/evanw/esbuild/issues/1610)
+        /* istanbul ignore if -- @preserve  */
+        if (__DEV__ && checkRecursiveUpdates(seen!, job)) {
+          continue
+        }
+        job.flags! &= ~SchedulerJobFlags.QUEUED
+        job()
       }
-      job.flags! &= ~SchedulerJobFlags.QUEUED
-      job()
     }
   } finally {
     // If there was an error we still need to clear the QUEUED flags
