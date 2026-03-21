@@ -8,6 +8,7 @@ export { useEffect } from './use-effect'
 export { useReducer } from './use-reducer'
 export { useMemo, useCallback } from './use-memo'
 export { useEffectEvent } from './use-effect-event'
+export { createContext, useContext } from './use-context'
 export { nextTick } from './scheduler'
 export { createApp } from './app'
 export { definePage } from './page'
@@ -37,6 +38,7 @@ export {
 
 // Types -----------------------------------------------------------------------
 
+export type { Context } from './use-context'
 export type { AppRender, AppOptions } from './app'
 export type {
   Query,
