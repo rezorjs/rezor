@@ -4,20 +4,22 @@ import { getHooksStore, isHookKind } from './store'
 import { toHiddenField } from './utils'
 import { queueJob } from './scheduler'
 
+export type ActionDispatch<A> = (action: A) => void
+
 export function useReducer<S, A>(
   reducer: (prevState: S, action: A) => S,
   initialArg: S,
-): [S, (action: A) => void]
+): [S, ActionDispatch<A>]
 export function useReducer<S, I, A>(
   reducer: (prevState: S, action: A) => S,
   initialArg: I,
   init: (i: I) => S,
-): [S, (action: A) => void]
+): [S, ActionDispatch<A>]
 export function useReducer<S, I, A>(
   reducer: (prevState: S, action: A) => S,
   initialArg: S | I,
   init?: (i: I) => S,
-): [S, (action: A) => void] {
+): [S, ActionDispatch<A>] {
   const getState = () =>
     init === undefined ? (initialArg as S) : init(initialArg as I)
 

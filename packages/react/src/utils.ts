@@ -22,8 +22,8 @@ export function toHiddenField(name: string): string {
 }
 
 export function areHookDepsEqual(
-  prevDeps?: unknown[],
-  nextDeps?: unknown[],
+  prevDeps?: readonly unknown[],
+  nextDeps?: readonly unknown[],
 ): boolean {
   if (prevDeps === undefined || nextDeps === undefined) {
     return false

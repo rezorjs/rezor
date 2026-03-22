@@ -4,9 +4,19 @@ import { getHooksStore, isHookKind } from './store'
 import { isFunction, toHiddenField } from './utils'
 import { queueJob } from './scheduler'
 
-export function useState<T>(
-  initialState: T | (() => T),
-): [T, (newState: T | ((prevState: T) => T)) => void] {
+export type Dispatch<A> = (value: A) => void
+export type SetStateAction<S> = S | ((prevState: S) => S)
+
+export function useState<S>(
+  initialState: S | (() => S),
+): [S, Dispatch<SetStateAction<S>>]
+export function useState<S = undefined>(): [
+  S | undefined,
+  Dispatch<SetStateAction<S | undefined>>,
+]
+export function useState<S>(
+  initialState?: S | (() => S),
+): [S | undefined, Dispatch<SetStateAction<S>>] {
   const getState = () =>
     isFunction(initialState) ? initialState() : initialState
 
@@ -16,7 +26,7 @@ export function useState<T>(
     const index = store.cursor
     let stateSlot = store.slots[index]
     if (!isHookKind(stateSlot, 'state')) {
-      const setState = (newState: T | ((prevState: T) => T)) => {
+      const setState = (newState: S | ((prevState: S) => S)) => {
         const prevState = (stateSlot as StateHookSlot).value
         const nextState = isFunction(newState) ? newState(prevState) : newState
         if (Object.is(prevState, nextState)) {

@@ -38,6 +38,10 @@ export {
 
 // Types -----------------------------------------------------------------------
 
+export type { RefObject } from './use-ref'
+export type { Dispatch, SetStateAction } from './use-state'
+export type { EffectCallback } from './use-effect'
+export type { ActionDispatch } from './use-reducer'
 export type { Context } from './use-context'
 export type { AppRender, AppOptions } from './app'
 export type {

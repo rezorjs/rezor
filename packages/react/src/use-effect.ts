@@ -4,9 +4,11 @@ import { getHooksStore, isHookKind } from './store'
 import { queuePostFlushCb } from './scheduler'
 import { areHookDepsEqual } from './utils'
 
+export type EffectCallback = () => void | (() => void)
+
 export function useEffect(
-  callback: () => void | (() => void),
-  deps?: unknown[],
+  callback: EffectCallback,
+  deps?: readonly unknown[],
 ): void {
   const currentInstance = getCurrentInstanceAll()
   if (currentInstance) {

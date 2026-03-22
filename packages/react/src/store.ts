@@ -4,7 +4,7 @@ import { toHiddenField } from './utils'
 
 type HookKind = 'ref' | 'memo' | 'state' | 'effect' | 'effectEvent' | 'context'
 type RefHookSlot = { kind: 'ref'; ref: { current: any } }
-type MemoHookSlot = { kind: 'memo'; value: any; deps: unknown[] }
+type MemoHookSlot = { kind: 'memo'; value: any; deps: readonly unknown[] }
 export type StateHookSlot = {
   kind: 'state'
   value: any
@@ -12,7 +12,7 @@ export type StateHookSlot = {
 }
 export type EffectHookSlot = {
   kind: 'effect'
-  deps?: unknown[]
+  deps?: readonly unknown[]
   job?: SchedulerJob
   cleanup: void | (() => void)
 }

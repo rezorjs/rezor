@@ -6,7 +6,7 @@ import { areHookDepsEqual } from './utils'
 function memoImpl<T>(
   currentInstance: AppInstance | PageInstance,
   factory: () => T,
-  deps: unknown[],
+  deps: readonly unknown[],
 ): T {
   const store = getHooksStore(currentInstance)
   const index = store.cursor
@@ -23,7 +23,7 @@ function memoImpl<T>(
   return memoSlot.value
 }
 
-export function useMemo<T>(factory: () => T, deps: unknown[]): T {
+export function useMemo<T>(factory: () => T, deps: readonly unknown[]): T {
   const currentInstance = getCurrentInstanceAll()
   if (currentInstance) {
     return memoImpl(currentInstance, factory, deps)
@@ -40,7 +40,7 @@ export function useMemo<T>(factory: () => T, deps: unknown[]): T {
 
 export function useCallback<T extends Function>(
   callback: T,
-  deps: unknown[],
+  deps: readonly unknown[],
 ): T {
   const currentInstance = getCurrentInstanceAll()
   if (currentInstance) {

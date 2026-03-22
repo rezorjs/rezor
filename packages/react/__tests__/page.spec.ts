@@ -117,7 +117,7 @@ describe('page', () => {
     definePage(() => {
       const [foo, setFoo] = useState('')
       const [bar, setBar] = useState('')
-      const [baz, setBaz] = useState(undefined)
+      const [baz, setBaz] = useState()
 
       return { foo, setFoo, bar, setBar, baz, setBaz }
     })
