@@ -230,10 +230,8 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
   options.lifetimes[ComponentLifecycle.DETACHED] = function (
     this: ComponentInstance,
   ) {
-    const renderJob: SchedulerJob | undefined = this[toHiddenField('render')]
-    if (renderJob) {
-      renderJob.flags! |= SchedulerJobFlags.DISPOSED
-    }
+    const renderJob: SchedulerJob = this[toHiddenField('render')]
+    renderJob.flags! |= SchedulerJobFlags.DISPOSED
 
     const store = getHooksStore(this)
     store.slots.forEach((slot) => {

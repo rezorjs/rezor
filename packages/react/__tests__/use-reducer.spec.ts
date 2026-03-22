@@ -96,7 +96,9 @@ describe('useReducer', () => {
   })
 
   test('warning outside render', () => {
-    useReducer(counterReducer, { count: 0 })
+    const [state, dispatch] = useReducer(counterReducer, { count: 0 })
+    expect(state.count).toBe(0)
+    dispatch({ type: 'increment' })
     expect('useReducer() hook can only be').toHaveBeenWarned()
   })
 })

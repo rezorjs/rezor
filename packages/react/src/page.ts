@@ -184,10 +184,8 @@ export function definePage(optionsOrRender: any, config?: Config): void {
 
   const originOnUnload = options[PageLifecycle.ON_UNLOAD] as Function
   options[PageLifecycle.ON_UNLOAD] = function (this: PageInstance) {
-    const renderJob: SchedulerJob | undefined = this[toHiddenField('render')]
-    if (renderJob) {
-      renderJob.flags! |= SchedulerJobFlags.DISPOSED
-    }
+    const renderJob: SchedulerJob = this[toHiddenField('render')]
+    renderJob.flags! |= SchedulerJobFlags.DISPOSED
 
     const store = getHooksStore(this)
     store.slots.forEach((slot) => {

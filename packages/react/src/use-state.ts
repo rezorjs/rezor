@@ -45,6 +45,7 @@ export function useState<S>(
     return [stateSlot.value, stateSlot.setState]
   }
 
+  /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
     console.warn(
       'useState() hook can only be called during execution of render().',

@@ -52,6 +52,7 @@ export function useReducer<S, I, A>(
     return [stateSlot.value, stateSlot.setState]
   }
 
+  /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
     console.warn(
       'useReducer() hook can only be called during execution of render().',

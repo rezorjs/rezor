@@ -69,6 +69,7 @@ export function useContext<T>(context: Context<T>, value?: T): T | void {
     return context.currentValue
   }
 
+  /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
     console.warn(
       'useContext() hook can only be called during execution of render().',

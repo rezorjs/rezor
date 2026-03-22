@@ -29,6 +29,7 @@ export function useMemo<T>(factory: () => T, deps: readonly unknown[]): T {
     return memoImpl(currentInstance, factory, deps)
   }
 
+  /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
     console.warn(
       'useMemo() hook can only be called during execution of render().',
@@ -47,6 +48,7 @@ export function useCallback<T extends Function>(
     return memoImpl(currentInstance, () => callback, deps)
   }
 
+  /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
     console.warn(
       'useCallback() hook can only be called during execution of render().',

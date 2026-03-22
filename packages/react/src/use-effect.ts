@@ -43,6 +43,7 @@ export function useEffect(
     return
   }
 
+  /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
     console.warn(
       'useEffect() hook can only be called during execution of render().',

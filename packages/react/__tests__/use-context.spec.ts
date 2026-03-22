@@ -147,9 +147,10 @@ describe('useContext', () => {
     const renderSpy = vi.fn()
 
     defineComponent(() => {
+      const [count, setCount] = useState(0)
       const [theme, setTheme] = useState('dark')
       useContext(ThemeContext, theme)
-      return { setTheme }
+      return { count, setCount, setTheme }
     })
     const provider = component
     provider.lifetimes.attached.call(provider)
@@ -162,8 +163,8 @@ describe('useContext', () => {
     component.lifetimes.attached.call(component)
     expect(renderSpy).toHaveBeenCalledTimes(1)
 
-    // Set same value — should not trigger consumer re-render
-    provider.setTheme('dark')
+    // Trigger re-render, but theme didn't change — should not trigger consumer re-render
+    provider.setCount(1)
     await nextTick()
     expect(renderSpy).toHaveBeenCalledTimes(1)
   })

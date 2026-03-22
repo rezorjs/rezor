@@ -170,7 +170,9 @@ describe('useState', () => {
   })
 
   test('warning outside render', () => {
-    useState(0)
+    const [count, setCount] = useState(0)
+    expect(count).toBe(0)
+    setCount(1)
     expect('useState() hook can only be').toHaveBeenWarned()
   })
 })

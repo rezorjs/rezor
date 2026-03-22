@@ -20,6 +20,7 @@ export function useEffectEvent<T extends (...args: any[]) => any>(
     return ((...args: any[]) => effectEventSlot.fn(...args)) as T
   }
 
+  /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
     console.warn(
       'useEffectEvent() hook can only be called during execution of render().',
