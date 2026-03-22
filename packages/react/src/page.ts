@@ -10,7 +10,6 @@ import {
   getHooksStore,
   getLifecycleHooks,
 } from './store'
-import { notifyContextSubscribers } from './use-context'
 import { extend, exclude, isFunction, toHiddenField } from './utils'
 
 export type Query = Record<string, string | undefined>
@@ -196,11 +195,8 @@ export function definePage(optionsOrRender: any, config?: Config): void {
         if (slot.cleanup) {
           slot.cleanup()
         }
-      } else if (slot.kind === 'contextProvider') {
-        slot.context.currentValue = slot.context.defaultValue
-        notifyContextSubscribers(slot.context)
-      } else if (slot.kind === 'contextConsumer') {
-        slot.context.subscribers.delete(renderJob!)
+      } else if (slot.kind === 'context') {
+        slot.cleanup()
       }
     })
     if (originOnUnload !== undefined) {

@@ -17,7 +17,7 @@ export function createContext<T>(defaultValue: T): Context<T> {
   }
 }
 
-export function notifyContextSubscribers(context: Context<any>): void {
+function notifyContextSubscribers(context: Context<any>): void {
   context.subscribers.forEach((job) => {
     queueJob(job)
   })
@@ -33,8 +33,14 @@ export function useContext<T>(context: Context<T>, value?: T): T | void {
 
     if (arguments.length >= 2) {
       // Provider
-      if (!isHookKind(store.slots[index], 'contextProvider')) {
-        store.slots[index] = { kind: 'contextProvider', context }
+      if (!isHookKind(store.slots[index], 'context')) {
+        store.slots[index] = {
+          kind: 'context',
+          cleanup() {
+            context.currentValue = context.defaultValue
+            notifyContextSubscribers(context)
+          },
+        }
       }
 
       if (!Object.is(context.currentValue, value)) {
@@ -47,11 +53,17 @@ export function useContext<T>(context: Context<T>, value?: T): T | void {
     }
 
     // Consumer
-    if (!isHookKind(store.slots[index], 'contextConsumer')) {
-      store.slots[index] = { kind: 'contextConsumer', context }
+    const render = currentInstance[toHiddenField('render')]
+    if (!isHookKind(store.slots[index], 'context')) {
+      store.slots[index] = {
+        kind: 'context',
+        cleanup() {
+          context.subscribers.delete(render)
+        },
+      }
     }
 
-    context.subscribers.add(currentInstance[toHiddenField('render')])
+    context.subscribers.add(render)
 
     store.cursor += 1
     return context.currentValue

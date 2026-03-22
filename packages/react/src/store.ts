@@ -2,14 +2,7 @@ import type { SchedulerJob } from './scheduler'
 import { AppInstance, PageInstance } from './instance'
 import { toHiddenField } from './utils'
 
-type HookKind =
-  | 'ref'
-  | 'memo'
-  | 'state'
-  | 'effect'
-  | 'effectEvent'
-  | 'contextProvider'
-  | 'contextConsumer'
+type HookKind = 'ref' | 'memo' | 'state' | 'effect' | 'effectEvent' | 'context'
 type RefHookSlot = { kind: 'ref'; ref: { current: any } }
 type MemoHookSlot = { kind: 'memo'; value: any; deps: unknown[] }
 export type StateHookSlot = {
@@ -27,13 +20,9 @@ type EffectEventHookSlot = {
   kind: 'effectEvent'
   fn: Function
 }
-export type ContextProviderHookSlot = {
-  kind: 'contextProvider'
-  context: { defaultValue: any; currentValue: any; subscribers: Set<Function> }
-}
-export type ContextConsumerHookSlot = {
-  kind: 'contextConsumer'
-  context: { defaultValue: any; currentValue: any; subscribers: Set<Function> }
+export type ContextHookSlot = {
+  kind: 'context'
+  cleanup: () => void
 }
 type HookSlot =
   | StateHookSlot
@@ -41,8 +30,7 @@ type HookSlot =
   | MemoHookSlot
   | EffectHookSlot
   | EffectEventHookSlot
-  | ContextProviderHookSlot
-  | ContextConsumerHookSlot
+  | ContextHookSlot
 type HooksStore = { cursor: number; slots: HookSlot[] }
 type HookSlotByKind = {
   ref: RefHookSlot
@@ -50,8 +38,7 @@ type HookSlotByKind = {
   state: StateHookSlot
   effect: EffectHookSlot
   effectEvent: EffectEventHookSlot
-  contextProvider: ContextProviderHookSlot
-  contextConsumer: ContextConsumerHookSlot
+  context: ContextHookSlot
 }
 
 type LifecycleStore = Record<string, { cursor: number; handlers: Function[] }>
