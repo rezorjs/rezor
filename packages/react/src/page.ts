@@ -147,8 +147,13 @@ export function definePage(optionsOrRender: any, config?: Config): void {
               return
             }
 
-            data = data || {}
-            data[key] = value
+            if (
+              !Object.prototype.hasOwnProperty.call(this.data, key) ||
+              !Object.is(this.data[key], value)
+            ) {
+              data = data || {}
+              data[key] = value
+            }
           })
           if (data !== undefined) {
             this.setData(data, flushPostFlushCbs)

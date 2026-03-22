@@ -26,6 +26,7 @@ globalThis.Page = (options: Record<string, any>) => {
   page = {
     ...options,
     is: '',
+    data: {},
     route: '',
     options: {},
     createSelectorQuery() {},
@@ -45,7 +46,6 @@ globalThis.Page = (options: Record<string, any>) => {
     setPassiveEvent() {},
     setInitialRenderingCache() {},
     setData(data: Record<string, unknown>, callback: () => void) {
-      this.data = this.data || {}
       Object.keys(data).forEach((key) => {
         this.data[key] = data[key]
       })
@@ -111,6 +111,40 @@ describe('page', () => {
     page.onUnload()
     await nextTick()
     expect(fn).toBeCalledTimes(2)
+  })
+
+  test('skip unchanged states on update', async () => {
+    definePage(() => {
+      const [foo, setFoo] = useState('')
+      const [bar, setBar] = useState('')
+      const [baz, setBaz] = useState(undefined)
+
+      return { foo, setFoo, bar, setBar, baz, setBaz }
+    })
+    page.onLoad()
+    expect(page.data.foo).toBe('')
+    expect(page.data.bar).toBe('')
+    expect(page.data.baz).toBe(undefined)
+    expect(Object.prototype.hasOwnProperty.call(page.data, 'baz')).toBe(true)
+
+    page.setData = function (
+      data: Record<string, unknown>,
+      callback: () => void,
+    ) {
+      expect(data).toEqual({ foo: 'foo' })
+
+      Object.keys(data).forEach((key) => {
+        this.data[key] = data[key]
+      })
+
+      renderCb = callback
+    }
+    page.setFoo('foo')
+    await nextTick()
+    expect(page.data.foo).toBe('foo')
+    expect(page.data.bar).toBe('')
+    expect(page.data.baz).toBe(undefined)
+    expect(Object.prototype.hasOwnProperty.call(page.data, 'baz')).toBe(true)
   })
 
   test('useEffect', async () => {

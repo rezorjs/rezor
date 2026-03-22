@@ -22,6 +22,7 @@ globalThis.Page = (options: Record<string, any>) => {
   page = {
     ...options,
     is: '',
+    data: {},
     route: '',
     options: {},
     createSelectorQuery() {},
@@ -41,7 +42,6 @@ globalThis.Page = (options: Record<string, any>) => {
     setPassiveEvent() {},
     setInitialRenderingCache() {},
     setData(data: Record<string, unknown>) {
-      this.data = this.data || {}
       Object.keys(data).forEach((key) => {
         this.data[key] = data[key]
       })
@@ -56,6 +56,7 @@ globalThis.Component = (options: Record<string, any>) => {
     ...options,
     is: '',
     id: '',
+    data: {},
     dataset: {},
     triggerEvent() {},
     createSelectorQuery() {},
@@ -78,7 +79,6 @@ globalThis.Component = (options: Record<string, any>) => {
     setPassiveEvent() {},
     setInitialRenderingCache() {},
     setData(data: Record<string, unknown>) {
-      this.data = this.data || {}
       Object.keys(data).forEach((key) => {
         this.data[key] = data[key]
       })

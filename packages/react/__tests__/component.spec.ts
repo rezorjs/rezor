@@ -29,6 +29,7 @@ globalThis.Component = (options: Record<string, any>) => {
     ...options,
     is: '',
     id: '',
+    data: {},
     dataset: {},
     triggerEvent() {},
     createSelectorQuery() {},
@@ -51,7 +52,6 @@ globalThis.Component = (options: Record<string, any>) => {
     setPassiveEvent() {},
     setInitialRenderingCache() {},
     setData(data: Record<string, unknown>, callback: () => void) {
-      this.data = this.data || {}
       Object.keys(data).forEach((key) => {
         this.data[key] = data[key]
       })
@@ -117,6 +117,44 @@ describe('component', () => {
     component.lifetimes.detached.call(component)
     await nextTick()
     expect(fn).toBeCalledTimes(2)
+  })
+
+  test('skip unchanged states on update', async () => {
+    defineComponent(() => {
+      const [foo, setFoo] = useState('')
+      const [bar, setBar] = useState('')
+      const [baz, setBaz] = useState(undefined)
+
+      return { foo, setFoo, bar, setBar, baz, setBaz }
+    })
+    component.lifetimes.attached.call(component)
+    expect(component.data.foo).toBe('')
+    expect(component.data.bar).toBe('')
+    expect(component.data.baz).toBe(undefined)
+    expect(Object.prototype.hasOwnProperty.call(component.data, 'baz')).toBe(
+      true,
+    )
+
+    component.setData = function (
+      data: Record<string, unknown>,
+      callback: () => void,
+    ) {
+      expect(data).toEqual({ foo: 'foo' })
+
+      Object.keys(data).forEach((key) => {
+        this.data[key] = data[key]
+      })
+
+      renderCb = callback
+    }
+    component.setFoo('foo')
+    await nextTick()
+    expect(component.data.foo).toBe('foo')
+    expect(component.data.bar).toBe('')
+    expect(component.data.baz).toBe(undefined)
+    expect(Object.prototype.hasOwnProperty.call(component.data, 'baz')).toBe(
+      true,
+    )
   })
 
   test('useEffect', async () => {

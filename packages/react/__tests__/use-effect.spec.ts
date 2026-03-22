@@ -14,6 +14,7 @@ globalThis.Page = (options: Record<string, any>) => {
   page = {
     ...options,
     is: '',
+    data: {},
     route: '',
     options: {},
     createSelectorQuery() {},
@@ -33,7 +34,6 @@ globalThis.Page = (options: Record<string, any>) => {
     setPassiveEvent() {},
     setInitialRenderingCache() {},
     setData(data: Record<string, unknown>, callback: () => void) {
-      this.data = this.data || {}
       Object.keys(data).forEach((key) => {
         this.data[key] = data[key]
       })
