@@ -34,7 +34,7 @@ async function generateDeclaration({
   })
 
   const dtsBundle = await rollup({
-    input: path.join('packages', target, 'dist', target, 'src', 'index.d.ts'),
+    input: path.join('packages', target, 'dist', 'index.d.ts'),
     external,
     plugins: [dts()],
   })
