@@ -7,7 +7,7 @@ import {
   trimLifecycleBuckets,
   getLifecycleHooks,
 } from './store'
-import { exclude, isFunction, toHiddenField } from './utils'
+import { exclude, isFunction } from './utils'
 
 export type AppRender = (
   this: void,
@@ -64,7 +64,7 @@ export function createApp(optionsOrRender: any): void {
     this: AppInstance,
     options: WechatMiniprogram.App.LaunchShowOption,
   ) {
-    this[toHiddenField('render')] = () => {
+    this.__render__ = () => {
       setCurrentApp(this)
       resetHooksCursor(this)
       resetLifecycleCursors(this, appLifeHooks)
@@ -84,7 +84,7 @@ export function createApp(optionsOrRender: any): void {
       trimLifecycleBuckets(this, appLifeHooks)
     }
 
-    this[toHiddenField('render')]()
+    this.__render__()
 
     if (originOnLaunch !== undefined) {
       originOnLaunch.call(this, options)

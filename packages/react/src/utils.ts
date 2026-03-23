@@ -17,10 +17,6 @@ export function isFunction(x: unknown): x is Function {
   return typeof x === 'function'
 }
 
-export function toHiddenField(name: string): string {
-  return `__${name}__`
-}
-
 export function areHookDepsEqual(
   prevDeps?: readonly unknown[],
   nextDeps?: readonly unknown[],

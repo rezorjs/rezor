@@ -10,7 +10,7 @@ import {
   getHooksStore,
   getLifecycleHooks,
 } from './store'
-import { extend, exclude, isFunction, toHiddenField } from './utils'
+import { extend, exclude, isFunction } from './utils'
 
 export type Query = Record<string, string | undefined>
 export type PageContext = WechatMiniprogram.Page.InstanceProperties &
@@ -131,7 +131,7 @@ export function definePage(optionsOrRender: any, config?: Config): void {
       getAppBar: this.getAppBar && this.getAppBar.bind(this),
     }
 
-    this[toHiddenField('render')] = () => {
+    this.__render__ = () => {
       setCurrentPage(this)
       resetHooksCursor(this)
       resetLifecycleCursors(this, pageLifeHooks)
@@ -167,7 +167,7 @@ export function definePage(optionsOrRender: any, config?: Config): void {
       trimLifecycleBuckets(this, pageLifeHooks)
     }
 
-    this[toHiddenField('render')]()
+    this.__render__()
 
     if (originOnLoad !== undefined) {
       originOnLoad.call(this, query)
@@ -184,7 +184,7 @@ export function definePage(optionsOrRender: any, config?: Config): void {
 
   const originOnUnload = options[PageLifecycle.ON_UNLOAD] as Function
   options[PageLifecycle.ON_UNLOAD] = function (this: PageInstance) {
-    const renderJob: SchedulerJob = this[toHiddenField('render')]
+    const renderJob: SchedulerJob = this.__render__
     renderJob.flags! |= SchedulerJobFlags.DISPOSED
 
     const store = getHooksStore(this)

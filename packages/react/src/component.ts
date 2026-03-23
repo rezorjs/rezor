@@ -12,7 +12,7 @@ import {
   getHooksStore,
   getLifecycleHooks,
 } from './store'
-import { extend, exclude, isFunction, toHiddenField } from './utils'
+import { extend, exclude, isFunction } from './utils'
 
 export type ComponentContext = WechatMiniprogram.Component.InstanceProperties &
   Omit<
@@ -162,7 +162,7 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
       getAppBar: this.getAppBar && this.getAppBar.bind(this),
     }
 
-    this[toHiddenField('render')] = () => {
+    this.__render__ = () => {
       setCurrentComponent(this)
       resetHooksCursor(this)
       resetLifecycleCursors(this, componentLifeHooks)
@@ -205,7 +205,7 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
       trimLifecycleBuckets(this, componentLifeHooks)
     }
 
-    this[toHiddenField('render')]()
+    this.__render__()
 
     if (originAttached !== undefined) {
       originAttached.call(this)
@@ -230,7 +230,7 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
   options.lifetimes[ComponentLifecycle.DETACHED] = function (
     this: ComponentInstance,
   ) {
-    const renderJob: SchedulerJob = this[toHiddenField('render')]
+    const renderJob: SchedulerJob = this.__render__
     renderJob.flags! |= SchedulerJobFlags.DISPOSED
 
     const store = getHooksStore(this)
@@ -362,8 +362,8 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
         value: any,
       ) {
         // Observer executes before attached
-        if (this[toHiddenField('render')]) {
-          queueJob(this[toHiddenField('render')])
+        if (this.__render__) {
+          queueJob(this.__render__)
         }
 
         if (originObserver !== undefined) {

@@ -1,7 +1,6 @@
 import { getCurrentInstanceAll } from './instance'
 import type { StateHookSlot } from './store'
 import { getHooksStore, isHookKind } from './store'
-import { toHiddenField } from './utils'
 import { queueJob } from './scheduler'
 
 export type ActionDispatch<A> = (action: A) => void
@@ -37,7 +36,7 @@ export function useReducer<S, I, A>(
         }
 
         ;(stateSlot as StateHookSlot).value = nextState
-        queueJob(currentInstance[toHiddenField('render')])
+        queueJob(currentInstance.__render__)
       }
 
       stateSlot = {

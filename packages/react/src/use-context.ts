@@ -1,7 +1,6 @@
 import { getCurrentInstanceAll } from './instance'
 import { getHooksStore, isHookKind } from './store'
 import { queueJob } from './scheduler'
-import { toHiddenField } from './utils'
 
 export interface Context<T> {
   defaultValue: T
@@ -53,7 +52,7 @@ export function useContext<T>(context: Context<T>, value?: T): T | void {
     }
 
     // Consumer
-    const render = currentInstance[toHiddenField('render')]
+    const render = currentInstance.__render__
     if (!isHookKind(store.slots[index], 'context')) {
       store.slots[index] = {
         kind: 'context',

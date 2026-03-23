@@ -1,6 +1,5 @@
 import type { SchedulerJob } from './scheduler'
 import { AppInstance, PageInstance } from './instance'
-import { toHiddenField } from './utils'
 
 type HookKind = 'ref' | 'memo' | 'state' | 'effect' | 'effectEvent' | 'context'
 type RefHookSlot = { kind: 'ref'; ref: { current: any } }
@@ -43,20 +42,17 @@ type HookSlotByKind = {
 
 type LifecycleStore = Record<string, { cursor: number; handlers: Function[] }>
 
-const hooksStoreField = toHiddenField('hooks')
-const lifecycleStoreField = toHiddenField('lifecycle')
-
 export function getHooksStore(
   instance: AppInstance | PageInstance,
 ): HooksStore {
-  if (instance[hooksStoreField] === undefined) {
-    instance[hooksStoreField] = { cursor: 0, slots: [] } satisfies HooksStore
+  if (instance.__hooks__ === undefined) {
+    instance.__hooks__ = { cursor: 0, slots: [] } satisfies HooksStore
   }
-  return instance[hooksStoreField]
+  return instance.__hooks__
 }
 
 export function resetHooksCursor(instance: AppInstance | PageInstance): void {
-  const store = instance[hooksStoreField] as HooksStore | undefined
+  const store = instance.__hooks__ as HooksStore | undefined
   if (store === undefined) {
     return
   }
@@ -64,7 +60,7 @@ export function resetHooksCursor(instance: AppInstance | PageInstance): void {
 }
 
 export function trimHooksStore(instance: AppInstance | PageInstance): void {
-  const store = instance[hooksStoreField] as HooksStore | undefined
+  const store = instance.__hooks__ as HooksStore | undefined
   if (store === undefined) {
     return
   }
@@ -82,7 +78,7 @@ export function resetLifecycleCursors(
   instance: AppInstance | PageInstance,
   lifecycles: string[],
 ): void {
-  const store = instance[lifecycleStoreField] as LifecycleStore | undefined
+  const store = instance.__lifecycle__ as LifecycleStore | undefined
   if (store === undefined) {
     return
   }
@@ -98,7 +94,7 @@ export function trimLifecycleBuckets(
   instance: AppInstance | PageInstance,
   lifecycles: string[],
 ): void {
-  const store = instance[lifecycleStoreField] as LifecycleStore | undefined
+  const store = instance.__lifecycle__ as LifecycleStore | undefined
   if (store === undefined) {
     return
   }
@@ -115,11 +111,11 @@ export function registerLifecycleHook(
   lifecycle: string,
   hook: Function,
 ): void {
-  if (instance[lifecycleStoreField] === undefined) {
-    instance[lifecycleStoreField] = {}
+  if (instance.__lifecycle__ === undefined) {
+    instance.__lifecycle__ = {}
   }
 
-  const store = instance[lifecycleStoreField] as LifecycleStore
+  const store = instance.__lifecycle__ as LifecycleStore
   if (store[lifecycle] === undefined) {
     store[lifecycle] = { cursor: 0, handlers: [] }
   }
@@ -133,7 +129,7 @@ export function getLifecycleCursor(
   instance: AppInstance | PageInstance,
   lifecycle: string,
 ): number {
-  const store = instance[lifecycleStoreField] as LifecycleStore | undefined
+  const store = instance.__lifecycle__ as LifecycleStore | undefined
   if (store === undefined || store[lifecycle] === undefined) {
     return 0
   }
@@ -144,7 +140,7 @@ export function getLifecycleHooks(
   instance: AppInstance | PageInstance,
   lifecycle: string,
 ): Function[] {
-  const store = instance[lifecycleStoreField] as LifecycleStore | undefined
+  const store = instance.__lifecycle__ as LifecycleStore | undefined
   if (store === undefined || store[lifecycle] === undefined) {
     return []
   }

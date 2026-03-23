@@ -1,7 +1,7 @@
 import { getCurrentInstanceAll } from './instance'
 import type { StateHookSlot } from './store'
 import { getHooksStore, isHookKind } from './store'
-import { isFunction, toHiddenField } from './utils'
+import { isFunction } from './utils'
 import { queueJob } from './scheduler'
 
 export type Dispatch<A> = (value: A) => void
@@ -34,7 +34,7 @@ export function useState<S>(
         }
 
         ;(stateSlot as StateHookSlot).value = nextState
-        queueJob(currentInstance[toHiddenField('render')])
+        queueJob(currentInstance.__render__)
       }
 
       stateSlot = { kind: 'state', value: getState(), setState }
