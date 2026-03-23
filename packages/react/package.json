@@ -2,9 +2,9 @@
   "name": "rezor",
   "version": "0.0.0",
   "description": "基于 React 的小程序框架。简单，强大，高性能。",
-  "main": "dist/rezor.cjs.js",
-  "module": "dist/rezor.esm-bundler.js",
-  "types": "dist/rezor.d.ts",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm-bundler.js",
+  "types": "dist/index.d.ts",
   "repository": "https://github.com/rezorjs/rezor.git",
   "homepage": "https://rezor.dev",
   "author": "Yang Mingshan <y.mingshan3@gmail.com>",
@@ -14,10 +14,10 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/rezor.d.ts",
-      "import": "./dist/rezor.esm-bundler.js",
-      "require": "./dist/rezor.cjs.js",
-      "default": "./dist/rezor.cjs.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm-bundler.js",
+      "require": "./dist/index.cjs.js",
+      "default": "./dist/index.cjs.js"
     },
     "./package.json": "./package.json"
   },

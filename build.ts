@@ -114,7 +114,7 @@ async function buildRezor() {
 
   await generateDeclaration({
     target,
-    fileName: 'rezor.d.ts',
+    fileName: 'index.d.ts',
   })
 
   await generateCode({
@@ -124,7 +124,7 @@ async function buildRezor() {
       __DEV__: 'true',
       'process.env.NODE_ENV': JSON.stringify('development'),
     },
-    fileName: 'rezor.cjs.js',
+    fileName: 'index.cjs.js',
     format: 'cjs',
   })
 
@@ -135,7 +135,7 @@ async function buildRezor() {
       __DEV__: 'false',
       'process.env.NODE_ENV': JSON.stringify('production'),
     },
-    fileName: 'rezor.cjs.prod.js',
+    fileName: 'index.cjs.prod.js',
     format: 'cjs',
   })
 
@@ -145,7 +145,7 @@ async function buildRezor() {
     replaces: {
       __DEV__: `(process.env.NODE_ENV !== 'production')`,
     },
-    fileName: 'rezor.esm-bundler.js',
+    fileName: 'index.esm-bundler.js',
     format: 'es',
   })
 }
