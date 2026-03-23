@@ -32,6 +32,6 @@
     "小程序"
   ],
   "dependencies": {
-    "miniprogram-api-typings": "~5.1.1"
+    "miniprogram-api-typings": "~5.1.2"
   }
 }
