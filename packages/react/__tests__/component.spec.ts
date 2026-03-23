@@ -103,20 +103,20 @@ describe('component', () => {
       }
     })
     component.lifetimes.attached.call(component)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(component.data.count).toBe(0)
     expect(component.data.double).toBe(0)
 
     component.increment()
     await nextTick()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(component.data.count).toBe(1)
     expect(component.data.double).toBe(2)
 
     component.increment()
     component.lifetimes.detached.call(component)
     await nextTick()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
   })
 
   test('skip unchanged states on update', async () => {
@@ -169,12 +169,12 @@ describe('component', () => {
     component.lifetimes.attached.call(component)
     component.lifetimes.ready.call(component)
     renderCb()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
 
     component.setCount(1)
     await nextTick()
     renderCb()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
   })
 
   test('useEffect', async () => {
@@ -197,20 +197,20 @@ describe('component', () => {
     component.lifetimes.attached.call(component)
     component.lifetimes.ready.call(component)
     renderCb()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy!).toBe(0)
 
     component.increment()
     await nextTick()
     renderCb()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy!).toBe(1)
 
     component.increment()
     await nextTick()
     component.lifetimes.detached.call(component)
     renderCb()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy!).toBe(1)
   })
 
@@ -257,7 +257,7 @@ describe('component', () => {
     component.lifetimes.attached.call(component)
     expect(component.data.double1).toBe(0)
     expect(component.data.double2).toBe(2)
-    expect(renderSpy).toBeCalledTimes(1)
+    expect(renderSpy).toHaveBeenCalledTimes(1)
 
     component.data.count1 = 1
     component.data.count2 = 2
@@ -266,7 +266,7 @@ describe('component', () => {
     await nextTick()
     expect(component.data.double1).toBe(2)
     expect(component.data.double2).toBe(4)
-    expect(renderSpy).toBeCalledTimes(2)
+    expect(renderSpy).toHaveBeenCalledTimes(2)
   })
 
   test('multiple instances', async () => {
@@ -315,7 +315,7 @@ describe('component', () => {
     component.data = { count: 0 }
     component.lifetimes.attached.call(component)
     component.observers.count.call(component, component.data.count)
-    expect(fn).toBeCalledWith(0)
+    expect(fn).toHaveBeenCalledWith(0)
   })
 
   test('context', () => {
@@ -346,7 +346,7 @@ describe('component', () => {
       render() {},
     })
     component.lifetimes.attached.call(component)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
   })
 
   test('legacy attached', () => {
@@ -356,7 +356,7 @@ describe('component', () => {
       render() {},
     })
     component.lifetimes.attached.call(component)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
   })
 
   test('ready', () => {
@@ -372,9 +372,9 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.lifetimes.ready.call(component)
-    expect(fn).toBeCalledTimes(1)
-    expect(injectedFn1).toBeCalledTimes(1)
-    expect(injectedFn2).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
+    expect(injectedFn1).toHaveBeenCalledTimes(1)
+    expect(injectedFn2).toHaveBeenCalledTimes(1)
   })
 
   test('legacy ready', () => {
@@ -385,7 +385,7 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.lifetimes.ready.call(component)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
   })
 
   test('moved', async () => {
@@ -413,14 +413,14 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.lifetimes.moved.call(component)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     component.increment()
     await nextTick()
     component.lifetimes.moved.call(component)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -433,7 +433,7 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.lifetimes.moved.call(component)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
   })
 
   test('detached', () => {
@@ -450,9 +450,9 @@ describe('component', () => {
     component.lifetimes.attached.call(component)
     component.lifetimes.ready.call(component)
     component.lifetimes.detached.call(component)
-    expect(fn).toBeCalledTimes(1)
-    expect(injectedFn1).toBeCalledTimes(1)
-    expect(injectedFn2).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
+    expect(injectedFn1).toHaveBeenCalledTimes(1)
+    expect(injectedFn2).toHaveBeenCalledTimes(1)
   })
 
   test('legacy detached', () => {
@@ -463,7 +463,7 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.lifetimes.detached.call(component)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
   })
 
   test('error', async () => {
@@ -496,14 +496,14 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.lifetimes.error.call(component, error)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     component.increment()
     await nextTick()
     component.lifetimes.error.call(component, error)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -517,7 +517,7 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.lifetimes.error.call(component, error)
-    expect(fn).toBeCalledWith(error)
+    expect(fn).toHaveBeenCalledWith(error)
   })
 
   test('onPullDownRefresh', async () => {
@@ -545,14 +545,14 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.methods.onPullDownRefresh.call(component)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     component.increment()
     await nextTick()
     component.methods.onPullDownRefresh.call(component)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -582,14 +582,14 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.methods.onReachBottom.call(component)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     component.increment()
     await nextTick()
     component.methods.onReachBottom.call(component)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -624,14 +624,14 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.methods.onTabItemTap.call(component, arg)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     component.increment()
     await nextTick()
     component.methods.onTabItemTap.call(component, arg)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -677,14 +677,14 @@ describe('component', () => {
     component.__listenPageScroll__ = component.methods.__listenPageScroll__
     component.lifetimes.attached.call(component)
     component.methods.onPageScroll.call(component, arg)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     component.increment()
     await nextTick()
     component.methods.onPageScroll.call(component, arg)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
 
@@ -717,7 +717,7 @@ describe('component', () => {
     expect(dummy!).toBe(1)
 
     defineComponent(() => {})
-    expect(component.methods.onPageScroll).toBeUndefined()
+    expect(component.methods.onPageScroll).toBe(undefined)
   })
 
   test('onShareAppMessage', async () => {
@@ -798,7 +798,7 @@ describe('component', () => {
     expect(component.methods.onShareAppMessage.call(component, arg)).toEqual({})
 
     defineComponent(() => {})
-    expect(component.methods.onShareAppMessage).toBeUndefined()
+    expect(component.methods.onShareAppMessage).toBe(undefined)
   })
 
   test('onShareTimeline', async () => {
@@ -872,7 +872,7 @@ describe('component', () => {
     expect(component.methods.onShareTimeline.call(component)).toEqual({})
 
     defineComponent(() => {})
-    expect(component.methods.onShareTimeline).toBeUndefined()
+    expect(component.methods.onShareTimeline).toBe(undefined)
   })
 
   test('onAddToFavorites', async () => {
@@ -1016,14 +1016,14 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.pageLifetimes.show.call(component)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     component.increment()
     await nextTick()
     component.pageLifetimes.show.call(component)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -1053,14 +1053,14 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.pageLifetimes.hide.call(component)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     component.increment()
     await nextTick()
     component.pageLifetimes.hide.call(component)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -1095,14 +1095,14 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.pageLifetimes.resize.call(component, arg)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     component.increment()
     await nextTick()
     component.pageLifetimes.resize.call(component, arg)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -1132,14 +1132,14 @@ describe('component', () => {
     })
     component.lifetimes.attached.call(component)
     component.pageLifetimes.routeDone.call(component)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     component.increment()
     await nextTick()
     component.pageLifetimes.routeDone.call(component)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })

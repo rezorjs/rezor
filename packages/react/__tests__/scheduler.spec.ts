@@ -495,7 +495,7 @@ describe('scheduler', () => {
       throw new Error('error')
     })
     await expect(nextTick()).rejects.toThrow('error')
-    await expect(nextTick()).resolves.toBeUndefined()
+    await expect(nextTick()).resolves.toBe(undefined)
   })
 
   test('queueJob inside job', async () => {
@@ -520,7 +520,7 @@ describe('scheduler', () => {
     queueJob(job)
     job.flags! |= SchedulerJobFlags.DISPOSED
     await nextTick()
-    expect(job).toBeCalledTimes(0)
+    expect(job).toHaveBeenCalledTimes(0)
   })
 
   test('disposed post job should not execute', () => {
@@ -528,6 +528,6 @@ describe('scheduler', () => {
     queuePostFlushCb(cb)
     cb.flags! |= SchedulerJobFlags.DISPOSED
     flushPostFlushCbs()
-    expect(cb).toBeCalledTimes(0)
+    expect(cb).toHaveBeenCalledTimes(0)
   })
 })

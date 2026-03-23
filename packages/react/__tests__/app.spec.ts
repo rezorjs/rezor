@@ -33,8 +33,8 @@ describe('app', () => {
     const render = vi.fn()
     createApp({ onLaunch, render })
     app.onLaunch(arg)
-    expect(onLaunch).toBeCalledWith(arg)
-    expect(render).toBeCalledWith(arg)
+    expect(onLaunch).toHaveBeenCalledWith(arg)
+    expect(render).toHaveBeenCalledWith(arg)
   })
 
   test('onShow', () => {
@@ -51,9 +51,9 @@ describe('app', () => {
     })
     app.onLaunch()
     app.onShow(arg)
-    expect(fn).toBeCalledWith(arg)
-    expect(injectedFn1).toBeCalledWith(arg)
-    expect(injectedFn2).toBeCalledWith(arg)
+    expect(fn).toHaveBeenCalledWith(arg)
+    expect(injectedFn1).toHaveBeenCalledWith(arg)
+    expect(injectedFn2).toHaveBeenCalledWith(arg)
   })
 
   test('onHide', () => {
@@ -69,9 +69,9 @@ describe('app', () => {
     })
     app.onLaunch()
     app.onHide()
-    expect(fn).toBeCalledTimes(1)
-    expect(injectedFn1).toBeCalledTimes(1)
-    expect(injectedFn2).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
+    expect(injectedFn1).toHaveBeenCalledTimes(1)
+    expect(injectedFn2).toHaveBeenCalledTimes(1)
   })
 
   test('onError', () => {
@@ -88,9 +88,9 @@ describe('app', () => {
     })
     app.onLaunch()
     app.onError(arg)
-    expect(fn).toBeCalledWith(arg)
-    expect(injectedFn1).toBeCalledWith(arg)
-    expect(injectedFn2).toBeCalledWith(arg)
+    expect(fn).toHaveBeenCalledWith(arg)
+    expect(injectedFn1).toHaveBeenCalledWith(arg)
+    expect(injectedFn2).toHaveBeenCalledWith(arg)
   })
 
   test('onPageNotFound', () => {
@@ -107,9 +107,9 @@ describe('app', () => {
     })
     app.onLaunch()
     app.onPageNotFound(arg)
-    expect(fn).toBeCalledWith(arg)
-    expect(injectedFn1).toBeCalledWith(arg)
-    expect(injectedFn2).toBeCalledWith(arg)
+    expect(fn).toHaveBeenCalledWith(arg)
+    expect(injectedFn1).toHaveBeenCalledWith(arg)
+    expect(injectedFn2).toHaveBeenCalledWith(arg)
   })
 
   test('onUnhandledRejection', () => {
@@ -126,9 +126,9 @@ describe('app', () => {
     })
     app.onLaunch()
     app.onUnhandledRejection(arg)
-    expect(fn).toBeCalledWith(arg)
-    expect(injectedFn1).toBeCalledWith(arg)
-    expect(injectedFn2).toBeCalledWith(arg)
+    expect(fn).toHaveBeenCalledWith(arg)
+    expect(injectedFn1).toHaveBeenCalledWith(arg)
+    expect(injectedFn2).toHaveBeenCalledWith(arg)
   })
 
   test('onThemeChange', () => {
@@ -145,9 +145,9 @@ describe('app', () => {
     })
     app.onLaunch()
     app.onThemeChange(arg)
-    expect(fn).toBeCalledWith(arg)
-    expect(injectedFn1).toBeCalledWith(arg)
-    expect(injectedFn2).toBeCalledWith(arg)
+    expect(fn).toHaveBeenCalledWith(arg)
+    expect(injectedFn1).toHaveBeenCalledWith(arg)
+    expect(injectedFn2).toHaveBeenCalledWith(arg)
   })
 
   test('inject lifecycle outside render', () => {
@@ -167,7 +167,7 @@ describe('app', () => {
     expect(app.num).toBe(0)
 
     app.onHide()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
   })
 
   test('only injected lifecycle', () => {
@@ -177,7 +177,7 @@ describe('app', () => {
     })
     app.onLaunch()
     app.onHide()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
   })
 
   test('no render', () => {

@@ -97,20 +97,20 @@ describe('page', () => {
       }
     })
     page.onLoad()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(page.data.count).toBe(0)
     expect(page.data.double).toBe(0)
 
     page.increment()
     await nextTick()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(page.data.count).toBe(1)
     expect(page.data.double).toBe(2)
 
     page.increment()
     page.onUnload()
     await nextTick()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
   })
 
   test('skip unchanged states on update', async () => {
@@ -159,12 +159,12 @@ describe('page', () => {
     page.onLoad({})
     page.onReady()
     renderCb()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
 
     page.setCount(1)
     await nextTick()
     renderCb()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
   })
 
   test('context should be stable', async () => {
@@ -179,12 +179,12 @@ describe('page', () => {
     page.onLoad()
     page.onReady()
     renderCb()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
 
     page.setCount(1)
     await nextTick()
     renderCb()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
   })
 
   test('useEffect', async () => {
@@ -207,20 +207,20 @@ describe('page', () => {
     page.onLoad()
     page.onReady()
     renderCb()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy!).toBe(0)
 
     page.increment()
     await nextTick()
     renderCb()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy!).toBe(1)
 
     page.increment()
     await nextTick()
     page.onUnload()
     renderCb()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy!).toBe(1)
   })
 
@@ -236,8 +236,8 @@ describe('page', () => {
     })
     definePage({ onLoad, render })
     page.onLoad(arg)
-    expect(onLoad).toBeCalledWith(arg)
-    expect(render).toBeCalledTimes(1)
+    expect(onLoad).toHaveBeenCalledWith(arg)
+    expect(render).toHaveBeenCalledTimes(1)
   })
 
   test('context: high library version', () => {
@@ -262,9 +262,9 @@ describe('page', () => {
     })
     page.onLoad()
     page.onReady()
-    expect(fn).toBeCalledTimes(1)
-    expect(injectedFn1).toBeCalledTimes(1)
-    expect(injectedFn2).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
+    expect(injectedFn1).toHaveBeenCalledTimes(1)
+    expect(injectedFn2).toHaveBeenCalledTimes(1)
   })
 
   test('onShow', async () => {
@@ -292,14 +292,14 @@ describe('page', () => {
     })
     page.onLoad()
     page.onShow()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     page.increment()
     await nextTick()
     page.onShow()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -329,14 +329,14 @@ describe('page', () => {
     })
     page.onLoad()
     page.onHide()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     page.increment()
     await nextTick()
     page.onHide()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -355,9 +355,9 @@ describe('page', () => {
     page.onLoad()
     page.onReady()
     page.onUnload()
-    expect(fn).toBeCalledTimes(1)
-    expect(injectedFn1).toBeCalledTimes(1)
-    expect(injectedFn2).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
+    expect(injectedFn1).toHaveBeenCalledTimes(1)
+    expect(injectedFn2).toHaveBeenCalledTimes(1)
   })
 
   test('onRouteDone', async () => {
@@ -385,14 +385,14 @@ describe('page', () => {
     })
     page.onLoad()
     page.onRouteDone()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     page.increment()
     await nextTick()
     page.onRouteDone()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -422,14 +422,14 @@ describe('page', () => {
     })
     page.onLoad()
     page.onPullDownRefresh()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     page.increment()
     await nextTick()
     page.onPullDownRefresh()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -459,14 +459,14 @@ describe('page', () => {
     })
     page.onLoad()
     page.onReachBottom()
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     page.increment()
     await nextTick()
     page.onReachBottom()
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -501,14 +501,14 @@ describe('page', () => {
     })
     page.onLoad()
     page.onResize(arg)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     page.increment()
     await nextTick()
     page.onResize(arg)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -543,14 +543,14 @@ describe('page', () => {
     })
     page.onLoad()
     page.onTabItemTap(arg)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     page.increment()
     await nextTick()
     page.onTabItemTap(arg)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
   })
@@ -594,14 +594,14 @@ describe('page', () => {
     })
     page.onLoad()
     page.onPageScroll(arg)
-    expect(fn).toBeCalledTimes(1)
+    expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy1!).toBe(0)
     expect(dummy2!).toBe(0)
 
     page.increment()
     await nextTick()
     page.onPageScroll(arg)
-    expect(fn).toBeCalledTimes(2)
+    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy1!).toBe(1)
     expect(dummy2!).toBe(1)
 
@@ -633,7 +633,7 @@ describe('page', () => {
     expect(dummy!).toBe(1)
 
     definePage(() => {})
-    expect(page.onPageScroll).toBeUndefined()
+    expect(page.onPageScroll).toBe(undefined)
   })
 
   test('onShareAppMessage', async () => {
@@ -694,7 +694,7 @@ describe('page', () => {
     expect(page.onShareAppMessage(arg)).toEqual({})
 
     definePage(() => {})
-    expect(page.onShareAppMessage).toBeUndefined()
+    expect(page.onShareAppMessage).toBe(undefined)
   })
 
   test('onShareTimeline', async () => {
@@ -753,7 +753,7 @@ describe('page', () => {
     expect(page.onShareTimeline()).toEqual({})
 
     definePage(() => {})
-    expect(page.onShareTimeline).toBeUndefined()
+    expect(page.onShareTimeline).toBe(undefined)
   })
 
   test('onAddToFavorites', async () => {

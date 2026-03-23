@@ -58,13 +58,13 @@ describe('useEffect', () => {
     })
     page.onLoad()
     // Effect should not run during render
-    expect(effect1).toBeCalledTimes(0)
-    expect(effect2).toBeCalledTimes(0)
+    expect(effect1).toHaveBeenCalledTimes(0)
+    expect(effect2).toHaveBeenCalledTimes(0)
 
     page.onReady()
     renderCb()
-    expect(effect1).toBeCalledTimes(1)
-    expect(effect2).toBeCalledTimes(1)
+    expect(effect1).toHaveBeenCalledTimes(1)
+    expect(effect2).toHaveBeenCalledTimes(1)
   })
 
   test('runs after every render when no deps', async () => {
@@ -77,17 +77,17 @@ describe('useEffect', () => {
     page.onLoad()
     page.onReady()
     renderCb()
-    expect(effect).toBeCalledTimes(1)
+    expect(effect).toHaveBeenCalledTimes(1)
 
     page.setCount(1)
     await nextTick()
     renderCb()
-    expect(effect).toBeCalledTimes(2)
+    expect(effect).toHaveBeenCalledTimes(2)
 
     page.setCount(2)
     await nextTick()
     renderCb()
-    expect(effect).toBeCalledTimes(3)
+    expect(effect).toHaveBeenCalledTimes(3)
   })
 
   test('runs only once with empty deps', async () => {
@@ -100,12 +100,12 @@ describe('useEffect', () => {
     page.onLoad()
     page.onReady()
     renderCb()
-    expect(effect).toBeCalledTimes(1)
+    expect(effect).toHaveBeenCalledTimes(1)
 
     page.setCount(1)
     await nextTick()
     renderCb()
-    expect(effect).toBeCalledTimes(1)
+    expect(effect).toHaveBeenCalledTimes(1)
   })
 
   test('runs when deps change', async () => {
@@ -118,18 +118,18 @@ describe('useEffect', () => {
     page.onLoad()
     page.onReady()
     renderCb()
-    expect(effect).toBeCalledTimes(1)
+    expect(effect).toHaveBeenCalledTimes(1)
 
     page.setCount(1)
     await nextTick()
     renderCb()
-    expect(effect).toBeCalledTimes(2)
+    expect(effect).toHaveBeenCalledTimes(2)
 
     // Same value — should not re-run (useState bails out)
     page.setCount(1)
     await nextTick()
     renderCb()
-    expect(effect).toBeCalledTimes(2)
+    expect(effect).toHaveBeenCalledTimes(2)
   })
 
   test('runs cleanup before re-running effect', async () => {
