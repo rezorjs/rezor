@@ -131,6 +131,13 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
   options.lifetimes[ComponentLifecycle.ATTACHED] = function (
     this: ComponentInstance,
   ) {
+    this.__props__ = {}
+    if (properties) {
+      properties.forEach((property) => {
+        this.__props__[property] = this.data[property]
+      })
+    }
+
     const context: ComponentContext = {
       is: this.is,
       id: this.id,
@@ -167,15 +174,8 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
       resetHooksCursor(this)
       resetLifecycleCursors(this, componentLifeHooks)
 
-      const props: Record<string, any> = {}
-      if (properties) {
-        properties.forEach((property) => {
-          props[property] = this.data[property]
-        })
-      }
-
       try {
-        const bindings = render(props, context)
+        const bindings = render(this.__props__, context)
         if (bindings !== undefined) {
           let data: Record<string, unknown> | undefined
           Object.keys(bindings).forEach((key) => {
@@ -361,6 +361,11 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
         this: ComponentInstance,
         value: any,
       ) {
+        // Observer executes before attached
+        if (this.__props__) {
+          this.__props__ = extend({}, this.__props__, { [property]: value })
+        }
+
         // Observer executes before attached
         if (this.__render__) {
           queueJob(this.__render__)

@@ -157,6 +157,41 @@ describe('component', () => {
     )
   })
 
+  test('props should only change when property updates', async () => {
+    const fn = vi.fn()
+    defineComponent({
+      properties: {
+        foo: String,
+      },
+      render(props) {
+        const [count, setCount] = useState(0)
+
+        useEffect(fn, [props])
+
+        return { count, setCount }
+      },
+    })
+    component.data.foo = ''
+    component.lifetimes.attached.call(component)
+    component.lifetimes.ready.call(component)
+    renderCb()
+    expect(component.data.count).toBe(0)
+    expect(fn).toHaveBeenCalledTimes(1)
+
+    component.setCount(1)
+    await nextTick()
+    renderCb()
+    expect(component.data.count).toBe(1)
+    expect(fn).toHaveBeenCalledTimes(1)
+
+    component.data.foo = 'foo'
+    component.observers.foo.call(component, component.data.foo)
+    await nextTick()
+    renderCb()
+    expect(component.data.count).toBe(1)
+    expect(fn).toHaveBeenCalledTimes(2)
+  })
+
   test('context should be stable', async () => {
     const fn = vi.fn()
     defineComponent((_, context) => {
