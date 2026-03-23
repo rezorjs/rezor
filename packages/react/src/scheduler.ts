@@ -90,8 +90,11 @@ export function flushPostFlushCbs(): void {
 }
 
 function flushJobs() {
-  const seen: CountMap | undefined =
-    __DEV__ ? new Map() : /* istanbul ignore next -- @preserve  */ undefined
+  let seen: CountMap | undefined
+  /* istanbul ignore else -- @preserve */
+  if (__DEV__) {
+    seen = new Map()
+  }
 
   try {
     while (flushIndex < jobsLength) {
