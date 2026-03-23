@@ -131,6 +131,37 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
   options.lifetimes[ComponentLifecycle.ATTACHED] = function (
     this: ComponentInstance,
   ) {
+    const context: ComponentContext = {
+      is: this.is,
+      id: this.id,
+      dataset: this.dataset,
+      exitState: this.exitState,
+      router: this.router,
+      pageRouter: this.pageRouter,
+      renderer: this.renderer,
+      triggerEvent: this.triggerEvent.bind(this),
+      createSelectorQuery: this.createSelectorQuery.bind(this),
+      createIntersectionObserver: this.createIntersectionObserver.bind(this),
+      createMediaQueryObserver: this.createMediaQueryObserver.bind(this),
+      selectComponent: this.selectComponent.bind(this),
+      selectAllComponents: this.selectAllComponents.bind(this),
+      selectOwnerComponent: this.selectOwnerComponent.bind(this),
+      getRelationNodes: this.getRelationNodes.bind(this),
+      getTabBar: this.getTabBar.bind(this),
+      getPageId: this.getPageId.bind(this),
+      animate: this.animate.bind(this),
+      clearAnimation: this.clearAnimation.bind(this),
+      getOpenerEventChannel: this.getOpenerEventChannel.bind(this),
+      applyAnimatedStyle: this.applyAnimatedStyle.bind(this),
+      clearAnimatedStyle: this.clearAnimatedStyle.bind(this),
+      setUpdatePerformanceListener:
+        this.setUpdatePerformanceListener.bind(this),
+      getPassiveEvent: this.getPassiveEvent.bind(this),
+      setPassiveEvent: this.setPassiveEvent.bind(this),
+      setInitialRenderingCache: this.setInitialRenderingCache.bind(this),
+      getAppBar: this.getAppBar && this.getAppBar.bind(this),
+    }
+
     this[toHiddenField('render')] = () => {
       setCurrentComponent(this)
       resetHooksCursor(this)
@@ -141,37 +172,6 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
         properties.forEach((property) => {
           props[property] = this.data[property]
         })
-      }
-
-      const context: ComponentContext = {
-        is: this.is,
-        id: this.id,
-        dataset: this.dataset,
-        exitState: this.exitState,
-        router: this.router,
-        pageRouter: this.pageRouter,
-        renderer: this.renderer,
-        triggerEvent: this.triggerEvent.bind(this),
-        createSelectorQuery: this.createSelectorQuery.bind(this),
-        createIntersectionObserver: this.createIntersectionObserver.bind(this),
-        createMediaQueryObserver: this.createMediaQueryObserver.bind(this),
-        selectComponent: this.selectComponent.bind(this),
-        selectAllComponents: this.selectAllComponents.bind(this),
-        selectOwnerComponent: this.selectOwnerComponent.bind(this),
-        getRelationNodes: this.getRelationNodes.bind(this),
-        getTabBar: this.getTabBar.bind(this),
-        getPageId: this.getPageId.bind(this),
-        animate: this.animate.bind(this),
-        clearAnimation: this.clearAnimation.bind(this),
-        getOpenerEventChannel: this.getOpenerEventChannel.bind(this),
-        applyAnimatedStyle: this.applyAnimatedStyle.bind(this),
-        clearAnimatedStyle: this.clearAnimatedStyle.bind(this),
-        setUpdatePerformanceListener:
-          this.setUpdatePerformanceListener.bind(this),
-        getPassiveEvent: this.getPassiveEvent.bind(this),
-        setPassiveEvent: this.setPassiveEvent.bind(this),
-        setInitialRenderingCache: this.setInitialRenderingCache.bind(this),
-        getAppBar: this.getAppBar && this.getAppBar.bind(this),
       }
 
       try {

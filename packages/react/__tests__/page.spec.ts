@@ -147,6 +147,46 @@ describe('page', () => {
     expect(Object.prototype.hasOwnProperty.call(page.data, 'baz')).toBe(true)
   })
 
+  test('query should be stable', async () => {
+    const fn = vi.fn()
+    definePage((query) => {
+      const [count, setCount] = useState(0)
+
+      useEffect(fn, [query])
+
+      return { count, setCount }
+    })
+    page.onLoad({})
+    page.onReady()
+    renderCb()
+    expect(fn).toBeCalledTimes(1)
+
+    page.setCount(1)
+    await nextTick()
+    renderCb()
+    expect(fn).toBeCalledTimes(1)
+  })
+
+  test('context should be stable', async () => {
+    const fn = vi.fn()
+    definePage((_, context) => {
+      const [count, setCount] = useState(0)
+
+      useEffect(fn, [context])
+
+      return { count, setCount }
+    })
+    page.onLoad()
+    page.onReady()
+    renderCb()
+    expect(fn).toBeCalledTimes(1)
+
+    page.setCount(1)
+    await nextTick()
+    renderCb()
+    expect(fn).toBeCalledTimes(1)
+  })
+
   test('useEffect', async () => {
     let dummy: number
     const fn = vi.fn()

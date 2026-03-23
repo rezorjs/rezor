@@ -157,6 +157,26 @@ describe('component', () => {
     )
   })
 
+  test('context should be stable', async () => {
+    const fn = vi.fn()
+    defineComponent((_, context) => {
+      const [count, setCount] = useState(0)
+
+      useEffect(fn, [context])
+
+      return { count, setCount }
+    })
+    component.lifetimes.attached.call(component)
+    component.lifetimes.ready.call(component)
+    renderCb()
+    expect(fn).toBeCalledTimes(1)
+
+    component.setCount(1)
+    await nextTick()
+    renderCb()
+    expect(fn).toBeCalledTimes(1)
+  })
+
   test('useEffect', async () => {
     let dummy: number
     const fn = vi.fn()

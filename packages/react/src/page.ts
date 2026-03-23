@@ -103,38 +103,38 @@ export function definePage(optionsOrRender: any, config?: Config): void {
 
   const originOnLoad = options[PageLifecycle.ON_LOAD]
   options[PageLifecycle.ON_LOAD] = function (this: PageInstance, query: Query) {
+    const context: PageContext = {
+      is: this.is,
+      route: this.route,
+      options: this.options,
+      exitState: this.exitState,
+      router: this.router,
+      pageRouter: this.pageRouter,
+      renderer: this.renderer,
+      createSelectorQuery: this.createSelectorQuery.bind(this),
+      createIntersectionObserver: this.createIntersectionObserver.bind(this),
+      createMediaQueryObserver: this.createMediaQueryObserver.bind(this),
+      selectComponent: this.selectComponent.bind(this),
+      selectAllComponents: this.selectAllComponents.bind(this),
+      getTabBar: this.getTabBar.bind(this),
+      getPageId: this.getPageId.bind(this),
+      animate: this.animate.bind(this),
+      clearAnimation: this.clearAnimation.bind(this),
+      getOpenerEventChannel: this.getOpenerEventChannel.bind(this),
+      applyAnimatedStyle: this.applyAnimatedStyle.bind(this),
+      clearAnimatedStyle: this.clearAnimatedStyle.bind(this),
+      setUpdatePerformanceListener:
+        this.setUpdatePerformanceListener.bind(this),
+      getPassiveEvent: this.getPassiveEvent.bind(this),
+      setPassiveEvent: this.setPassiveEvent.bind(this),
+      setInitialRenderingCache: this.setInitialRenderingCache.bind(this),
+      getAppBar: this.getAppBar && this.getAppBar.bind(this),
+    }
+
     this[toHiddenField('render')] = () => {
       setCurrentPage(this)
       resetHooksCursor(this)
       resetLifecycleCursors(this, pageLifeHooks)
-
-      const context: PageContext = {
-        is: this.is,
-        route: this.route,
-        options: this.options,
-        exitState: this.exitState,
-        router: this.router,
-        pageRouter: this.pageRouter,
-        renderer: this.renderer,
-        createSelectorQuery: this.createSelectorQuery.bind(this),
-        createIntersectionObserver: this.createIntersectionObserver.bind(this),
-        createMediaQueryObserver: this.createMediaQueryObserver.bind(this),
-        selectComponent: this.selectComponent.bind(this),
-        selectAllComponents: this.selectAllComponents.bind(this),
-        getTabBar: this.getTabBar.bind(this),
-        getPageId: this.getPageId.bind(this),
-        animate: this.animate.bind(this),
-        clearAnimation: this.clearAnimation.bind(this),
-        getOpenerEventChannel: this.getOpenerEventChannel.bind(this),
-        applyAnimatedStyle: this.applyAnimatedStyle.bind(this),
-        clearAnimatedStyle: this.clearAnimatedStyle.bind(this),
-        setUpdatePerformanceListener:
-          this.setUpdatePerformanceListener.bind(this),
-        getPassiveEvent: this.getPassiveEvent.bind(this),
-        setPassiveEvent: this.setPassiveEvent.bind(this),
-        setInitialRenderingCache: this.setInitialRenderingCache.bind(this),
-        getAppBar: this.getAppBar && this.getAppBar.bind(this),
-      }
 
       try {
         const bindings = render(query, context)
