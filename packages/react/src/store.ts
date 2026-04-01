@@ -1,5 +1,5 @@
 import type { SchedulerJob } from './scheduler'
-import { AppInstance, PageInstance } from './instance'
+import type { AppInstance, PageInstance } from './instance'
 
 type HookKind = 'ref' | 'memo' | 'state' | 'effect' | 'effectEvent' | 'context'
 type RefHookSlot = { kind: 'ref'; ref: { current: any } }
