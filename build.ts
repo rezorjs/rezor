@@ -23,6 +23,7 @@ async function generateDeclaration({
       typescript({
         tsconfig: 'tsconfig.build.json',
         compilerOptions: {
+          rootDir: path.join('packages', target, 'src'),
           declarationDir: path.join('packages', target, 'dist'),
         },
       }),
