@@ -4,10 +4,10 @@
 
 export { useRef } from './use-ref'
 export { useState } from './use-state'
-export { useEffect } from './use-effect'
 export { useReducer } from './use-reducer'
 export { useMemo, useCallback } from './use-memo'
 export { useEffectEvent } from './use-effect-event'
+export { useEffect, useRenderEffect } from './use-effect'
 export { createContext, useContext } from './use-context'
 export { nextTick } from './scheduler'
 export { createApp } from './app'
@@ -40,8 +40,8 @@ export {
 
 export type { RefObject } from './use-ref'
 export type { Dispatch, SetStateAction } from './use-state'
-export type { EffectCallback } from './use-effect'
 export type { ActionDispatch } from './use-reducer'
+export type { EffectCallback } from './use-effect'
 export type { Context } from './use-context'
 export type { AppRender, AppOptions } from './app'
 export type {

@@ -4,6 +4,7 @@ import {
   nextTick,
   useState,
   useEffect,
+  useRenderEffect,
   useShow,
   useHide,
   useRouteDone,
@@ -224,6 +225,40 @@ describe('page', () => {
     expect(dummy!).toBe(1)
   })
 
+  test('useRenderEffect', async () => {
+    let dummy: number
+    const fn = vi.fn()
+    definePage(() => {
+      const [count, setCount] = useState(0)
+
+      const increment = () => {
+        setCount(count + 1)
+      }
+
+      useRenderEffect(() => {
+        fn()
+        dummy = count
+      }, [count])
+
+      return { count, increment }
+    })
+    page.onLoad()
+    await nextTick()
+    expect(fn).toHaveBeenCalledTimes(1)
+    expect(dummy!).toBe(0)
+
+    page.increment()
+    await nextTick()
+    expect(fn).toHaveBeenCalledTimes(2)
+    expect(dummy!).toBe(1)
+
+    page.increment()
+    page.onUnload()
+    await nextTick()
+    expect(fn).toHaveBeenCalledTimes(2)
+    expect(dummy!).toBe(1)
+  })
+
   test('onLoad', () => {
     const arg = {}
     const onLoad = vi.fn()
@@ -251,20 +286,20 @@ describe('page', () => {
 
   test('onReady', () => {
     const fn = vi.fn()
-    const injectedFn1 = vi.fn()
-    const injectedFn2 = vi.fn()
+    const effect1 = vi.fn()
+    const effect2 = vi.fn()
     definePage({
       onReady: fn,
       render() {
-        useEffect(injectedFn1, [])
-        useEffect(injectedFn2, [])
+        useEffect(effect1, [])
+        useEffect(effect2, [])
       },
     })
     page.onLoad()
     page.onReady()
     expect(fn).toHaveBeenCalledTimes(1)
-    expect(injectedFn1).toHaveBeenCalledTimes(1)
-    expect(injectedFn2).toHaveBeenCalledTimes(1)
+    expect(effect1).toHaveBeenCalledTimes(1)
+    expect(effect2).toHaveBeenCalledTimes(1)
   })
 
   test('onShow', async () => {
@@ -341,23 +376,30 @@ describe('page', () => {
     expect(dummy2!).toBe(1)
   })
 
-  test('onUnload', () => {
+  test('onUnload', async () => {
     const fn = vi.fn()
-    const injectedFn1 = vi.fn()
-    const injectedFn2 = vi.fn()
+    const cleanup1 = vi.fn()
+    const cleanup2 = vi.fn()
+    const cleanup3 = vi.fn()
+    const cleanup4 = vi.fn()
     definePage({
       onUnload: fn,
       render() {
-        useEffect(() => injectedFn1, [])
-        useEffect(() => injectedFn2, [])
+        useEffect(() => cleanup1, [])
+        useEffect(() => cleanup2, [])
+        useRenderEffect(() => cleanup3, [])
+        useRenderEffect(() => cleanup4, [])
       },
     })
     page.onLoad()
+    await nextTick()
     page.onReady()
     page.onUnload()
     expect(fn).toHaveBeenCalledTimes(1)
-    expect(injectedFn1).toHaveBeenCalledTimes(1)
-    expect(injectedFn2).toHaveBeenCalledTimes(1)
+    expect(cleanup1).toHaveBeenCalledTimes(1)
+    expect(cleanup2).toHaveBeenCalledTimes(1)
+    expect(cleanup3).toHaveBeenCalledTimes(1)
+    expect(cleanup4).toHaveBeenCalledTimes(1)
   })
 
   test('onRouteDone', async () => {

@@ -4,6 +4,7 @@ import {
   nextTick,
   useState,
   useEffect,
+  useRenderEffect,
   useMove,
   useError,
   useShow,
@@ -249,6 +250,40 @@ describe('component', () => {
     expect(dummy!).toBe(1)
   })
 
+  test('useRenderEffect', async () => {
+    let dummy: number
+    const fn = vi.fn()
+    defineComponent(() => {
+      const [count, setCount] = useState(0)
+
+      const increment = () => {
+        setCount(count + 1)
+      }
+
+      useRenderEffect(() => {
+        fn()
+        dummy = count
+      }, [count])
+
+      return { count, increment }
+    })
+    component.lifetimes.attached.call(component)
+    await nextTick()
+    expect(fn).toHaveBeenCalledTimes(1)
+    expect(dummy!).toBe(0)
+
+    component.increment()
+    await nextTick()
+    expect(fn).toHaveBeenCalledTimes(2)
+    expect(dummy!).toBe(1)
+
+    component.increment()
+    component.lifetimes.detached.call(component)
+    await nextTick()
+    expect(fn).toHaveBeenCalledTimes(2)
+    expect(dummy!).toBe(1)
+  })
+
   test('props', async () => {
     defineComponent({
       properties: {
@@ -396,20 +431,20 @@ describe('component', () => {
 
   test('ready', () => {
     const fn = vi.fn()
-    const injectedFn1 = vi.fn()
-    const injectedFn2 = vi.fn()
+    const effect1 = vi.fn()
+    const effect2 = vi.fn()
     defineComponent({
       lifetimes: { ready: fn },
       render() {
-        useEffect(injectedFn1, [])
-        useEffect(injectedFn2, [])
+        useEffect(effect1, [])
+        useEffect(effect2, [])
       },
     })
     component.lifetimes.attached.call(component)
     component.lifetimes.ready.call(component)
     expect(fn).toHaveBeenCalledTimes(1)
-    expect(injectedFn1).toHaveBeenCalledTimes(1)
-    expect(injectedFn2).toHaveBeenCalledTimes(1)
+    expect(effect1).toHaveBeenCalledTimes(1)
+    expect(effect2).toHaveBeenCalledTimes(1)
   })
 
   test('legacy ready', () => {
@@ -471,23 +506,30 @@ describe('component', () => {
     expect(fn).toHaveBeenCalledTimes(1)
   })
 
-  test('detached', () => {
+  test('detached', async () => {
     const fn = vi.fn()
-    const injectedFn1 = vi.fn()
-    const injectedFn2 = vi.fn()
+    const cleanup1 = vi.fn()
+    const cleanup2 = vi.fn()
+    const cleanup3 = vi.fn()
+    const cleanup4 = vi.fn()
     defineComponent({
       lifetimes: { detached: fn },
       render() {
-        useEffect(() => injectedFn1, [])
-        useEffect(() => injectedFn2, [])
+        useEffect(() => cleanup1, [])
+        useEffect(() => cleanup2, [])
+        useRenderEffect(() => cleanup3, [])
+        useRenderEffect(() => cleanup4, [])
       },
     })
     component.lifetimes.attached.call(component)
+    await nextTick()
     component.lifetimes.ready.call(component)
     component.lifetimes.detached.call(component)
     expect(fn).toHaveBeenCalledTimes(1)
-    expect(injectedFn1).toHaveBeenCalledTimes(1)
-    expect(injectedFn2).toHaveBeenCalledTimes(1)
+    expect(cleanup1).toHaveBeenCalledTimes(1)
+    expect(cleanup2).toHaveBeenCalledTimes(1)
+    expect(cleanup3).toHaveBeenCalledTimes(1)
+    expect(cleanup4).toHaveBeenCalledTimes(1)
   })
 
   test('legacy detached', () => {
