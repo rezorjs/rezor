@@ -221,7 +221,100 @@ describe('useContext', () => {
     // Unmount provider — context resets to default, consumer re-renders
     provider.lifetimes.detached.call(provider)
     await nextTick()
-    expect(ThemeContext.currentValue).toBe('light')
+    expect(consumer.data.theme).toBe('light')
+  })
+
+  test('provider resets bailout', async () => {
+    const fn = vi.fn()
+    const ThemeContext = createContext('light')
+
+    defineComponent(() => {
+      useContext(ThemeContext, 'light')
+    })
+    const provider = component
+    provider.lifetimes.attached.call(provider)
+
+    defineComponent(() => {
+      fn()
+      const theme = useContext(ThemeContext)
+      return { theme }
+    })
+    const consumer = component
+    consumer.lifetimes.attached.call(consumer)
+    expect(consumer.data.theme).toBe('light')
+    expect(fn).toHaveBeenCalledTimes(1)
+
+    // Unmount provider — context resets bailout
+    provider.lifetimes.detached.call(provider)
+    await nextTick()
+    expect(fn).toHaveBeenCalledTimes(1)
+  })
+
+  test('multiple providers warn and keep the first provider value', async () => {
+    const ThemeContext = createContext('light')
+
+    defineComponent(() => {
+      useContext(ThemeContext, 'outer')
+    })
+    const outerProvider = component
+    outerProvider.lifetimes.attached.call(outerProvider)
+
+    defineComponent(() => {
+      useContext(ThemeContext, 'inner')
+    })
+    const innerProvider = component
+    innerProvider.lifetimes.attached.call(innerProvider)
+    expect('useContext() does not support').toHaveBeenWarned()
+
+    defineComponent(() => {
+      const theme = useContext(ThemeContext)
+      return { theme }
+    })
+    const consumer = component
+    consumer.lifetimes.attached.call(consumer)
+    expect(consumer.data.theme).toBe('outer')
+
+    innerProvider.lifetimes.detached.call(innerProvider)
+    await nextTick()
+    expect(consumer.data.theme).toBe('outer')
+  })
+
+  test('ignored provider becomes active after current provider unmounts', async () => {
+    const ThemeContext = createContext('light')
+
+    defineComponent(() => {
+      useContext(ThemeContext, 'first')
+    })
+    const firstProvider = component
+    firstProvider.lifetimes.attached.call(firstProvider)
+
+    defineComponent(() => {
+      const [theme, setTheme] = useState('')
+      useContext(ThemeContext, theme)
+      return { theme, setTheme }
+    })
+    const secondProvider = component
+    secondProvider.lifetimes.attached.call(secondProvider)
+    expect('useContext() does not support').toHaveBeenWarned()
+
+    defineComponent(() => {
+      const theme = useContext(ThemeContext)
+      return { theme }
+    })
+    const consumer = component
+    consumer.lifetimes.attached.call(consumer)
+    expect(consumer.data.theme).toBe('first')
+
+    firstProvider.lifetimes.detached.call(firstProvider)
+    await nextTick()
+    expect(consumer.data.theme).toBe('light')
+
+    secondProvider.setTheme('second')
+    await nextTick()
+    expect(consumer.data.theme).toBe('second')
+
+    secondProvider.lifetimes.detached.call(secondProvider)
+    await nextTick()
     expect(consumer.data.theme).toBe('light')
   })
 
@@ -286,7 +379,6 @@ describe('useContext', () => {
     // Unload page — context resets
     page.onUnload()
     await nextTick()
-    expect(ThemeContext.currentValue).toBe('light')
     expect(component.data.theme).toBe('light')
   })
 
