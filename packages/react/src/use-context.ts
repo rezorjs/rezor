@@ -25,9 +25,12 @@ function notifyContextSubscribers(context: Context<any>): void {
   })
 }
 
-export function useContext<T>(context: Context<T>, value: T): void
+export function useContext<T>(context: Context<T>, value: NoInfer<T>): void
 export function useContext<T>(context: Context<T>): T
-export function useContext<T>(context: Context<T>, value?: T): T | void {
+export function useContext<T>(
+  context: Context<T>,
+  value?: NoInfer<T>,
+): T | void {
   const currentInstance = getCurrentInstanceAll()
   if (currentInstance) {
     const store = getHooksStore(currentInstance)
