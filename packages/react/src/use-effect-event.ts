@@ -17,6 +17,7 @@ export function useEffectEvent<T extends (...args: any[]) => any>(
     }
 
     store.cursor += 1
+    // https://react.dev/reference/react/useEffectEvent#why-are-effect-events-not-stable
     return ((...args: any[]) => effectEventSlot.fn(...args)) as T
   }
 
