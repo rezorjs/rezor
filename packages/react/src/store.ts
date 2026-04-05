@@ -1,13 +1,26 @@
 import type { SchedulerJob } from './scheduler'
 import type { AppInstance, PageInstance } from './instance'
 
-type HookKind = 'ref' | 'memo' | 'state' | 'effect' | 'effectEvent' | 'context'
+type HookKind =
+  | 'ref'
+  | 'memo'
+  | 'state'
+  | 'reducer'
+  | 'effect'
+  | 'effectEvent'
+  | 'context'
 type RefHookSlot = { kind: 'ref'; ref: { current: any } }
 type MemoHookSlot = { kind: 'memo'; value: any; deps: readonly unknown[] }
 export type StateHookSlot = {
   kind: 'state'
   value: any
   setState: (newState: any) => void
+}
+export type ReducerHookSlot = {
+  kind: 'reducer'
+  value: any
+  reducer: (prevState: any, action: any) => any
+  dispatch: (action: any) => void
 }
 export type EffectHookSlot = {
   kind: 'effect'
@@ -24,9 +37,10 @@ export type ContextHookSlot = {
   cleanup: () => void
 }
 type HookSlot =
-  | StateHookSlot
   | RefHookSlot
   | MemoHookSlot
+  | StateHookSlot
+  | ReducerHookSlot
   | EffectHookSlot
   | EffectEventHookSlot
   | ContextHookSlot
@@ -35,6 +49,7 @@ type HookSlotByKind = {
   ref: RefHookSlot
   memo: MemoHookSlot
   state: StateHookSlot
+  reducer: ReducerHookSlot
   effect: EffectHookSlot
   effectEvent: EffectEventHookSlot
   context: ContextHookSlot

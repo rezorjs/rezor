@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { createApp, useReducer, nextTick } from '../src'
+import { createApp, useState, useReducer, nextTick } from '../src'
 
 // Mocks
 let app: Record<string, any>
@@ -93,6 +93,33 @@ describe('useReducer', () => {
 
     expect(dispatches.length).toBe(2)
     expect(dispatches[0]).toBe(dispatches[1])
+  })
+
+  test('uses the latest reducer on dispatch', async () => {
+    createApp(() => {
+      const [step, setStep] = useState(1)
+      const [state, dispatch] = useReducer(
+        (_: number, action: number) => action + step,
+        0,
+      )
+      return { setStep, state, dispatch }
+    })
+
+    app.onLaunch()
+    expect(app.state).toBe(0)
+
+    app.dispatch(1)
+    await nextTick()
+    expect(app.state).toBe(2) // 1 + step(1)
+
+    app.setStep(10)
+    await nextTick()
+
+    app.dispatch(1)
+    await nextTick()
+    // With stale reducer (step=1): 1 + 1 = 2
+    // With fresh reducer (step=10): 1 + 10 = 11
+    expect(app.state).toBe(11)
   })
 
   test('warning outside render', () => {

@@ -1,5 +1,5 @@
 import { getCurrentInstanceAll } from './instance'
-import type { StateHookSlot } from './store'
+import type { ReducerHookSlot } from './store'
 import { getHooksStore, isHookKind } from './store'
 import { queueJob } from './scheduler'
 
@@ -26,29 +26,30 @@ export function useReducer<S, I, A>(
   if (currentInstance) {
     const store = getHooksStore(currentInstance)
     const index = store.cursor
-    let stateSlot = store.slots[index]
-    if (!isHookKind(stateSlot, 'state')) {
+    let reducerSlot = store.slots[index]
+    if (!isHookKind(reducerSlot, 'reducer')) {
       const dispatch = (action: A) => {
-        const prevState = (stateSlot as StateHookSlot).value
-        const nextState = reducer(prevState, action)
+        const prevState = (reducerSlot as ReducerHookSlot).value
+        const nextState = (reducerSlot as ReducerHookSlot).reducer(
+          prevState,
+          action,
+        )
         if (Object.is(prevState, nextState)) {
           return
         }
 
-        ;(stateSlot as StateHookSlot).value = nextState
+        ;(reducerSlot as ReducerHookSlot).value = nextState
         queueJob(currentInstance.__render__)
       }
 
-      stateSlot = {
-        kind: 'state',
-        value: getState(),
-        setState: dispatch as any,
-      }
-      store.slots[index] = stateSlot
+      reducerSlot = { kind: 'reducer', value: getState(), reducer, dispatch }
+      store.slots[index] = reducerSlot
+    } else {
+      reducerSlot.reducer = reducer
     }
 
     store.cursor += 1
-    return [stateSlot.value, stateSlot.setState]
+    return [reducerSlot.value, reducerSlot.dispatch]
   }
 
   /* istanbul ignore else -- @preserve  */
