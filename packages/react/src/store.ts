@@ -1,5 +1,5 @@
 import type { SchedulerJob } from './scheduler'
-import type { AppInstance, PageInstance } from './instance'
+import type { AppInstance, PageInstance, ComponentInstance } from './instance'
 
 type HookKind =
   | 'ref'
@@ -58,7 +58,7 @@ type HookSlotByKind = {
 type LifecycleStore = Record<string, { cursor: number; handlers: Function[] }>
 
 export function getHooksStore(
-  instance: AppInstance | PageInstance,
+  instance: AppInstance | PageInstance | ComponentInstance,
 ): HooksStore {
   if (instance.__hooks__ === undefined) {
     instance.__hooks__ = { cursor: 0, slots: [] } satisfies HooksStore
@@ -66,7 +66,9 @@ export function getHooksStore(
   return instance.__hooks__
 }
 
-export function resetHooksCursor(instance: AppInstance | PageInstance): void {
+export function resetHooksCursor(
+  instance: AppInstance | PageInstance | ComponentInstance,
+): void {
   const store = instance.__hooks__ as HooksStore | undefined
   if (store === undefined) {
     return
@@ -74,7 +76,9 @@ export function resetHooksCursor(instance: AppInstance | PageInstance): void {
   store.cursor = 0
 }
 
-export function trimHooksStore(instance: AppInstance | PageInstance): void {
+export function trimHooksStore(
+  instance: AppInstance | PageInstance | ComponentInstance,
+): void {
   const store = instance.__hooks__ as HooksStore | undefined
   if (store === undefined) {
     return
@@ -90,7 +94,7 @@ export function isHookKind<K extends HookKind>(
 }
 
 export function resetLifecycleCursors(
-  instance: AppInstance | PageInstance,
+  instance: AppInstance | PageInstance | ComponentInstance,
   lifecycles: string[],
 ): void {
   const store = instance.__lifecycle__ as LifecycleStore | undefined
@@ -106,7 +110,7 @@ export function resetLifecycleCursors(
 }
 
 export function trimLifecycleBuckets(
-  instance: AppInstance | PageInstance,
+  instance: AppInstance | PageInstance | ComponentInstance,
   lifecycles: string[],
 ): void {
   const store = instance.__lifecycle__ as LifecycleStore | undefined
@@ -122,7 +126,7 @@ export function trimLifecycleBuckets(
 }
 
 export function registerLifecycleHook(
-  instance: AppInstance | PageInstance,
+  instance: AppInstance | PageInstance | ComponentInstance,
   lifecycle: string,
   hook: Function,
 ): void {
@@ -141,7 +145,7 @@ export function registerLifecycleHook(
 }
 
 export function getLifecycleCursor(
-  instance: AppInstance | PageInstance,
+  instance: AppInstance | PageInstance | ComponentInstance,
   lifecycle: string,
 ): number {
   const store = instance.__lifecycle__ as LifecycleStore | undefined
@@ -152,7 +156,7 @@ export function getLifecycleCursor(
 }
 
 export function getLifecycleHooks(
-  instance: AppInstance | PageInstance,
+  instance: AppInstance | PageInstance | ComponentInstance,
   lifecycle: string,
 ): Function[] {
   const store = instance.__lifecycle__ as LifecycleStore | undefined

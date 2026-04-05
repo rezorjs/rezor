@@ -1,10 +1,10 @@
-import type { AppInstance, PageInstance } from './instance'
+import type { AppInstance, PageInstance, ComponentInstance } from './instance'
 import { getCurrentInstanceAll } from './instance'
 import { getHooksStore, isHookKind } from './store'
 import { areHookDepsEqual } from './utils'
 
 function memoImpl<T>(
-  currentInstance: AppInstance | PageInstance,
+  currentInstance: AppInstance | PageInstance | ComponentInstance,
   factory: () => T,
   deps: readonly unknown[],
 ): T {
