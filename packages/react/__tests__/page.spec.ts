@@ -18,6 +18,7 @@ import {
   useAddToFavorites,
   useSaveExitState,
 } from '../src'
+import { currentPage } from '../src/instance'
 
 // Mocks
 let page: Record<string, any>
@@ -890,14 +891,22 @@ describe('page', () => {
     expect(page.onSaveExitState()).toEqual({ data: undefined })
   })
 
+  test('no render', () => {
+    const options = {}
+    definePage(options)
+    expect(page).toBeInstanceOf(Object)
+  })
+
   test('inject lifecycle outside render', () => {
     useShow(() => {})
     expect('Page specific lifecycle').toHaveBeenWarned()
   })
 
-  test('no render', () => {
-    const options = {}
-    definePage(options)
-    expect(page).toBeInstanceOf(Object)
+  test('unset current page when render throws', () => {
+    definePage(() => {
+      throw new Error('render error')
+    })
+    expect(page.onLoad.bind(page)).toThrow('render error')
+    expect(currentPage).toBe(null)
   })
 })

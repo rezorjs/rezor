@@ -8,6 +8,7 @@ import {
   useUnhandledRejection,
   useThemeChange,
 } from '../src'
+import { currentApp } from '../src/instance'
 
 // Mocks
 let app: Record<string, any>
@@ -150,11 +151,6 @@ describe('app', () => {
     expect(injectedFn2).toHaveBeenCalledWith(arg)
   })
 
-  test('inject lifecycle outside render', () => {
-    useAppShow(() => {})
-    expect('App specific lifecycle').toHaveBeenWarned()
-  })
-
   test('no injected lifecycle', () => {
     const fn = vi.fn()
     createApp({
@@ -184,5 +180,18 @@ describe('app', () => {
     const options = {}
     createApp(options)
     expect(app).toBeInstanceOf(Object)
+  })
+
+  test('inject lifecycle outside render', () => {
+    useAppShow(() => {})
+    expect('App specific lifecycle').toHaveBeenWarned()
+  })
+
+  test('unset current app when render throws', () => {
+    createApp(() => {
+      throw new Error('render error')
+    })
+    expect(app.onLaunch.bind(app)).toThrow('render error')
+    expect(currentApp).toBe(null)
   })
 })

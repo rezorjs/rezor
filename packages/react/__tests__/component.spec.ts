@@ -20,6 +20,7 @@ import {
   useAddToFavorites,
   useSaveExitState,
 } from '../src'
+import { currentComponent } from '../src/instance'
 
 // Mocks
 let component: Record<string, any>
@@ -1221,14 +1222,22 @@ describe('component', () => {
     expect(dummy2!).toBe(1)
   })
 
+  test('no render', () => {
+    const options = {}
+    defineComponent(options)
+    expect(component).toBeInstanceOf(Object)
+  })
+
   test('inject component lifecycle outside render', () => {
     useMove(() => {})
     expect('Component specific lifecycle').toHaveBeenWarned()
   })
 
-  test('no render', () => {
-    const options = {}
-    defineComponent(options)
-    expect(component).toBeInstanceOf(Object)
+  test('unset current component when render throws', () => {
+    defineComponent(() => {
+      throw new Error('render error')
+    })
+    expect(component.lifetimes.attached.bind(component)).toThrow('render error')
+    expect(currentComponent).toBe(null)
   })
 })
