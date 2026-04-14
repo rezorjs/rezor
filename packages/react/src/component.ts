@@ -174,35 +174,38 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
       resetHooksCursor(this)
       resetLifecycleCursors(this, componentLifeHooks)
 
+      let bindings: Bindings
       try {
-        const bindings = render(this.__props__, context)
-        if (bindings !== undefined) {
-          let data: Record<string, unknown> | undefined
-          Object.keys(bindings).forEach((key) => {
-            const value = bindings[key]
-            if (isFunction(value)) {
-              this[key] = value
-              return
-            }
-
-            if (
-              !Object.prototype.hasOwnProperty.call(this.data, key) ||
-              !Object.is(this.data[key], value)
-            ) {
-              data = data || {}
-              data[key] = value
-            }
-          })
-          if (data !== undefined) {
-            this.setData(data, flushPostFlushCbs)
-          }
-        }
+        bindings = render(this.__props__, context)
       } finally {
         unsetCurrentComponent()
       }
 
       trimHooksStore(this)
       trimLifecycleBuckets(this, componentLifeHooks)
+
+      if (bindings !== undefined) {
+        let data: Record<string, unknown> | undefined
+        Object.keys(bindings).forEach((key) => {
+          const value = bindings[key]
+          if (isFunction(value)) {
+            this[key] = value
+            return
+          }
+
+          if (
+            !Object.prototype.hasOwnProperty.call(this.data, key) ||
+            !Object.is(this.data[key], value)
+          ) {
+            data = data || {}
+            data[key] = value
+          }
+        })
+        if (data !== undefined) {
+          // May call sub component's render synchronously, so should call after unsetCurrentComponent()
+          this.setData(data, flushPostFlushCbs)
+        }
+      }
     }
 
     this.__render__()

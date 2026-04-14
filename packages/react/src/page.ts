@@ -136,35 +136,38 @@ export function definePage(optionsOrRender: any, config?: Config): void {
       resetHooksCursor(this)
       resetLifecycleCursors(this, pageLifeHooks)
 
+      let bindings: Bindings
       try {
-        const bindings = render(query, context)
-        if (bindings !== undefined) {
-          let data: Record<string, unknown> | undefined
-          Object.keys(bindings).forEach((key) => {
-            const value = bindings[key]
-            if (isFunction(value)) {
-              this[key] = value
-              return
-            }
-
-            if (
-              !Object.prototype.hasOwnProperty.call(this.data, key) ||
-              !Object.is(this.data[key], value)
-            ) {
-              data = data || {}
-              data[key] = value
-            }
-          })
-          if (data !== undefined) {
-            this.setData(data, flushPostFlushCbs)
-          }
-        }
+        bindings = render(query, context)
       } finally {
         unsetCurrentPage()
       }
 
       trimHooksStore(this)
       trimLifecycleBuckets(this, pageLifeHooks)
+
+      if (bindings !== undefined) {
+        let data: Record<string, unknown> | undefined
+        Object.keys(bindings).forEach((key) => {
+          const value = bindings[key]
+          if (isFunction(value)) {
+            this[key] = value
+            return
+          }
+
+          if (
+            !Object.prototype.hasOwnProperty.call(this.data, key) ||
+            !Object.is(this.data[key], value)
+          ) {
+            data = data || {}
+            data[key] = value
+          }
+        })
+        if (data !== undefined) {
+          // May call sub component's render synchronously, so should call after unsetCurrentPage()
+          this.setData(data, flushPostFlushCbs)
+        }
+      }
     }
 
     this.__render__()

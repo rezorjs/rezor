@@ -69,19 +69,21 @@ export function createApp(optionsOrRender: any): void {
       resetHooksCursor(this)
       resetLifecycleCursors(this, appLifeHooks)
 
+      let bindings: Bindings
       try {
-        const bindings = render(options)
-        if (bindings !== undefined) {
-          Object.keys(bindings).forEach((key) => {
-            this[key] = bindings[key]
-          })
-        }
+        bindings = render(options)
       } finally {
         unsetCurrentApp()
       }
 
       trimHooksStore(this)
       trimLifecycleBuckets(this, appLifeHooks)
+
+      if (bindings !== undefined) {
+        Object.keys(bindings).forEach((key) => {
+          this[key] = bindings[key]
+        })
+      }
     }
 
     this.__render__()
