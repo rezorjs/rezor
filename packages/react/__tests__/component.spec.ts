@@ -2,6 +2,7 @@ import { describe, test, expect, vi } from 'vitest'
 import {
   defineComponent,
   nextTick,
+  markData,
   useState,
   useEffect,
   useRenderEffect,
@@ -85,6 +86,24 @@ describe('component', () => {
       arr: [],
       obj: {},
     })
+  })
+
+  test('data function binding', () => {
+    const plus = markData((a: number, b: number) => a + b)
+
+    defineComponent(() => {
+      return { plus }
+    })
+    component.lifetimes.attached.call(component)
+    expect(component.data.plus(1, 1)).toBe(2)
+
+    defineComponent(() => {
+      // markData is idempotent, so it can be safely called multiple times.
+      return { plus: markData(plus) }
+    })
+    component.lifetimes.attached.call(component)
+    expect(component.data.plus).toBe(plus)
+    expect(component.data.plus(1, 1)).toBe(2)
   })
 
   test('render', async () => {

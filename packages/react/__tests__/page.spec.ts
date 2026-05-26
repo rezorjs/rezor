@@ -2,6 +2,7 @@ import { describe, test, expect, vi } from 'vitest'
 import {
   definePage,
   nextTick,
+  markData,
   useState,
   useEffect,
   useRenderEffect,
@@ -79,6 +80,24 @@ describe('page', () => {
       arr: [],
       obj: {},
     })
+  })
+
+  test('data function binding', () => {
+    const plus = markData((a: number, b: number) => a + b)
+
+    definePage(() => {
+      return { plus }
+    })
+    page.onLoad()
+    expect(page.data.plus(1, 1)).toBe(2)
+
+    definePage(() => {
+      // markData is idempotent, so it can be safely called multiple times.
+      return { plus: markData(plus) }
+    })
+    page.onLoad()
+    expect(page.data.plus).toBe(plus)
+    expect(page.data.plus(1, 1)).toBe(2)
   })
 
   test('render', async () => {

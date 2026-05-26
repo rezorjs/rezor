@@ -12,7 +12,7 @@ import {
   getHooksStore,
   getLifecycleHooks,
 } from './store'
-import { extend, exclude, isFunction } from './utils'
+import { extend, exclude, hasOwn, isFunction } from './utils'
 
 export type ComponentContext = WechatMiniprogram.Component.InstanceProperties &
   Omit<
@@ -188,15 +188,12 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
         let data: Record<string, unknown> | undefined
         Object.keys(bindings).forEach((key) => {
           const value = bindings[key]
-          if (isFunction(value)) {
+          if (isFunction(value) && !value.__data__) {
             this[key] = value
             return
           }
 
-          if (
-            !Object.prototype.hasOwnProperty.call(this.data, key) ||
-            !Object.is(this.data[key], value)
-          ) {
+          if (!hasOwn(this.data, key) || !Object.is(this.data[key], value)) {
             data = data || {}
             data[key] = value
           }

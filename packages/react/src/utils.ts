@@ -13,6 +13,10 @@ export function exclude<T extends Record<string, unknown>, K extends keyof T>(
   return ret as Omit<T, K>
 }
 
+export function hasOwn(val: object, key: string | number | symbol): boolean {
+  return Object.prototype.hasOwnProperty.call(val, key)
+}
+
 export function isFunction(x: unknown): x is Function {
   return typeof x === 'function'
 }

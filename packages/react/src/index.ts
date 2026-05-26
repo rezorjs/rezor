@@ -35,6 +35,7 @@ export {
   useMove,
   useError,
 } from './lifecycle'
+export { markData } from './mark-data'
 
 // Types -----------------------------------------------------------------------
 
