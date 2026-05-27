@@ -1,6 +1,6 @@
 {
   "name": "rezor",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "拥有原生性能的 React 小程序框架。",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm-bundler.js",
