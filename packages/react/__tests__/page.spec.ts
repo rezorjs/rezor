@@ -2,7 +2,8 @@ import { describe, test, expect, vi } from 'vitest'
 import {
   definePage,
   nextTick,
-  markData,
+  dataFn,
+  useMemo,
   useState,
   useEffect,
   useRenderEffect,
@@ -82,22 +83,60 @@ describe('page', () => {
     })
   })
 
-  test('data function binding', () => {
-    const plus = markData((a: number, b: number) => a + b)
+  test('data function binding', async () => {
+    const originalPlus = (a: number, b: number) => a + b
+    const plus = dataFn(originalPlus)
+
+    definePage(() => {
+      return { plus: originalPlus }
+    })
+    page.onLoad()
+    expect(page.plus(1, 1)).toBe(2)
+    expect(page.data.plus).toBe(undefined)
 
     definePage(() => {
       return { plus }
     })
     page.onLoad()
+    expect(page.plus).toBe(undefined)
     expect(page.data.plus(1, 1)).toBe(2)
 
     definePage(() => {
-      // markData is idempotent, so it can be safely called multiple times.
-      return { plus: markData(plus) }
+      // dataFn is idempotent, so it can be safely called multiple times.
+      return { plus: dataFn(plus) }
     })
     page.onLoad()
     expect(page.data.plus).toBe(plus)
     expect(page.data.plus(1, 1)).toBe(2)
+
+    definePage(() => {
+      const [count, setCount] = useState(0)
+      const add = dataFn((num: number) => count + num)
+      return { setCount, add }
+    })
+    page.onLoad()
+    expect(page.data.add(1)).toBe(1)
+    page.setCount(1)
+    await nextTick()
+    expect(page.data.add(1)).toBe(2)
+    page.setCount(2)
+    await nextTick()
+    expect(page.data.add(1)).toBe(3)
+
+    definePage(() => {
+      const [count, setCount] = useState(0)
+      const plus = useMemo(() => dataFn((a: number, b: number) => a + b), [])
+      return { count, setCount, plus }
+    })
+    page.onLoad()
+    expect(page.data.count).toBe(0)
+    expect(page.data.plus(1, 1)).toBe(2)
+    const prevPlus = page.data.plus
+    page.setCount(1)
+    await nextTick()
+    expect(page.data.count).toBe(1)
+    expect(page.data.plus(1, 1)).toBe(2)
+    expect(page.data.plus).toBe(prevPlus)
   })
 
   test('render', async () => {

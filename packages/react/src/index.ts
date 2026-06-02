@@ -10,6 +10,7 @@ export { useEffectEvent } from './use-effect-event'
 export { useEffect, useRenderEffect } from './use-effect'
 export { createContext, useContext } from './use-context'
 export { nextTick } from './scheduler'
+export { dataFn } from './data-fn'
 export { createApp } from './app'
 export { definePage } from './page'
 export { defineComponent } from './component'
@@ -35,7 +36,6 @@ export {
   useMove,
   useError,
 } from './lifecycle'
-export { markData } from './mark-data'
 
 // Types -----------------------------------------------------------------------
 

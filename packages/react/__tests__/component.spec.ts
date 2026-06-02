@@ -2,7 +2,8 @@ import { describe, test, expect, vi } from 'vitest'
 import {
   defineComponent,
   nextTick,
-  markData,
+  dataFn,
+  useMemo,
   useState,
   useEffect,
   useRenderEffect,
@@ -88,22 +89,62 @@ describe('component', () => {
     })
   })
 
-  test('data function binding', () => {
-    const plus = markData((a: number, b: number) => a + b)
+  test('data function binding', async () => {
+    const originalPlus = (a: number, b: number) => a + b
+    const plus = dataFn(originalPlus)
+
+    defineComponent(() => {
+      return { plus: originalPlus }
+    })
+    component.lifetimes.attached.call(component)
+    expect(component.plus(1, 1)).toBe(2)
+    expect(component.data.plus).toBe(undefined)
 
     defineComponent(() => {
       return { plus }
     })
     component.lifetimes.attached.call(component)
+    expect(component.plus).toBe(undefined)
     expect(component.data.plus(1, 1)).toBe(2)
 
     defineComponent(() => {
-      // markData is idempotent, so it can be safely called multiple times.
-      return { plus: markData(plus) }
+      // dataFn is idempotent, so it can be safely called multiple times.
+      return { plus: dataFn(plus) }
     })
     component.lifetimes.attached.call(component)
     expect(component.data.plus).toBe(plus)
     expect(component.data.plus(1, 1)).toBe(2)
+
+    defineComponent(() => {
+      const [count, setCount] = useState(0)
+
+      const add = dataFn((num: number) => count + num)
+
+      return { setCount, add }
+    })
+    component.lifetimes.attached.call(component)
+    expect(component.data.add(1)).toBe(1)
+    component.setCount(1)
+    await nextTick()
+    expect(component.data.add(1)).toBe(2)
+    component.setCount(2)
+    await nextTick()
+    expect(component.data.add(1)).toBe(3)
+
+    defineComponent(() => {
+      const [count, setCount] = useState(0)
+      const plus = useMemo(() => dataFn((a: number, b: number) => a + b), [])
+      return { count, setCount, plus }
+    })
+    component.lifetimes.attached.call(component)
+    expect(component.data.count).toBe(0)
+    expect(component.data.plus(1, 1)).toBe(2)
+    const prevPlus = component.data.plus
+    component.setCount(1)
+    await nextTick()
+    expect(component.data.count).toBe(1)
+    expect(component.data.plus(1, 1)).toBe(2)
+    expect(component.data.plus).toBe(prevPlus)
   })
 
   test('render', async () => {
