@@ -17,7 +17,7 @@ jobs:
       - run: pnpm lint
       - run: pnpm type
       - run: pnpm test --coverage
-      # - uses: codecov/codecov-action@v7
-      #   with:
-      #     fail_ci_if_error: true
-      #     token: ${{ secrets.CODECOV_TOKEN }}
+      - uses: codecov/codecov-action@v7
+        with:
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
