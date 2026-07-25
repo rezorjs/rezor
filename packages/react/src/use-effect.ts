@@ -1,6 +1,10 @@
-import type { AppInstance, PageInstance, ComponentInstance } from './instance'
+import type {
+  EffectHookSlot,
+  AppInstance,
+  PageInstance,
+  ComponentInstance,
+} from './instance'
 import { getCurrentInstanceAll } from './instance'
-import type { EffectHookSlot } from './store'
 import { getHooksStore, isHookKind } from './store'
 import type { SchedulerJob } from './scheduler'
 import { queueJob, queuePostFlushCb } from './scheduler'

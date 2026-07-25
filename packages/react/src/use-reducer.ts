@@ -1,5 +1,5 @@
+import type { ReducerHookSlot } from './instance'
 import { getCurrentInstanceAll } from './instance'
-import type { ReducerHookSlot } from './store'
 import { getHooksStore, isHookKind } from './store'
 import { queueJob } from './scheduler'
 

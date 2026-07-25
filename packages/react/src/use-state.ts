@@ -1,5 +1,5 @@
+import type { StateHookSlot } from './instance'
 import { getCurrentInstanceAll } from './instance'
-import type { StateHookSlot } from './store'
 import { getHooksStore, isHookKind } from './store'
 import { isFunction } from './utils'
 import { queueJob } from './scheduler'
