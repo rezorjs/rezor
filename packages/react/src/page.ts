@@ -131,7 +131,7 @@ export function definePage(optionsOrRender: any, config?: Config): void {
       getAppBar: this.getAppBar && this.getAppBar.bind(this),
     }
 
-    this.__render__ = () => {
+    this.__v_render = () => {
       setCurrentPage(this)
       resetHooksCursor(this)
       resetLifecycleCursors(this, pageLifeHooks)
@@ -150,7 +150,7 @@ export function definePage(optionsOrRender: any, config?: Config): void {
         let data: Record<string, unknown> | undefined
         Object.keys(bindings).forEach((key) => {
           const value = bindings[key]
-          if (isFunction(value) && !value.__data__) {
+          if (isFunction(value) && !value.__v_data) {
             this[key] = value
             return
           }
@@ -167,7 +167,7 @@ export function definePage(optionsOrRender: any, config?: Config): void {
       }
     }
 
-    this.__render__()
+    this.__v_render()
 
     if (originOnLoad !== undefined) {
       originOnLoad.call(this, query)
@@ -184,7 +184,7 @@ export function definePage(optionsOrRender: any, config?: Config): void {
 
   const originOnUnload = options[PageLifecycle.ON_UNLOAD] as Function
   options[PageLifecycle.ON_UNLOAD] = function (this: PageInstance) {
-    const renderJob: SchedulerJob = this.__render__
+    const renderJob: SchedulerJob = this.__v_render
     renderJob.flags! |= SchedulerJobFlags.DISPOSED
 
     const store = getHooksStore(this)
@@ -213,7 +213,7 @@ export function definePage(optionsOrRender: any, config?: Config): void {
       PageLifecycle.ON_PAGE_SCROLL,
     )
     /* istanbul ignore next -- @preserve */
-    options.__listenPageScroll__ = () => true
+    options.__v_listenPageScroll = () => true
   }
 
   if (
@@ -226,7 +226,7 @@ export function definePage(optionsOrRender: any, config?: Config): void {
     )
 
     /* istanbul ignore next -- @preserve */
-    options.__isInjectedShareToOthersHook__ = () => true
+    options.__v_isInjectedShareToOthersHook = () => true
   }
 
   if (
@@ -239,7 +239,7 @@ export function definePage(optionsOrRender: any, config?: Config): void {
     )
 
     /* istanbul ignore next -- @preserve */
-    options.__isInjectedShareToTimelineHook__ = () => true
+    options.__v_isInjectedShareToTimelineHook = () => true
   }
 
   if (options[PageLifecycle.ON_ADD_TO_FAVORITES] === undefined) {
@@ -249,7 +249,7 @@ export function definePage(optionsOrRender: any, config?: Config): void {
     )
 
     /* istanbul ignore next -- @preserve */
-    options.__isInjectedFavoritesHook__ = () => true
+    options.__v_isInjectedFavoritesHook = () => true
   }
 
   if (options[PageLifecycle.ON_SAVE_EXIT_STATE] === undefined) {
@@ -259,7 +259,7 @@ export function definePage(optionsOrRender: any, config?: Config): void {
     )
 
     /* istanbul ignore next -- @preserve */
-    options.__isInjectedExitStateHook__ = () => true
+    options.__v_isInjectedExitStateHook = () => true
   }
 
   options[PageLifecycle.ON_SHOW] = createLifecycle(

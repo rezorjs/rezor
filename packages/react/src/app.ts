@@ -64,7 +64,7 @@ export function createApp(optionsOrRender: any): void {
     this: AppInstance,
     options: WechatMiniprogram.App.LaunchShowOption,
   ) {
-    this.__render__ = () => {
+    this.__v_render = () => {
       setCurrentApp(this)
       resetHooksCursor(this)
       resetLifecycleCursors(this, appLifeHooks)
@@ -86,7 +86,7 @@ export function createApp(optionsOrRender: any): void {
       }
     }
 
-    this.__render__()
+    this.__v_render()
 
     if (originOnLaunch !== undefined) {
       originOnLaunch.call(this, options)

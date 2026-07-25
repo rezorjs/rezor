@@ -34,7 +34,7 @@ export function useState<S>(
         }
 
         ;(stateSlot as StateHookSlot).value = nextState
-        queueJob(currentInstance.__render__)
+        queueJob(currentInstance.__v_render)
       }
 
       stateSlot = { kind: 'state', value: getState(), setState }

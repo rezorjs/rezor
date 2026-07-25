@@ -54,7 +54,7 @@ export const usePageScroll = (
   /* istanbul ignore else -- @preserve  */
   if (currentInstance) {
     /* istanbul ignore else -- @preserve   */
-    if (currentInstance.__listenPageScroll__) {
+    if (currentInstance.__v_listenPageScroll) {
       registerLifecycleHook(currentInstance, PageLifecycle.ON_PAGE_SCROLL, hook)
     } else if (__DEV__) {
       console.warn(
@@ -80,7 +80,7 @@ export const useShareAppMessage = (
   /* istanbul ignore else -- @preserve  */
   if (currentInstance) {
     /* istanbul ignore else -- @preserve  */
-    if (currentInstance.__isInjectedShareToOthersHook__) {
+    if (currentInstance.__v_isInjectedShareToOthersHook) {
       const cursor = getLifecycleCursor(
         currentInstance,
         PageLifecycle.ON_SHARE_APP_MESSAGE,
@@ -112,7 +112,7 @@ export const useShareTimeline = (
   /* istanbul ignore else -- @preserve  */
   if (currentInstance) {
     /* istanbul ignore else -- @preserve  */
-    if (currentInstance.__isInjectedShareToTimelineHook__) {
+    if (currentInstance.__v_isInjectedShareToTimelineHook) {
       const cursor = getLifecycleCursor(
         currentInstance,
         PageLifecycle.ON_SHARE_TIMELINE,
@@ -146,7 +146,7 @@ export const useAddToFavorites = (
   /* istanbul ignore else -- @preserve  */
   if (currentInstance) {
     /* istanbul ignore else -- @preserve  */
-    if (currentInstance.__isInjectedFavoritesHook__) {
+    if (currentInstance.__v_isInjectedFavoritesHook) {
       const cursor = getLifecycleCursor(
         currentInstance,
         PageLifecycle.ON_ADD_TO_FAVORITES,
@@ -178,7 +178,7 @@ export const useSaveExitState = (
   /* istanbul ignore else -- @preserve  */
   if (currentInstance) {
     /* istanbul ignore else -- @preserve  */
-    if (currentInstance.__isInjectedExitStateHook__) {
+    if (currentInstance.__v_isInjectedExitStateHook) {
       const cursor = getLifecycleCursor(
         currentInstance,
         PageLifecycle.ON_SAVE_EXIT_STATE,

@@ -12,11 +12,11 @@ export function unsetCurrentApp(): void {
 export type PageInstance = WechatMiniprogram.Page.InstanceProperties &
   WechatMiniprogram.Page.InstanceMethods<Record<string, unknown>> & {
     [key: string]: any
-    __isInjectedShareToOthersHook__?: () => true
-    __isInjectedShareToTimelineHook__?: () => true
-    __isInjectedFavoritesHook__?: () => true
-    __isInjectedExitStateHook__?: () => true
-    __listenPageScroll__?: () => true
+    __v_isInjectedShareToOthersHook?: () => true
+    __v_isInjectedShareToTimelineHook?: () => true
+    __v_isInjectedFavoritesHook?: () => true
+    __v_isInjectedExitStateHook?: () => true
+    __v_listenPageScroll?: () => true
   }
 export let currentPage: PageInstance | null = null
 export function setCurrentPage(page: PageInstance): void {
@@ -29,11 +29,11 @@ export function unsetCurrentPage(): void {
 export type ComponentInstance = WechatMiniprogram.Component.InstanceProperties &
   WechatMiniprogram.Component.InstanceMethods<Record<string, unknown>> & {
     [key: string]: any
-    __isInjectedShareToOthersHook__?: () => true
-    __isInjectedShareToTimelineHook__?: () => true
-    __isInjectedFavoritesHook__?: () => true
-    __isInjectedExitStateHook__?: () => true
-    __listenPageScroll__?: () => true
+    __v_isInjectedShareToOthersHook?: () => true
+    __v_isInjectedShareToTimelineHook?: () => true
+    __v_isInjectedFavoritesHook?: () => true
+    __v_isInjectedExitStateHook?: () => true
+    __v_listenPageScroll?: () => true
   }
 export let currentComponent: ComponentInstance | null = null
 export function setCurrentComponent(component: ComponentInstance): void {

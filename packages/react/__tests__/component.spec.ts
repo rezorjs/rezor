@@ -781,7 +781,7 @@ describe('component', () => {
     defineComponent(() => {
       usePageScroll(() => {})
     })
-    component.__listenPageScroll__ = component.methods.__listenPageScroll__
+    component.__v_listenPageScroll = component.methods.__v_listenPageScroll
     component.lifetimes.attached.call(component)
     expect('usePageScroll() hook only').toHaveBeenWarned()
 
@@ -812,7 +812,7 @@ describe('component', () => {
         return { count, increment }
       },
     })
-    component.__listenPageScroll__ = component.methods.__listenPageScroll__
+    component.__v_listenPageScroll = component.methods.__v_listenPageScroll
     component.lifetimes.attached.call(component)
     component.methods.onPageScroll.call(component, arg)
     expect(fn).toHaveBeenCalledTimes(1)
@@ -844,7 +844,7 @@ describe('component', () => {
       },
       { listenPageScroll: true },
     )
-    component.__listenPageScroll__ = component.methods.__listenPageScroll__
+    component.__v_listenPageScroll = component.methods.__v_listenPageScroll
     component.lifetimes.attached.call(component)
     component.methods.onPageScroll.call(component, arg)
     expect(dummy!).toBe(0)
@@ -873,8 +873,8 @@ describe('component', () => {
       },
     })
     component.onShareAppMessage = component.methods.onShareAppMessage
-    component.__isInjectedShareToOthersHook__ =
-      component.methods.__isInjectedShareToOthersHook__
+    component.__v_isInjectedShareToOthersHook =
+      component.methods.__v_isInjectedShareToOthersHook
     component.lifetimes.attached.call(component)
     expect('useShareAppMessage() hook only').toHaveBeenWarnedTimes(1)
 
@@ -882,8 +882,8 @@ describe('component', () => {
       useShareAppMessage(() => ({}))
     })
     component.onShareAppMessage = component.methods.onShareAppMessage
-    component.__isInjectedShareToOthersHook__ =
-      component.methods.__isInjectedShareToOthersHook__
+    component.__v_isInjectedShareToOthersHook =
+      component.methods.__v_isInjectedShareToOthersHook
     component.lifetimes.attached.call(component)
     expect('useShareAppMessage() hook only').toHaveBeenWarnedTimes(2)
 
@@ -895,8 +895,8 @@ describe('component', () => {
       { canShareToOthers: true },
     )
     component.onShareAppMessage = component.methods.onShareAppMessage
-    component.__isInjectedShareToOthersHook__ =
-      component.methods.__isInjectedShareToOthersHook__
+    component.__v_isInjectedShareToOthersHook =
+      component.methods.__v_isInjectedShareToOthersHook
     component.lifetimes.attached.call(component)
     expect('useShareAppMessage() hook can only').toHaveBeenWarned()
 
@@ -915,8 +915,8 @@ describe('component', () => {
       { canShareToOthers: true },
     )
     component.onShareAppMessage = component.methods.onShareAppMessage
-    component.__isInjectedShareToOthersHook__ =
-      component.methods.__isInjectedShareToOthersHook__
+    component.__v_isInjectedShareToOthersHook =
+      component.methods.__v_isInjectedShareToOthersHook
     component.lifetimes.attached.call(component)
     const shareContent = component.methods.onShareAppMessage.call(
       component,
@@ -954,8 +954,8 @@ describe('component', () => {
       },
     })
     component.onShareTimeline = component.methods.onShareTimeline
-    component.__isInjectedShareToTimelineHook__ =
-      component.methods.__isInjectedShareToTimelineHook__
+    component.__v_isInjectedShareToTimelineHook =
+      component.methods.__v_isInjectedShareToTimelineHook
     component.lifetimes.attached.call(component)
     expect('useShareTimeline() hook only').toHaveBeenWarnedTimes(1)
 
@@ -963,8 +963,8 @@ describe('component', () => {
       useShareTimeline(() => ({}))
     })
     component.onShareTimeline = component.methods.onShareTimeline
-    component.__isInjectedShareToTimelineHook__ =
-      component.methods.__isInjectedShareToTimelineHook__
+    component.__v_isInjectedShareToTimelineHook =
+      component.methods.__v_isInjectedShareToTimelineHook
     component.lifetimes.attached.call(component)
     expect('useShareTimeline() hook only').toHaveBeenWarnedTimes(2)
 
@@ -976,8 +976,8 @@ describe('component', () => {
       { canShareToTimeline: true },
     )
     component.onShareTimeline = component.methods.onShareTimeline
-    component.__isInjectedShareToTimelineHook__ =
-      component.methods.__isInjectedShareToTimelineHook__
+    component.__v_isInjectedShareToTimelineHook =
+      component.methods.__v_isInjectedShareToTimelineHook
     component.lifetimes.attached.call(component)
     expect('useShareTimeline() hook can only').toHaveBeenWarned()
 
@@ -994,8 +994,8 @@ describe('component', () => {
       { canShareToTimeline: true },
     )
     component.onShareTimeline = component.methods.onShareTimeline
-    component.__isInjectedShareToTimelineHook__ =
-      component.methods.__isInjectedShareToTimelineHook__
+    component.__v_isInjectedShareToTimelineHook =
+      component.methods.__v_isInjectedShareToTimelineHook
     component.lifetimes.attached.call(component)
     const shareContent = component.methods.onShareTimeline.call(component)
     expect(shareContent).toEqual({ title: 'Hi' })
@@ -1027,8 +1027,8 @@ describe('component', () => {
         useAddToFavorites(() => ({}))
       },
     })
-    component.__isInjectedFavoritesHook__ =
-      component.methods.__isInjectedFavoritesHook__
+    component.__v_isInjectedFavoritesHook =
+      component.methods.__v_isInjectedFavoritesHook
     component.lifetimes.attached.call(component)
     expect('useAddToFavorites() hook only').toHaveBeenWarned()
 
@@ -1036,8 +1036,8 @@ describe('component', () => {
       useAddToFavorites(() => ({}))
       useAddToFavorites(() => ({}))
     })
-    component.__isInjectedFavoritesHook__ =
-      component.methods.__isInjectedFavoritesHook__
+    component.__v_isInjectedFavoritesHook =
+      component.methods.__v_isInjectedFavoritesHook
     component.lifetimes.attached.call(component)
     expect('useAddToFavorites() hook can only').toHaveBeenWarned()
 
@@ -1052,8 +1052,8 @@ describe('component', () => {
 
       return { title, setTitle }
     })
-    component.__isInjectedFavoritesHook__ =
-      component.methods.__isInjectedFavoritesHook__
+    component.__v_isInjectedFavoritesHook =
+      component.methods.__v_isInjectedFavoritesHook
     component.lifetimes.attached.call(component)
     const favoritesContent = component.methods.onAddToFavorites.call(
       component,
@@ -1087,8 +1087,8 @@ describe('component', () => {
         useSaveExitState(() => ({ data: undefined }))
       },
     })
-    component.__isInjectedExitStateHook__ =
-      component.methods.__isInjectedExitStateHook__
+    component.__v_isInjectedExitStateHook =
+      component.methods.__v_isInjectedExitStateHook
     component.lifetimes.attached.call(component)
     expect('useSaveExitState() hook only').toHaveBeenWarned()
 
@@ -1096,8 +1096,8 @@ describe('component', () => {
       useSaveExitState(() => ({ data: undefined }))
       useSaveExitState(() => ({ data: undefined }))
     })
-    component.__isInjectedExitStateHook__ =
-      component.methods.__isInjectedExitStateHook__
+    component.__v_isInjectedExitStateHook =
+      component.methods.__v_isInjectedExitStateHook
     component.lifetimes.attached.call(component)
     expect('useSaveExitState() hook can only').toHaveBeenWarned()
 
@@ -1112,8 +1112,8 @@ describe('component', () => {
 
       return { count, increment }
     })
-    component.__isInjectedExitStateHook__ =
-      component.methods.__isInjectedExitStateHook__
+    component.__v_isInjectedExitStateHook =
+      component.methods.__v_isInjectedExitStateHook
     component.lifetimes.attached.call(component)
     const exitState = component.methods.onSaveExitState.call(component)
     expect(exitState).toEqual({ data: { count: 0 } })

@@ -131,10 +131,10 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
   options.lifetimes[ComponentLifecycle.ATTACHED] = function (
     this: ComponentInstance,
   ) {
-    this.__props__ = {}
+    this.__v_props = {}
     if (properties) {
       properties.forEach((property) => {
-        this.__props__[property] = this.data[property]
+        this.__v_props[property] = this.data[property]
       })
     }
 
@@ -169,14 +169,14 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
       getAppBar: this.getAppBar && this.getAppBar.bind(this),
     }
 
-    this.__render__ = () => {
+    this.__v_render = () => {
       setCurrentComponent(this)
       resetHooksCursor(this)
       resetLifecycleCursors(this, componentLifeHooks)
 
       let bindings: Bindings
       try {
-        bindings = render(this.__props__, context)
+        bindings = render(this.__v_props, context)
       } finally {
         unsetCurrentComponent()
       }
@@ -188,7 +188,7 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
         let data: Record<string, unknown> | undefined
         Object.keys(bindings).forEach((key) => {
           const value = bindings[key]
-          if (isFunction(value) && !value.__data__) {
+          if (isFunction(value) && !value.__v_data) {
             this[key] = value
             return
           }
@@ -205,7 +205,7 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
       }
     }
 
-    this.__render__()
+    this.__v_render()
 
     if (originAttached !== undefined) {
       originAttached.call(this)
@@ -230,7 +230,7 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
   options.lifetimes[ComponentLifecycle.DETACHED] = function (
     this: ComponentInstance,
   ) {
-    const renderJob: SchedulerJob = this.__render__
+    const renderJob: SchedulerJob = this.__v_render
     renderJob.flags! |= SchedulerJobFlags.DISPOSED
 
     const store = getHooksStore(this)
@@ -275,7 +275,7 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
       PageLifecycle.ON_PAGE_SCROLL,
     )
     /* istanbul ignore next -- @preserve */
-    options.methods.__listenPageScroll__ = () => true
+    options.methods.__v_listenPageScroll = () => true
   }
 
   if (
@@ -288,7 +288,7 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
     )
 
     /* istanbul ignore next -- @preserve */
-    options.methods.__isInjectedShareToOthersHook__ = () => true
+    options.methods.__v_isInjectedShareToOthersHook = () => true
   }
 
   if (
@@ -301,7 +301,7 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
     )
 
     /* istanbul ignore next -- @preserve */
-    options.methods.__isInjectedShareToTimelineHook__ = () => true
+    options.methods.__v_isInjectedShareToTimelineHook = () => true
   }
 
   if (options.methods[PageLifecycle.ON_ADD_TO_FAVORITES] === undefined) {
@@ -311,7 +311,7 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
     )
 
     /* istanbul ignore next -- @preserve */
-    options.methods.__isInjectedFavoritesHook__ = () => true
+    options.methods.__v_isInjectedFavoritesHook = () => true
   }
 
   if (options.methods[PageLifecycle.ON_SAVE_EXIT_STATE] === undefined) {
@@ -321,7 +321,7 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
     )
 
     /* istanbul ignore next -- @preserve */
-    options.methods.__isInjectedExitStateHook__ = () => true
+    options.methods.__v_isInjectedExitStateHook = () => true
   }
 
   options.methods[PageLifecycle.ON_PULL_DOWN_REFRESH] = createPageLifecycle(
@@ -362,13 +362,13 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
         value: any,
       ) {
         // Observer executes before attached
-        if (this.__props__) {
-          this.__props__ = extend({}, this.__props__, { [property]: value })
+        if (this.__v_props) {
+          this.__v_props = extend({}, this.__v_props, { [property]: value })
         }
 
         // Observer executes before attached
-        if (this.__render__) {
-          queueJob(this.__render__)
+        if (this.__v_render) {
+          queueJob(this.__v_render)
         }
 
         if (originObserver !== undefined) {

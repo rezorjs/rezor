@@ -39,7 +39,7 @@ export function useReducer<S, I, A>(
         }
 
         ;(reducerSlot as ReducerHookSlot).value = nextState
-        queueJob(currentInstance.__render__)
+        queueJob(currentInstance.__v_render)
       }
 
       reducerSlot = { kind: 'reducer', value: getState(), reducer, dispatch }

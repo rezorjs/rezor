@@ -54,16 +54,16 @@ type LifecycleStore = Record<string, { cursor: number; handlers: Function[] }>
 export function getHooksStore(
   instance: AppInstance | PageInstance | ComponentInstance,
 ): HooksStore {
-  if (instance.__hooks__ === undefined) {
-    instance.__hooks__ = { cursor: 0, slots: [] } satisfies HooksStore
+  if (instance.__v_hooks === undefined) {
+    instance.__v_hooks = { cursor: 0, slots: [] } satisfies HooksStore
   }
-  return instance.__hooks__
+  return instance.__v_hooks
 }
 
 export function resetHooksCursor(
   instance: AppInstance | PageInstance | ComponentInstance,
 ): void {
-  const store = instance.__hooks__ as HooksStore | undefined
+  const store = instance.__v_hooks as HooksStore | undefined
   if (store === undefined) {
     return
   }
@@ -73,7 +73,7 @@ export function resetHooksCursor(
 export function trimHooksStore(
   instance: AppInstance | PageInstance | ComponentInstance,
 ): void {
-  const store = instance.__hooks__ as HooksStore | undefined
+  const store = instance.__v_hooks as HooksStore | undefined
   if (store === undefined) {
     return
   }
@@ -91,7 +91,7 @@ export function resetLifecycleCursors(
   instance: AppInstance | PageInstance | ComponentInstance,
   lifecycles: string[],
 ): void {
-  const store = instance.__lifecycle__ as LifecycleStore | undefined
+  const store = instance.__v_lifecycle as LifecycleStore | undefined
   if (store === undefined) {
     return
   }
@@ -107,7 +107,7 @@ export function trimLifecycleBuckets(
   instance: AppInstance | PageInstance | ComponentInstance,
   lifecycles: string[],
 ): void {
-  const store = instance.__lifecycle__ as LifecycleStore | undefined
+  const store = instance.__v_lifecycle as LifecycleStore | undefined
   if (store === undefined) {
     return
   }
@@ -124,11 +124,11 @@ export function registerLifecycleHook(
   lifecycle: string,
   hook: Function,
 ): void {
-  if (instance.__lifecycle__ === undefined) {
-    instance.__lifecycle__ = {}
+  if (instance.__v_lifecycle === undefined) {
+    instance.__v_lifecycle = {}
   }
 
-  const store = instance.__lifecycle__ as LifecycleStore
+  const store = instance.__v_lifecycle as LifecycleStore
   if (store[lifecycle] === undefined) {
     store[lifecycle] = { cursor: 0, handlers: [] }
   }
@@ -142,7 +142,7 @@ export function getLifecycleCursor(
   instance: AppInstance | PageInstance | ComponentInstance,
   lifecycle: string,
 ): number {
-  const store = instance.__lifecycle__ as LifecycleStore | undefined
+  const store = instance.__v_lifecycle as LifecycleStore | undefined
   if (store === undefined || store[lifecycle] === undefined) {
     return 0
   }
@@ -153,7 +153,7 @@ export function getLifecycleHooks(
   instance: AppInstance | PageInstance | ComponentInstance,
   lifecycle: string,
 ): Function[] {
-  const store = instance.__lifecycle__ as LifecycleStore | undefined
+  const store = instance.__v_lifecycle as LifecycleStore | undefined
   if (store === undefined || store[lifecycle] === undefined) {
     return []
   }

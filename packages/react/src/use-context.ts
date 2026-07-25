@@ -78,7 +78,7 @@ export function useContext<T>(
     }
 
     // Consumer
-    const render = currentInstance.__render__
+    const render = currentInstance.__v_render
     if (!isHookKind(store.slots[index], 'context')) {
       store.slots[index] = {
         kind: 'context',
