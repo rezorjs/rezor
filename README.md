@@ -1,4 +1,4 @@
-# Rezor
+# Rezor [![Coverage Status](https://img.shields.io/codecov/c/github/rezorjs/rezor.svg)](https://codecov.io/gh/rezorjs/rezor)
 
 Rezor 是一个基于 React 的小程序框架，它的性能无限趋近于原生小程序。你可以在不牺牲性能和用户体验的前提下，使用 React Hooks 开发小程序。
 
