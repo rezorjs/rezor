@@ -48,9 +48,6 @@ export function getCurrentInstance(): PageInstance | ComponentInstance | null {
 }
 
 export function getCurrentInstanceAll():
-  | AppInstance
-  | PageInstance
-  | ComponentInstance
-  | null {
+  AppInstance | PageInstance | ComponentInstance | null {
   return currentApp || currentPage || currentComponent
 }

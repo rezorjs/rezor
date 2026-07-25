@@ -2,13 +2,7 @@ import type { SchedulerJob } from './scheduler'
 import type { AppInstance, PageInstance, ComponentInstance } from './instance'
 
 type HookKind =
-  | 'ref'
-  | 'memo'
-  | 'state'
-  | 'reducer'
-  | 'effect'
-  | 'effectEvent'
-  | 'context'
+  'ref' | 'memo' | 'state' | 'reducer' | 'effect' | 'effectEvent' | 'context'
 type RefHookSlot = { kind: 'ref'; ref: { current: any } }
 type MemoHookSlot = { kind: 'memo'; value: any; deps: readonly unknown[] }
 export type StateHookSlot = {
