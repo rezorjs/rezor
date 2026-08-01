@@ -2,6 +2,7 @@ import type { AppInstance, ComponentInstance } from './instance'
 import { getCurrentInstance } from './instance'
 import { getHooksStore, isHookKind } from './store'
 import { queueJob } from './scheduler'
+import { warn } from './utils'
 
 export interface Context<T> {
   defaultValue: T
@@ -58,7 +59,7 @@ export function useContext<T>(
       if (context.provider !== null && context.provider !== currentInstance) {
         /* istanbul ignore else -- @preserve  */
         if (__DEV__) {
-          console.warn(
+          warn(
             'useContext() does not support multiple providers for the same context at the same time.',
           )
         }
@@ -96,9 +97,7 @@ export function useContext<T>(
 
   /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
-    console.warn(
-      'useContext() hook can only be called during execution of render().',
-    )
+    warn('useContext() hook can only be called during execution of render().')
   }
 
   return context.currentValue

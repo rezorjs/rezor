@@ -1,5 +1,6 @@
 import { getCurrentInstance } from './instance'
 import { getHooksStore, isHookKind } from './store'
+import { warn } from './utils'
 
 export function useEffectEvent<T extends (...args: any[]) => any>(
   callback: T,
@@ -23,7 +24,7 @@ export function useEffectEvent<T extends (...args: any[]) => any>(
 
   /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
-    console.warn(
+    warn(
       'useEffectEvent() hook can only be called during execution of render().',
     )
   }

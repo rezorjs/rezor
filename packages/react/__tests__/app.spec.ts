@@ -184,7 +184,7 @@ describe('app', () => {
 
   test('inject lifecycle outside render', () => {
     useAppShow(() => {})
-    expect('App lifecycle hooks can only').toHaveBeenWarned()
+    expect('[Rezor] App lifecycle hooks can only').toHaveBeenWarned()
   })
 
   test('unset current app when render throws', () => {

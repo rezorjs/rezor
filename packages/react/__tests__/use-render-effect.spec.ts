@@ -146,6 +146,6 @@ describe('useRenderEffect', () => {
 
   test('warning outside render', () => {
     useRenderEffect(() => {})
-    expect('useRenderEffect() hook can only be').toHaveBeenWarned()
+    expect('[Rezor] useRenderEffect() hook can only be').toHaveBeenWarned()
   })
 })

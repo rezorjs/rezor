@@ -2,6 +2,7 @@ import { currentApp, currentComponent } from './instance'
 import { getLifecycleCursor, registerLifecycleHook } from './store'
 import { AppLifecycle } from './app'
 import { PageLifecycle, ComponentLifecycle } from './component'
+import { warn } from './utils'
 
 const pageHookWarn =
   'Page lifecycle hooks can only be called during execution of render() in defineComponent().'
@@ -59,12 +60,12 @@ export const usePageScroll = (
         hook,
       )
     } else if (__DEV__) {
-      console.warn(
+      warn(
         'usePageScroll() hook only works when `listenPageScroll` is configured to true.',
       )
     }
   } else if (__DEV__) {
-    console.warn(pageHookWarn)
+    warn(pageHookWarn)
   }
 }
 
@@ -94,15 +95,15 @@ export const useShareAppMessage = (
           hook,
         )
       } else if (__DEV__) {
-        console.warn('useShareAppMessage() hook can only be called once.')
+        warn('useShareAppMessage() hook can only be called once.')
       }
     } else if (__DEV__) {
-      console.warn(
+      warn(
         'useShareAppMessage() hook only works when `onShareAppMessage` method is not defined and `canShareToOthers` is configured to true.',
       )
     }
   } else if (__DEV__) {
-    console.warn(pageHookWarn)
+    warn(pageHookWarn)
   }
 }
 
@@ -125,15 +126,15 @@ export const useShareTimeline = (
           hook,
         )
       } else if (__DEV__) {
-        console.warn('useShareTimeline() hook can only be called once.')
+        warn('useShareTimeline() hook can only be called once.')
       }
     } else if (__DEV__) {
-      console.warn(
+      warn(
         'useShareTimeline() hook only works when `onShareTimeline` method is not defined and `canShareToTimeline` is configured to true.',
       )
     }
   } else if (__DEV__) {
-    console.warn(pageHookWarn)
+    warn(pageHookWarn)
   }
 }
 
@@ -158,15 +159,15 @@ export const useAddToFavorites = (
           hook,
         )
       } else if (__DEV__) {
-        console.warn('useAddToFavorites() hook can only be called once.')
+        warn('useAddToFavorites() hook can only be called once.')
       }
     } else if (__DEV__) {
-      console.warn(
+      warn(
         'useAddToFavorites() hook only works when `onAddToFavorites` method is not defined.',
       )
     }
   } else if (__DEV__) {
-    console.warn(pageHookWarn)
+    warn(pageHookWarn)
   }
 }
 
@@ -189,15 +190,15 @@ export const useSaveExitState = (
           hook,
         )
       } else if (__DEV__) {
-        console.warn('useSaveExitState() hook can only be called once.')
+        warn('useSaveExitState() hook can only be called once.')
       }
     } else if (__DEV__) {
-      console.warn(
+      warn(
         'useSaveExitState() hook only works when `onSaveExitState` method is not defined.',
       )
     }
   } else if (__DEV__) {
-    console.warn(pageHookWarn)
+    warn(pageHookWarn)
   }
 }
 
@@ -213,7 +214,7 @@ function createAppHook(lifecycle: AppLifecycle) {
     if (currentApp) {
       registerLifecycleHook(currentApp, lifecycle, hook)
     } else if (__DEV__) {
-      console.warn(
+      warn(
         'App lifecycle hooks can only be called during execution of render() in createApp().',
       )
     }
@@ -226,7 +227,7 @@ function createPageHook(lifecycle: PageLifecycle) {
     if (currentComponent) {
       registerLifecycleHook(currentComponent, lifecycle, hook)
     } else if (__DEV__) {
-      console.warn(pageHookWarn)
+      warn(pageHookWarn)
     }
   }
 }
@@ -237,7 +238,7 @@ function createComponentHook(lifecycle: ComponentLifecycle) {
     if (currentComponent) {
       registerLifecycleHook(currentComponent, lifecycle, hook)
     } else if (__DEV__) {
-      console.warn(
+      warn(
         'Component lifecycle hooks can only be called during execution of render() in defineComponent().',
       )
     }

@@ -797,14 +797,14 @@ describe('component', () => {
 
   test('onPageScroll', async () => {
     usePageScroll(() => {})
-    expect('Page lifecycle hooks can only').toHaveBeenWarned()
+    expect('[Rezor] Page lifecycle hooks can only').toHaveBeenWarned()
 
     defineComponent(() => {
       usePageScroll(() => {})
     })
     component.__v_listenPageScroll = component.methods.__v_listenPageScroll
     component.lifetimes.attached.call(component)
-    expect('usePageScroll() hook only').toHaveBeenWarned()
+    expect('[Rezor] usePageScroll() hook only').toHaveBeenWarned()
 
     const arg = {}
     const fn = vi.fn((scroll) => {
@@ -881,7 +881,7 @@ describe('component', () => {
 
   test('onShareAppMessage', async () => {
     useShareAppMessage(() => ({}))
-    expect('Page lifecycle hooks can only').toHaveBeenWarned()
+    expect('[Rezor] Page lifecycle hooks can only').toHaveBeenWarned()
 
     defineComponent({
       methods: {
@@ -897,7 +897,7 @@ describe('component', () => {
     component.__v_isInjectedShareToOthersHook =
       component.methods.__v_isInjectedShareToOthersHook
     component.lifetimes.attached.call(component)
-    expect('useShareAppMessage() hook only').toHaveBeenWarnedTimes(1)
+    expect('[Rezor] useShareAppMessage() hook only').toHaveBeenWarnedTimes(1)
 
     defineComponent(() => {
       useShareAppMessage(() => ({}))
@@ -906,7 +906,7 @@ describe('component', () => {
     component.__v_isInjectedShareToOthersHook =
       component.methods.__v_isInjectedShareToOthersHook
     component.lifetimes.attached.call(component)
-    expect('useShareAppMessage() hook only').toHaveBeenWarnedTimes(2)
+    expect('[Rezor] useShareAppMessage() hook only').toHaveBeenWarnedTimes(2)
 
     defineComponent(
       () => {
@@ -919,7 +919,7 @@ describe('component', () => {
     component.__v_isInjectedShareToOthersHook =
       component.methods.__v_isInjectedShareToOthersHook
     component.lifetimes.attached.call(component)
-    expect('useShareAppMessage() hook can only').toHaveBeenWarned()
+    expect('[Rezor] useShareAppMessage() hook can only').toHaveBeenWarned()
 
     const arg = {}
     defineComponent(
@@ -962,7 +962,7 @@ describe('component', () => {
 
   test('onShareTimeline', async () => {
     useShareTimeline(() => ({}))
-    expect('Page lifecycle hooks can only').toHaveBeenWarned()
+    expect('[Rezor] Page lifecycle hooks can only').toHaveBeenWarned()
 
     defineComponent({
       methods: {
@@ -978,7 +978,7 @@ describe('component', () => {
     component.__v_isInjectedShareToTimelineHook =
       component.methods.__v_isInjectedShareToTimelineHook
     component.lifetimes.attached.call(component)
-    expect('useShareTimeline() hook only').toHaveBeenWarnedTimes(1)
+    expect('[Rezor] useShareTimeline() hook only').toHaveBeenWarnedTimes(1)
 
     defineComponent(() => {
       useShareTimeline(() => ({}))
@@ -987,7 +987,7 @@ describe('component', () => {
     component.__v_isInjectedShareToTimelineHook =
       component.methods.__v_isInjectedShareToTimelineHook
     component.lifetimes.attached.call(component)
-    expect('useShareTimeline() hook only').toHaveBeenWarnedTimes(2)
+    expect('[Rezor] useShareTimeline() hook only').toHaveBeenWarnedTimes(2)
 
     defineComponent(
       () => {
@@ -1000,7 +1000,7 @@ describe('component', () => {
     component.__v_isInjectedShareToTimelineHook =
       component.methods.__v_isInjectedShareToTimelineHook
     component.lifetimes.attached.call(component)
-    expect('useShareTimeline() hook can only').toHaveBeenWarned()
+    expect('[Rezor] useShareTimeline() hook can only').toHaveBeenWarned()
 
     defineComponent(
       () => {
@@ -1036,7 +1036,7 @@ describe('component', () => {
 
   test('onAddToFavorites', async () => {
     useAddToFavorites(() => ({}))
-    expect('Page lifecycle hooks can only').toHaveBeenWarned()
+    expect('[Rezor] Page lifecycle hooks can only').toHaveBeenWarned()
 
     defineComponent({
       methods: {
@@ -1051,7 +1051,7 @@ describe('component', () => {
     component.__v_isInjectedFavoritesHook =
       component.methods.__v_isInjectedFavoritesHook
     component.lifetimes.attached.call(component)
-    expect('useAddToFavorites() hook only').toHaveBeenWarned()
+    expect('[Rezor] useAddToFavorites() hook only').toHaveBeenWarned()
 
     defineComponent(() => {
       useAddToFavorites(() => ({}))
@@ -1060,7 +1060,7 @@ describe('component', () => {
     component.__v_isInjectedFavoritesHook =
       component.methods.__v_isInjectedFavoritesHook
     component.lifetimes.attached.call(component)
-    expect('useAddToFavorites() hook can only').toHaveBeenWarned()
+    expect('[Rezor] useAddToFavorites() hook can only').toHaveBeenWarned()
 
     const arg = {}
     defineComponent(() => {
@@ -1096,7 +1096,7 @@ describe('component', () => {
 
   test('onSaveExitState', async () => {
     useSaveExitState(() => ({ data: undefined }))
-    expect('Page lifecycle hooks can only').toHaveBeenWarned()
+    expect('[Rezor] Page lifecycle hooks can only').toHaveBeenWarned()
 
     defineComponent({
       methods: {
@@ -1111,7 +1111,7 @@ describe('component', () => {
     component.__v_isInjectedExitStateHook =
       component.methods.__v_isInjectedExitStateHook
     component.lifetimes.attached.call(component)
-    expect('useSaveExitState() hook only').toHaveBeenWarned()
+    expect('[Rezor] useSaveExitState() hook only').toHaveBeenWarned()
 
     defineComponent(() => {
       useSaveExitState(() => ({ data: undefined }))
@@ -1120,7 +1120,7 @@ describe('component', () => {
     component.__v_isInjectedExitStateHook =
       component.methods.__v_isInjectedExitStateHook
     component.lifetimes.attached.call(component)
-    expect('useSaveExitState() hook can only').toHaveBeenWarned()
+    expect('[Rezor] useSaveExitState() hook can only').toHaveBeenWarned()
 
     defineComponent(() => {
       const [count, setCount] = useState(0)
@@ -1311,7 +1311,7 @@ describe('component', () => {
 
   test('inject component lifecycle outside render', () => {
     useMove(() => {})
-    expect('Component lifecycle hooks can only').toHaveBeenWarned()
+    expect('[Rezor] Component lifecycle hooks can only').toHaveBeenWarned()
   })
 
   test('unset current component when render throws', () => {

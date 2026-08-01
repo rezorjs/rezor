@@ -173,6 +173,6 @@ describe('useState', () => {
     const [count, setCount] = useState(0)
     expect(count).toBe(0)
     setCount(1)
-    expect('useState() hook can only be').toHaveBeenWarned()
+    expect('[Rezor] useState() hook can only be').toHaveBeenWarned()
   })
 })

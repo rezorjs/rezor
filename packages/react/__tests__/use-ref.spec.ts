@@ -69,6 +69,6 @@ describe('useRef', () => {
 
   test('warning outside render', () => {
     useRef(0)
-    expect('useRef() hook can only be').toHaveBeenWarned()
+    expect('[Rezor] useRef() hook can only be').toHaveBeenWarned()
   })
 })

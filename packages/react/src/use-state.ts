@@ -1,7 +1,7 @@
 import type { StateHookSlot } from './instance'
 import { getCurrentInstance } from './instance'
 import { getHooksStore, isHookKind } from './store'
-import { isFunction } from './utils'
+import { isFunction, warn } from './utils'
 import { queueJob } from './scheduler'
 
 export type Dispatch<A> = (value: A) => void
@@ -47,9 +47,7 @@ export function useState<S>(
 
   /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
-    console.warn(
-      'useState() hook can only be called during execution of render().',
-    )
+    warn('useState() hook can only be called during execution of render().')
   }
 
   return [getState(), () => {}]

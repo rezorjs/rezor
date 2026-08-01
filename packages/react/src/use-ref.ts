@@ -1,5 +1,6 @@
 import { getCurrentInstance } from './instance'
 import { getHooksStore, isHookKind } from './store'
+import { warn } from './utils'
 
 export interface RefObject<T> {
   current: T
@@ -25,9 +26,7 @@ export function useRef<T>(initialValue: T): RefObject<T> {
 
   /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
-    console.warn(
-      'useRef() hook can only be called during execution of render().',
-    )
+    warn('useRef() hook can only be called during execution of render().')
   }
 
   return { current: initialValue }

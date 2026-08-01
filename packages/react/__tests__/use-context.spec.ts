@@ -223,7 +223,7 @@ describe('useContext', () => {
     })
     const innerProvider = component
     innerProvider.lifetimes.attached.call(innerProvider)
-    expect('useContext() does not support').toHaveBeenWarned()
+    expect('[Rezor] useContext() does not support').toHaveBeenWarned()
 
     defineComponent(() => {
       const theme = useContext(ThemeContext)
@@ -254,7 +254,7 @@ describe('useContext', () => {
     })
     const secondProvider = component
     secondProvider.lifetimes.attached.call(secondProvider)
-    expect('useContext() does not support').toHaveBeenWarned()
+    expect('[Rezor] useContext() does not support').toHaveBeenWarned()
 
     defineComponent(() => {
       const theme = useContext(ThemeContext)
@@ -322,6 +322,6 @@ describe('useContext', () => {
   test('warning outside render', () => {
     const ctx = createContext('default')
     useContext(ctx)
-    expect('useContext() hook can only be').toHaveBeenWarned()
+    expect('[Rezor] useContext() hook can only be').toHaveBeenWarned()
   })
 })

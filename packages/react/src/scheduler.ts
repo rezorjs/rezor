@@ -1,3 +1,5 @@
+import { warn } from './utils'
+
 export enum SchedulerJobFlags {
   QUEUED = 1 << 0,
   DISPOSED = 1 << 1,
@@ -133,7 +135,7 @@ function checkRecursiveUpdates(seen: CountMap, fn: SchedulerJob) {
   const count = seen.get(fn) || 0
   /* istanbul ignore if -- @preserve */
   if (count > RECURSION_LIMIT) {
-    console.warn(
+    warn(
       `Maximum recursive updates exceeded. ` +
         `This usually means a state update is being triggered inside render(), ` +
         `causing an infinite loop.`,

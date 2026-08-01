@@ -77,7 +77,7 @@ describe('useMemo', () => {
 
   test('warning outside render', () => {
     useMemo(() => 1, [])
-    expect('useMemo() hook can only be').toHaveBeenWarned()
+    expect('[Rezor] useMemo() hook can only be').toHaveBeenWarned()
   })
 })
 
@@ -114,6 +114,6 @@ describe('useCallback', () => {
 
   test('warning outside render', () => {
     useCallback(() => {}, [])
-    expect('useCallback() hook can only be').toHaveBeenWarned()
+    expect('[Rezor] useCallback() hook can only be').toHaveBeenWarned()
   })
 })

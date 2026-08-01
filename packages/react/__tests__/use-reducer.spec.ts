@@ -126,6 +126,6 @@ describe('useReducer', () => {
     const [state, dispatch] = useReducer(counterReducer, { count: 0 })
     expect(state.count).toBe(0)
     dispatch({ type: 'increment' })
-    expect('useReducer() hook can only be').toHaveBeenWarned()
+    expect('[Rezor] useReducer() hook can only be').toHaveBeenWarned()
   })
 })

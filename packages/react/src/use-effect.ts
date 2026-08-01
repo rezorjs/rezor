@@ -3,7 +3,7 @@ import { getCurrentInstance } from './instance'
 import { getHooksStore, isHookKind } from './store'
 import type { SchedulerJob } from './scheduler'
 import { queueJob, queuePostFlushCb } from './scheduler'
-import { areHookDepsEqual } from './utils'
+import { areHookDepsEqual, warn } from './utils'
 
 export type EffectCallback = () => void | (() => void)
 
@@ -55,9 +55,7 @@ export function useEffect(
 
   /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
-    console.warn(
-      'useEffect() hook can only be called during execution of render().',
-    )
+    warn('useEffect() hook can only be called during execution of render().')
   }
 }
 
@@ -73,7 +71,7 @@ export function useRenderEffect(
 
   /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
-    console.warn(
+    warn(
       'useRenderEffect() hook can only be called during execution of render().',
     )
   }

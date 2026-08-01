@@ -2,6 +2,7 @@ import type { ReducerHookSlot } from './instance'
 import { getCurrentInstance } from './instance'
 import { getHooksStore, isHookKind } from './store'
 import { queueJob } from './scheduler'
+import { warn } from './utils'
 
 export type ActionDispatch<A> = (action: A) => void
 
@@ -54,9 +55,7 @@ export function useReducer<S, I, A>(
 
   /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
-    console.warn(
-      'useReducer() hook can only be called during execution of render().',
-    )
+    warn('useReducer() hook can only be called during execution of render().')
   }
 
   return [getState(), () => {}]
