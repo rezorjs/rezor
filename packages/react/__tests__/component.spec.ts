@@ -449,6 +449,27 @@ describe('component', () => {
     expect(fn).toHaveBeenCalledWith(0)
   })
 
+  test('observer should bail out if value is unchanged', async () => {
+    const fn = vi.fn()
+    defineComponent({
+      properties: {
+        count: Number,
+      },
+      render() {
+        fn()
+      },
+    })
+    component.data.count = 0
+    component.lifetimes.attached.call(component)
+    const props = component.__v_props
+    expect(fn).toHaveBeenCalledTimes(1)
+
+    component.observers.count.call(component, 0)
+    await nextTick()
+    expect(component.__v_props).toBe(props)
+    expect(fn).toHaveBeenCalledTimes(1)
+  })
+
   test('context', () => {
     defineComponent((_, context) => {
       expect(context.is).toBe('')

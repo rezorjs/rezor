@@ -361,13 +361,10 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
         this: ComponentInstance,
         value: any,
       ) {
-        // Observer executes before attached
-        if (this.__v_props) {
+        // 1. Observer executes before attached
+        // 2. Observer will be triggered after setData() even with same value
+        if (this.__v_props && !Object.is(this.__v_props[property], value)) {
           this.__v_props = extend({}, this.__v_props, { [property]: value })
-        }
-
-        // Observer executes before attached
-        if (this.__v_render) {
           queueJob(this.__v_render)
         }
 
