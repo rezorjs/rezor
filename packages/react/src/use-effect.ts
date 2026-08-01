@@ -1,10 +1,5 @@
-import type {
-  EffectHookSlot,
-  AppInstance,
-  PageInstance,
-  ComponentInstance,
-} from './instance'
-import { getCurrentInstanceAll } from './instance'
+import type { EffectHookSlot, AppInstance, ComponentInstance } from './instance'
+import { getCurrentInstance } from './instance'
 import { getHooksStore, isHookKind } from './store'
 import type { SchedulerJob } from './scheduler'
 import { queueJob, queuePostFlushCb } from './scheduler'
@@ -13,7 +8,7 @@ import { areHookDepsEqual } from './utils'
 export type EffectCallback = () => void | (() => void)
 
 function effectImpl(
-  currentInstance: AppInstance | PageInstance | ComponentInstance,
+  currentInstance: AppInstance | ComponentInstance,
   queue: (job: SchedulerJob) => void,
   callback: EffectCallback,
   deps?: readonly unknown[],
@@ -52,7 +47,7 @@ export function useEffect(
   callback: EffectCallback,
   deps?: readonly unknown[],
 ): void {
-  const currentInstance = getCurrentInstanceAll()
+  const currentInstance = getCurrentInstance()
   if (currentInstance) {
     effectImpl(currentInstance, queuePostFlushCb, callback, deps)
     return
@@ -70,7 +65,7 @@ export function useRenderEffect(
   callback: EffectCallback,
   deps?: readonly unknown[],
 ): void {
-  const currentInstance = getCurrentInstanceAll()
+  const currentInstance = getCurrentInstance()
   if (currentInstance) {
     effectImpl(currentInstance, queueJob, callback, deps)
     return

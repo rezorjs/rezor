@@ -9,7 +9,6 @@ import type {
   HookSlot,
   HooksStore,
   AppInstance,
-  PageInstance,
   ComponentInstance,
 } from './instance'
 
@@ -26,7 +25,7 @@ type HookSlotByKind = {
 }
 
 export function getHooksStore(
-  instance: AppInstance | PageInstance | ComponentInstance,
+  instance: AppInstance | ComponentInstance,
 ): HooksStore {
   if (instance.__v_hooks === undefined) {
     instance.__v_hooks = { cursor: 0, slots: [] }
@@ -35,7 +34,7 @@ export function getHooksStore(
 }
 
 export function resetHooksCursor(
-  instance: AppInstance | PageInstance | ComponentInstance,
+  instance: AppInstance | ComponentInstance,
 ): void {
   const store = instance.__v_hooks
   if (store === undefined) {
@@ -45,7 +44,7 @@ export function resetHooksCursor(
 }
 
 export function trimHooksStore(
-  instance: AppInstance | PageInstance | ComponentInstance,
+  instance: AppInstance | ComponentInstance,
 ): void {
   const store = instance.__v_hooks
   if (store === undefined) {
@@ -62,7 +61,7 @@ export function isHookKind<K extends HookKind>(
 }
 
 export function resetLifecycleCursors(
-  instance: AppInstance | PageInstance | ComponentInstance,
+  instance: AppInstance | ComponentInstance,
   lifecycles: string[],
 ): void {
   const store = instance.__v_lifecycle
@@ -78,7 +77,7 @@ export function resetLifecycleCursors(
 }
 
 export function trimLifecycleBuckets(
-  instance: AppInstance | PageInstance | ComponentInstance,
+  instance: AppInstance | ComponentInstance,
   lifecycles: string[],
 ): void {
   const store = instance.__v_lifecycle
@@ -94,7 +93,7 @@ export function trimLifecycleBuckets(
 }
 
 export function registerLifecycleHook(
-  instance: AppInstance | PageInstance | ComponentInstance,
+  instance: AppInstance | ComponentInstance,
   lifecycle: string,
   hook: Function,
 ): void {
@@ -113,7 +112,7 @@ export function registerLifecycleHook(
 }
 
 export function getLifecycleCursor(
-  instance: AppInstance | PageInstance | ComponentInstance,
+  instance: AppInstance | ComponentInstance,
   lifecycle: string,
 ): number {
   const store = instance.__v_lifecycle
@@ -124,7 +123,7 @@ export function getLifecycleCursor(
 }
 
 export function getLifecycleHooks(
-  instance: AppInstance | PageInstance | ComponentInstance,
+  instance: AppInstance | ComponentInstance,
   lifecycle: string,
 ): Function[] {
   const store = instance.__v_lifecycle

@@ -1,10 +1,10 @@
-import type { AppInstance, PageInstance, ComponentInstance } from './instance'
-import { getCurrentInstanceAll } from './instance'
+import type { AppInstance, ComponentInstance } from './instance'
+import { getCurrentInstance } from './instance'
 import { getHooksStore, isHookKind } from './store'
 import { areHookDepsEqual } from './utils'
 
 function memoImpl<T>(
-  currentInstance: AppInstance | PageInstance | ComponentInstance,
+  currentInstance: AppInstance | ComponentInstance,
   factory: () => T,
   deps: readonly unknown[],
 ): T {
@@ -24,7 +24,7 @@ function memoImpl<T>(
 }
 
 export function useMemo<T>(factory: () => T, deps: readonly unknown[]): T {
-  const currentInstance = getCurrentInstanceAll()
+  const currentInstance = getCurrentInstance()
   if (currentInstance) {
     return memoImpl(currentInstance, factory, deps)
   }
@@ -43,7 +43,7 @@ export function useCallback<T extends Function>(
   callback: T,
   deps: readonly unknown[],
 ): T {
-  const currentInstance = getCurrentInstanceAll()
+  const currentInstance = getCurrentInstance()
   if (currentInstance) {
     return memoImpl(currentInstance, () => callback, deps)
   }

@@ -1,5 +1,5 @@
-import type { AppInstance, PageInstance, ComponentInstance } from './instance'
-import { getCurrentInstanceAll } from './instance'
+import type { AppInstance, ComponentInstance } from './instance'
+import { getCurrentInstance } from './instance'
 import { getHooksStore, isHookKind } from './store'
 import { queueJob } from './scheduler'
 
@@ -7,7 +7,7 @@ export interface Context<T> {
   defaultValue: T
   currentValue: T
   subscribers: Set<Function>
-  provider: AppInstance | PageInstance | ComponentInstance | null
+  provider: AppInstance | ComponentInstance | null
 }
 
 export function createContext<T>(defaultValue: T): Context<T> {
@@ -31,7 +31,7 @@ export function useContext<T>(
   context: Context<T>,
   value?: NoInfer<T>,
 ): T | void {
-  const currentInstance = getCurrentInstanceAll()
+  const currentInstance = getCurrentInstance()
   if (currentInstance) {
     const store = getHooksStore(currentInstance)
     const index = store.cursor

@@ -797,7 +797,7 @@ describe('component', () => {
 
   test('onPageScroll', async () => {
     usePageScroll(() => {})
-    expect('Page specific lifecycle').toHaveBeenWarned()
+    expect('Page lifecycle hooks can only').toHaveBeenWarned()
 
     defineComponent(() => {
       usePageScroll(() => {})
@@ -881,7 +881,7 @@ describe('component', () => {
 
   test('onShareAppMessage', async () => {
     useShareAppMessage(() => ({}))
-    expect('Page specific lifecycle').toHaveBeenWarned()
+    expect('Page lifecycle hooks can only').toHaveBeenWarned()
 
     defineComponent({
       methods: {
@@ -962,7 +962,7 @@ describe('component', () => {
 
   test('onShareTimeline', async () => {
     useShareTimeline(() => ({}))
-    expect('Page specific lifecycle').toHaveBeenWarned()
+    expect('Page lifecycle hooks can only').toHaveBeenWarned()
 
     defineComponent({
       methods: {
@@ -1036,7 +1036,7 @@ describe('component', () => {
 
   test('onAddToFavorites', async () => {
     useAddToFavorites(() => ({}))
-    expect('Page specific lifecycle').toHaveBeenWarned()
+    expect('Page lifecycle hooks can only').toHaveBeenWarned()
 
     defineComponent({
       methods: {
@@ -1096,7 +1096,7 @@ describe('component', () => {
 
   test('onSaveExitState', async () => {
     useSaveExitState(() => ({ data: undefined }))
-    expect('Page specific lifecycle').toHaveBeenWarned()
+    expect('Page lifecycle hooks can only').toHaveBeenWarned()
 
     defineComponent({
       methods: {
@@ -1311,7 +1311,7 @@ describe('component', () => {
 
   test('inject component lifecycle outside render', () => {
     useMove(() => {})
-    expect('Component specific lifecycle').toHaveBeenWarned()
+    expect('Component lifecycle hooks can only').toHaveBeenWarned()
   })
 
   test('unset current component when render throws', () => {
@@ -1320,5 +1320,27 @@ describe('component', () => {
     })
     expect(component.lifetimes.attached.bind(component)).toThrow('render error')
     expect(currentComponent).toBe(null)
+  })
+
+  test('unset current component before setData', async () => {
+    defineComponent(() => {
+      const [count, setCount] = useState(0)
+      return { count, setCount }
+    })
+
+    component.setData = function (data: Record<string, unknown>) {
+      Object.keys(data).forEach((key) => {
+        this.data[key] = data[key]
+      })
+
+      expect(currentComponent).toBe(null)
+    }
+
+    component.lifetimes.attached.call(component)
+    expect(component.data.count).toBe(0)
+
+    component.setCount(1)
+    await nextTick()
+    expect(component.data.count).toBe(1)
   })
 })

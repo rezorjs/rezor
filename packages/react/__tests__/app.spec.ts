@@ -184,7 +184,7 @@ describe('app', () => {
 
   test('inject lifecycle outside render', () => {
     useAppShow(() => {})
-    expect('App specific lifecycle').toHaveBeenWarned()
+    expect('App lifecycle hooks can only').toHaveBeenWarned()
   })
 
   test('unset current app when render throws', () => {

@@ -1,5 +1,11 @@
 import { describe, test, expect, vi } from 'vitest'
-import { createApp, definePage, useState, useEffect, nextTick } from '../src'
+import {
+  createApp,
+  defineComponent,
+  useState,
+  useEffect,
+  nextTick,
+} from '../src'
 
 // Mocks
 let app: Record<string, any>
@@ -8,21 +14,25 @@ globalThis.App = (options: Record<string, any>) => {
   app = options
 }
 
-let page: Record<string, any>
+let component: Record<string, any>
 let renderCb: () => void
 // @ts-expect-error
-globalThis.Page = (options: Record<string, any>) => {
-  page = {
+globalThis.Component = (options: Record<string, any>) => {
+  component = {
     ...options,
     is: '',
+    id: '',
     data: {},
-    route: '',
-    options: {},
+    dataset: {},
+    triggerEvent() {},
     createSelectorQuery() {},
     createIntersectionObserver() {},
     createMediaQueryObserver() {},
     selectComponent() {},
     selectAllComponents() {},
+    selectOwnerComponent() {},
+    getRelationNodes() {},
+    groupSetData() {},
     getTabBar() {},
     getPageId() {},
     animate() {},
@@ -52,17 +62,17 @@ describe('useEffect', () => {
       useEffect(effect1)
     })
     app.onLaunch()
-    definePage(() => {
+    defineComponent(() => {
       const [count, setCount] = useState(0)
       useEffect(effect2)
       return { count, setCount }
     })
-    page.onLoad()
+    component.lifetimes.attached.call(component)
     // Effect should not run during render
     expect(effect1).toHaveBeenCalledTimes(0)
     expect(effect2).toHaveBeenCalledTimes(0)
 
-    page.onReady()
+    component.lifetimes.ready.call(component)
     renderCb()
     expect(effect1).toHaveBeenCalledTimes(1)
     expect(effect2).toHaveBeenCalledTimes(1)
@@ -70,22 +80,22 @@ describe('useEffect', () => {
 
   test('runs after every render when no deps', async () => {
     const effect = vi.fn()
-    definePage(() => {
+    defineComponent(() => {
       const [count, setCount] = useState(0)
       useEffect(effect)
       return { count, setCount }
     })
-    page.onLoad()
-    page.onReady()
+    component.lifetimes.attached.call(component)
+    component.lifetimes.ready.call(component)
     renderCb()
     expect(effect).toHaveBeenCalledTimes(1)
 
-    page.setCount(1)
+    component.setCount(1)
     await nextTick()
     renderCb()
     expect(effect).toHaveBeenCalledTimes(2)
 
-    page.setCount(2)
+    component.setCount(2)
     await nextTick()
     renderCb()
     expect(effect).toHaveBeenCalledTimes(3)
@@ -93,17 +103,17 @@ describe('useEffect', () => {
 
   test('runs only once with empty deps', async () => {
     const effect = vi.fn()
-    definePage(() => {
+    defineComponent(() => {
       const [count, setCount] = useState(0)
       useEffect(effect, [])
       return { count, setCount }
     })
-    page.onLoad()
-    page.onReady()
+    component.lifetimes.attached.call(component)
+    component.lifetimes.ready.call(component)
     renderCb()
     expect(effect).toHaveBeenCalledTimes(1)
 
-    page.setCount(1)
+    component.setCount(1)
     await nextTick()
     renderCb()
     expect(effect).toHaveBeenCalledTimes(1)
@@ -111,23 +121,23 @@ describe('useEffect', () => {
 
   test('runs when deps change', async () => {
     const effect = vi.fn()
-    definePage(() => {
+    defineComponent(() => {
       const [count, setCount] = useState(0)
       useEffect(effect, [count])
       return { count, setCount }
     })
-    page.onLoad()
-    page.onReady()
+    component.lifetimes.attached.call(component)
+    component.lifetimes.ready.call(component)
     renderCb()
     expect(effect).toHaveBeenCalledTimes(1)
 
-    page.setCount(1)
+    component.setCount(1)
     await nextTick()
     renderCb()
     expect(effect).toHaveBeenCalledTimes(2)
 
     // Same value — should not re-run (useState bails out)
-    page.setCount(1)
+    component.setCount(1)
     await nextTick()
     renderCb()
     expect(effect).toHaveBeenCalledTimes(2)
@@ -135,7 +145,7 @@ describe('useEffect', () => {
 
   test('runs cleanup before re-running effect', async () => {
     const calls: string[] = []
-    definePage(() => {
+    defineComponent(() => {
       const [count, setCount] = useState(0)
       useEffect(() => {
         calls.push(`effect ${count}`)
@@ -145,17 +155,17 @@ describe('useEffect', () => {
       }, [count])
       return { count, setCount }
     })
-    page.onLoad()
-    page.onReady()
+    component.lifetimes.attached.call(component)
+    component.lifetimes.ready.call(component)
     renderCb()
     expect(calls).toEqual(['effect 0'])
 
-    page.setCount(1)
+    component.setCount(1)
     await nextTick()
     renderCb()
     expect(calls).toEqual(['effect 0', 'cleanup 0', 'effect 1'])
 
-    page.setCount(2)
+    component.setCount(2)
     await nextTick()
     renderCb()
     expect(calls).toEqual([
@@ -169,7 +179,7 @@ describe('useEffect', () => {
 
   test('runs cleanup on no-deps effect', async () => {
     const calls: string[] = []
-    definePage(() => {
+    defineComponent(() => {
       const [count, setCount] = useState(0)
       useEffect(() => {
         calls.push('effect')
@@ -179,12 +189,12 @@ describe('useEffect', () => {
       })
       return { count, setCount }
     })
-    page.onLoad()
-    page.onReady()
+    component.lifetimes.attached.call(component)
+    component.lifetimes.ready.call(component)
     renderCb()
     expect(calls).toEqual(['effect'])
 
-    page.setCount(1)
+    component.setCount(1)
     await nextTick()
     renderCb()
     expect(calls).toEqual(['effect', 'cleanup', 'effect'])

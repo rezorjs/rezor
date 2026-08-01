@@ -12,7 +12,6 @@ export { createContext, useContext } from './use-context'
 export { nextTick } from './scheduler'
 export { dataFn } from './data-fn'
 export { createApp } from './app'
-export { definePage } from './page'
 export { defineComponent } from './component'
 export {
   useAppShow,
@@ -46,14 +45,8 @@ export type { EffectCallback } from './use-effect'
 export type { Context } from './use-context'
 export type { AppRender, AppOptions } from './app'
 export type {
-  Query,
-  PageContext,
-  PageRender,
-  PageOptions,
-  Config,
-} from './page'
-export type {
   ComponentContext,
   ComponentRender,
   ComponentOptions,
+  Config,
 } from './component'

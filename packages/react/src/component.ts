@@ -1,7 +1,5 @@
 import type { SchedulerJob } from './scheduler'
 import { queueJob, flushPostFlushCbs, SchedulerJobFlags } from './scheduler'
-import type { Config } from './page'
-import { PageLifecycle, pageLifeHooks } from './page'
 import type { Bindings, ComponentInstance } from './instance'
 import { setCurrentComponent, unsetCurrentComponent } from './instance'
 import {
@@ -37,6 +35,12 @@ export type ComponentOptions<
   >
 }
 
+export interface Config {
+  listenPageScroll?: boolean
+  canShareToOthers?: boolean
+  canShareToTimeline?: boolean
+}
+
 /** * Temporary patch for https://github.com/wechat-miniprogram/api-typings/issues/97 ***/
 type PropertyOptionToData<
   T extends WechatMiniprogram.Component.PropertyOption,
@@ -57,6 +61,21 @@ type OptionalTypes<T extends WechatMiniprogram.Component.PropertyType> = T[]
 
 type Options = Record<string, any>
 
+export enum PageLifecycle {
+  ON_SHOW = 'onShow',
+  ON_HIDE = 'onHide',
+  ON_ROUTE_DONE = 'onRouteDone',
+  ON_PULL_DOWN_REFRESH = 'onPullDownRefresh',
+  ON_REACH_BOTTOM = 'onReachBottom',
+  ON_PAGE_SCROLL = 'onPageScroll',
+  ON_SHARE_APP_MESSAGE = 'onShareAppMessage',
+  ON_SHARE_TIMELINE = 'onShareTimeline',
+  ON_ADD_TO_FAVORITES = 'onAddToFavorites',
+  ON_RESIZE = 'onResize',
+  ON_TAB_ITEM_TAP = 'onTabItemTap',
+  ON_SAVE_EXIT_STATE = 'onSaveExitState',
+}
+
 export enum ComponentLifecycle {
   ATTACHED = 'attached',
   READY = 'ready',
@@ -70,10 +89,21 @@ const specialLifecycleMap = {
   [PageLifecycle.ON_HIDE]: 'hide',
   [PageLifecycle.ON_RESIZE]: 'resize',
   [PageLifecycle.ON_ROUTE_DONE]: 'routeDone',
-}
+} as const
 
 const componentLifeHooks = [
-  ...pageLifeHooks,
+  PageLifecycle.ON_SHOW,
+  PageLifecycle.ON_HIDE,
+  PageLifecycle.ON_ROUTE_DONE,
+  PageLifecycle.ON_PULL_DOWN_REFRESH,
+  PageLifecycle.ON_REACH_BOTTOM,
+  PageLifecycle.ON_PAGE_SCROLL,
+  PageLifecycle.ON_SHARE_APP_MESSAGE,
+  PageLifecycle.ON_SHARE_TIMELINE,
+  PageLifecycle.ON_ADD_TO_FAVORITES,
+  PageLifecycle.ON_RESIZE,
+  PageLifecycle.ON_TAB_ITEM_TAP,
+  PageLifecycle.ON_SAVE_EXIT_STATE,
   ComponentLifecycle.MOVED,
   ComponentLifecycle.ERROR,
 ]

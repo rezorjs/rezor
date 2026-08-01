@@ -1,7 +1,5 @@
 import { describe, test, expect, vi } from 'vitest'
 import {
-  createApp,
-  definePage,
   defineComponent,
   useState,
   createContext,
@@ -10,45 +8,6 @@ import {
 } from '../src'
 
 // Mocks
-let app: Record<string, any>
-// @ts-expect-error
-globalThis.App = (options: Record<string, any>) => {
-  app = options
-}
-
-let page: Record<string, any>
-// @ts-expect-error
-globalThis.Page = (options: Record<string, any>) => {
-  page = {
-    ...options,
-    is: '',
-    data: {},
-    route: '',
-    options: {},
-    createSelectorQuery() {},
-    createIntersectionObserver() {},
-    createMediaQueryObserver() {},
-    selectComponent() {},
-    selectAllComponents() {},
-    getTabBar() {},
-    getPageId() {},
-    animate() {},
-    clearAnimation() {},
-    getOpenerEventChannel() {},
-    applyAnimatedStyle() {},
-    clearAnimatedStyle() {},
-    setUpdatePerformanceListener() {},
-    getPassiveEvent() {},
-    setPassiveEvent() {},
-    setInitialRenderingCache() {},
-    setData(data: Record<string, unknown>) {
-      Object.keys(data).forEach((key) => {
-        this.data[key] = data[key]
-      })
-    },
-  }
-}
-
 let component: Record<string, any>
 // @ts-expect-error
 globalThis.Component = (options: Record<string, any>) => {
@@ -358,47 +317,6 @@ describe('useContext', () => {
     expect(consumer2.data.theme).toBe('blue')
     expect(renderSpy1).toHaveBeenCalledTimes(2)
     expect(renderSpy2).toHaveBeenCalledTimes(2)
-  })
-
-  test('provider in page resets on unload', async () => {
-    const ThemeContext = createContext('light')
-
-    definePage(() => {
-      useContext(ThemeContext, 'dark')
-      return {}
-    })
-    page.onLoad()
-
-    defineComponent(() => {
-      const theme = useContext(ThemeContext)
-      return { theme }
-    })
-    component.lifetimes.attached.call(component)
-    expect(component.data.theme).toBe('dark')
-
-    // Unload page — context resets
-    page.onUnload()
-    await nextTick()
-    expect(component.data.theme).toBe('light')
-  })
-
-  test('consumer in page unsubscribes on unload', () => {
-    const ThemeContext = createContext('light')
-
-    createApp(() => {
-      useContext(ThemeContext, 'dark')
-    })
-    app.onLaunch()
-
-    definePage(() => {
-      const theme = useContext(ThemeContext)
-      return { theme }
-    })
-    page.onLoad()
-    expect(ThemeContext.subscribers.size).toBe(1)
-
-    page.onUnload()
-    expect(ThemeContext.subscribers.size).toBe(0)
   })
 
   test('warning outside render', () => {

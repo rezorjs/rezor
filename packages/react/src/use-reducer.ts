@@ -1,5 +1,5 @@
 import type { ReducerHookSlot } from './instance'
-import { getCurrentInstanceAll } from './instance'
+import { getCurrentInstance } from './instance'
 import { getHooksStore, isHookKind } from './store'
 import { queueJob } from './scheduler'
 
@@ -22,7 +22,7 @@ export function useReducer<S, I, A>(
   const getState = () =>
     init === undefined ? (initialArg as S) : init(initialArg as I)
 
-  const currentInstance = getCurrentInstanceAll()
+  const currentInstance = getCurrentInstance()
   if (currentInstance) {
     const store = getHooksStore(currentInstance)
     const index = store.cursor

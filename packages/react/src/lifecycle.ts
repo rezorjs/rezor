@@ -1,11 +1,10 @@
-import { currentApp, currentComponent, getCurrentInstance } from './instance'
+import { currentApp, currentComponent } from './instance'
 import { getLifecycleCursor, registerLifecycleHook } from './store'
 import { AppLifecycle } from './app'
-import { PageLifecycle } from './page'
-import { ComponentLifecycle } from './component'
+import { PageLifecycle, ComponentLifecycle } from './component'
 
 const pageHookWarn =
-  'Page specific lifecycle hooks can only be used during execution of render() in definePage() or defineComponent().'
+  'Page lifecycle hooks can only be called during execution of render() in defineComponent().'
 
 export const useAppShow: (
   hook: (options: WechatMiniprogram.App.LaunchShowOption) => void,
@@ -50,12 +49,15 @@ export const useTabItemTap: (
 export const usePageScroll = (
   hook: (scroll: WechatMiniprogram.Page.IPageScrollOption) => void,
 ): void => {
-  const currentInstance = getCurrentInstance()
   /* istanbul ignore else -- @preserve  */
-  if (currentInstance) {
+  if (currentComponent) {
     /* istanbul ignore else -- @preserve   */
-    if (currentInstance.__v_listenPageScroll) {
-      registerLifecycleHook(currentInstance, PageLifecycle.ON_PAGE_SCROLL, hook)
+    if (currentComponent.__v_listenPageScroll) {
+      registerLifecycleHook(
+        currentComponent,
+        PageLifecycle.ON_PAGE_SCROLL,
+        hook,
+      )
     } else if (__DEV__) {
       console.warn(
         'usePageScroll() hook only works when `listenPageScroll` is configured to true.',
@@ -76,19 +78,18 @@ export const useShareAppMessage = (
     | void
     | Promise<void>,
 ): void => {
-  const currentInstance = getCurrentInstance()
   /* istanbul ignore else -- @preserve  */
-  if (currentInstance) {
+  if (currentComponent) {
     /* istanbul ignore else -- @preserve  */
-    if (currentInstance.__v_isInjectedShareToOthersHook) {
+    if (currentComponent.__v_isInjectedShareToOthersHook) {
       const cursor = getLifecycleCursor(
-        currentInstance,
+        currentComponent,
         PageLifecycle.ON_SHARE_APP_MESSAGE,
       )
       /* istanbul ignore else -- @preserve  */
       if (cursor === 0) {
         registerLifecycleHook(
-          currentInstance,
+          currentComponent,
           PageLifecycle.ON_SHARE_APP_MESSAGE,
           hook,
         )
@@ -97,7 +98,7 @@ export const useShareAppMessage = (
       }
     } else if (__DEV__) {
       console.warn(
-        'useShareAppMessage() hook only works when `onShareAppMessage` option does not exist and `canShareToOthers` is configured to true.',
+        'useShareAppMessage() hook only works when `onShareAppMessage` method is not defined and `canShareToOthers` is configured to true.',
       )
     }
   } else if (__DEV__) {
@@ -108,19 +109,18 @@ export const useShareAppMessage = (
 export const useShareTimeline = (
   hook: () => WechatMiniprogram.Page.ICustomTimelineContent | void,
 ): void => {
-  const currentInstance = getCurrentInstance()
   /* istanbul ignore else -- @preserve  */
-  if (currentInstance) {
+  if (currentComponent) {
     /* istanbul ignore else -- @preserve  */
-    if (currentInstance.__v_isInjectedShareToTimelineHook) {
+    if (currentComponent.__v_isInjectedShareToTimelineHook) {
       const cursor = getLifecycleCursor(
-        currentInstance,
+        currentComponent,
         PageLifecycle.ON_SHARE_TIMELINE,
       )
       /* istanbul ignore else -- @preserve  */
       if (cursor === 0) {
         registerLifecycleHook(
-          currentInstance,
+          currentComponent,
           PageLifecycle.ON_SHARE_TIMELINE,
           hook,
         )
@@ -129,7 +129,7 @@ export const useShareTimeline = (
       }
     } else if (__DEV__) {
       console.warn(
-        'useShareTimeline() hook only works when `onShareTimeline` option does not exist and `canShareToTimeline` is configured to true.',
+        'useShareTimeline() hook only works when `onShareTimeline` method is not defined and `canShareToTimeline` is configured to true.',
       )
     }
   } else if (__DEV__) {
@@ -142,19 +142,18 @@ export const useAddToFavorites = (
     share: WechatMiniprogram.Page.IAddToFavoritesOption,
   ) => WechatMiniprogram.Page.IAddToFavoritesContent,
 ): void => {
-  const currentInstance = getCurrentInstance()
   /* istanbul ignore else -- @preserve  */
-  if (currentInstance) {
+  if (currentComponent) {
     /* istanbul ignore else -- @preserve  */
-    if (currentInstance.__v_isInjectedFavoritesHook) {
+    if (currentComponent.__v_isInjectedFavoritesHook) {
       const cursor = getLifecycleCursor(
-        currentInstance,
+        currentComponent,
         PageLifecycle.ON_ADD_TO_FAVORITES,
       )
       /* istanbul ignore else -- @preserve  */
       if (cursor === 0) {
         registerLifecycleHook(
-          currentInstance,
+          currentComponent,
           PageLifecycle.ON_ADD_TO_FAVORITES,
           hook,
         )
@@ -163,7 +162,7 @@ export const useAddToFavorites = (
       }
     } else if (__DEV__) {
       console.warn(
-        'useAddToFavorites() hook only works when `onAddToFavorites` option does not exist.',
+        'useAddToFavorites() hook only works when `onAddToFavorites` method is not defined.',
       )
     }
   } else if (__DEV__) {
@@ -174,19 +173,18 @@ export const useAddToFavorites = (
 export const useSaveExitState = (
   hook: () => WechatMiniprogram.Page.ISaveExitState,
 ): void => {
-  const currentInstance = getCurrentInstance()
   /* istanbul ignore else -- @preserve  */
-  if (currentInstance) {
+  if (currentComponent) {
     /* istanbul ignore else -- @preserve  */
-    if (currentInstance.__v_isInjectedExitStateHook) {
+    if (currentComponent.__v_isInjectedExitStateHook) {
       const cursor = getLifecycleCursor(
-        currentInstance,
+        currentComponent,
         PageLifecycle.ON_SAVE_EXIT_STATE,
       )
       /* istanbul ignore else -- @preserve  */
       if (cursor === 0) {
         registerLifecycleHook(
-          currentInstance,
+          currentComponent,
           PageLifecycle.ON_SAVE_EXIT_STATE,
           hook,
         )
@@ -195,7 +193,7 @@ export const useSaveExitState = (
       }
     } else if (__DEV__) {
       console.warn(
-        'useSaveExitState() hook only works when `onSaveExitState` option does not exist.',
+        'useSaveExitState() hook only works when `onSaveExitState` method is not defined.',
       )
     }
   } else if (__DEV__) {
@@ -216,7 +214,7 @@ function createAppHook(lifecycle: AppLifecycle) {
       registerLifecycleHook(currentApp, lifecycle, hook)
     } else if (__DEV__) {
       console.warn(
-        'App specific lifecycle hooks can only be used during execution of render() in createApp().',
+        'App lifecycle hooks can only be called during execution of render() in createApp().',
       )
     }
   }
@@ -224,10 +222,9 @@ function createAppHook(lifecycle: AppLifecycle) {
 
 function createPageHook(lifecycle: PageLifecycle) {
   return (hook: Function): void => {
-    const currentInstance = getCurrentInstance()
     /* istanbul ignore else -- @preserve  */
-    if (currentInstance) {
-      registerLifecycleHook(currentInstance, lifecycle, hook)
+    if (currentComponent) {
+      registerLifecycleHook(currentComponent, lifecycle, hook)
     } else if (__DEV__) {
       console.warn(pageHookWarn)
     }
@@ -241,7 +238,7 @@ function createComponentHook(lifecycle: ComponentLifecycle) {
       registerLifecycleHook(currentComponent, lifecycle, hook)
     } else if (__DEV__) {
       console.warn(
-        'Component specific lifecycle hooks can only be used during execution of render() in defineComponent().',
+        'Component lifecycle hooks can only be called during execution of render() in defineComponent().',
       )
     }
   }

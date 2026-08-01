@@ -1,4 +1,4 @@
-import { getCurrentInstanceAll } from './instance'
+import { getCurrentInstance } from './instance'
 import { getHooksStore, isHookKind } from './store'
 
 export interface RefObject<T> {
@@ -9,7 +9,7 @@ export function useRef<T>(initialValue: T): RefObject<T>
 export function useRef<T>(initialValue: T | null): RefObject<T | null>
 export function useRef<T>(initialValue: T | undefined): RefObject<T | undefined>
 export function useRef<T>(initialValue: T): RefObject<T> {
-  const currentInstance = getCurrentInstanceAll()
+  const currentInstance = getCurrentInstance()
   if (currentInstance) {
     const store = getHooksStore(currentInstance)
     const index = store.cursor

@@ -1,5 +1,5 @@
 import type { StateHookSlot } from './instance'
-import { getCurrentInstanceAll } from './instance'
+import { getCurrentInstance } from './instance'
 import { getHooksStore, isHookKind } from './store'
 import { isFunction } from './utils'
 import { queueJob } from './scheduler'
@@ -20,7 +20,7 @@ export function useState<S>(
   const getState = () =>
     isFunction(initialState) ? initialState() : initialState
 
-  const currentInstance = getCurrentInstanceAll()
+  const currentInstance = getCurrentInstance()
   if (currentInstance) {
     const store = getHooksStore(currentInstance)
     const index = store.cursor
