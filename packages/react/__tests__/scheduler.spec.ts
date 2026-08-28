@@ -1,7 +1,6 @@
 import { describe, test, expect, vi } from 'vitest'
 import type { SchedulerJob } from '../src/scheduler'
 import {
-  flushPostFlushCbs,
   nextTick,
   queueJob,
   queuePostFlushCb,
@@ -87,7 +86,7 @@ describe('scheduler', () => {
   })
 
   describe('queuePostFlushCb', () => {
-    test('basic usage', () => {
+    test('basic usage', async () => {
       const calls: string[] = []
 
       const cb1 = () => {
@@ -107,11 +106,11 @@ describe('scheduler', () => {
       queuePostFlushCb(cb3)
 
       expect(calls).toEqual([])
-      flushPostFlushCbs()
+      await nextTick()
       expect(calls).toEqual(['cb1', 'cb2', 'cb3'])
     })
 
-    test('should dedupe queued postFlushCb', () => {
+    test('should dedupe queued postFlushCb', async () => {
       const calls: string[] = []
 
       const cb1 = () => {
@@ -135,11 +134,11 @@ describe('scheduler', () => {
       queuePostFlushCb(cb2)
 
       expect(calls).toEqual([])
-      flushPostFlushCbs()
+      await nextTick()
       expect(calls).toEqual(['cb1', 'cb2', 'cb3'])
     })
 
-    test('queuePostFlushCb while flushing', () => {
+    test('queuePostFlushCb while flushing', async () => {
       const calls: string[] = []
       const cb1 = () => {
         calls.push('cb1')
@@ -153,10 +152,7 @@ describe('scheduler', () => {
 
       queuePostFlushCb(cb1)
 
-      flushPostFlushCbs()
-      expect(calls).toEqual(['cb1'])
-
-      flushPostFlushCbs()
+      await nextTick()
       expect(calls).toEqual(['cb1', 'cb2'])
     })
   })
@@ -175,8 +171,6 @@ describe('scheduler', () => {
       }
 
       queuePostFlushCb(cb1)
-      flushPostFlushCbs()
-      expect(calls).toEqual(['cb1'])
       await nextTick()
       expect(calls).toEqual(['cb1', 'job1'])
     })
@@ -200,11 +194,7 @@ describe('scheduler', () => {
       }
 
       queuePostFlushCb(cb1)
-      flushPostFlushCbs()
-      expect(calls).toEqual(['cb1'])
       await nextTick()
-      expect(calls).toEqual(['cb1', 'job1'])
-      flushPostFlushCbs()
       expect(calls).toEqual(['cb1', 'job1', 'cb2'])
     })
 
@@ -222,8 +212,6 @@ describe('scheduler', () => {
 
       queueJob(job1)
       await nextTick()
-      expect(calls).toEqual(['job1'])
-      flushPostFlushCbs()
       expect(calls).toEqual(['job1', 'cb1'])
     })
 
@@ -247,8 +235,6 @@ describe('scheduler', () => {
 
       queueJob(job1)
       await nextTick()
-      expect(calls).toEqual(['job1', 'job2'])
-      flushPostFlushCbs()
       expect(calls).toEqual(['job1', 'job2', 'cb1'])
     })
 
@@ -276,14 +262,12 @@ describe('scheduler', () => {
 
       queueJob(job1)
       await nextTick()
-      expect(calls).toEqual(['job1', 'job2'])
-      flushPostFlushCbs()
       expect(calls).toEqual(['job1', 'job2', 'cb1', 'cb2'])
     })
   })
 
   // #1595
-  test('avoid duplicate postFlushCb invocation', () => {
+  test('avoid duplicate postFlushCb invocation', async () => {
     const calls: string[] = []
     const cb1 = () => {
       calls.push('cb1')
@@ -296,9 +280,7 @@ describe('scheduler', () => {
 
     queuePostFlushCb(cb1)
     queuePostFlushCb(cb2)
-    flushPostFlushCbs()
-    expect(calls).toEqual(['cb1', 'cb2'])
-    flushPostFlushCbs()
+    await nextTick()
     expect(calls).toEqual(['cb1', 'cb2'])
   })
 
@@ -345,37 +327,23 @@ describe('scheduler', () => {
     expect(job2).toHaveBeenCalledTimes(1)
   })
 
-  test('post jobs can be re-queued after an error', () => {
-    const err = new Error('test')
-    let shouldThrow = true
+  test('post job error should not leave newly queued main jobs pending', async () => {
+    const calls: string[] = []
 
-    const job1 = vi.fn(() => {
-      if (shouldThrow) {
-        shouldThrow = false
-        throw err
-      }
-    })
-    const job2 = vi.fn()
-
-    queuePostFlushCb(job1)
-    queuePostFlushCb(job2)
-
-    try {
-      flushPostFlushCbs()
-    } catch (e: any) {
-      expect(e).toBe(err)
+    const job2: SchedulerJob = () => {
+      calls.push('job2')
     }
 
-    expect(job1).toHaveBeenCalledTimes(1)
-    expect(job2).toHaveBeenCalledTimes(0)
+    const job1: SchedulerJob = () => {
+      queueJob(job2)
+      throw new Error('test')
+    }
 
     queuePostFlushCb(job1)
-    queuePostFlushCb(job2)
 
-    flushPostFlushCbs()
-
-    expect(job1).toHaveBeenCalledTimes(2)
-    expect(job2).toHaveBeenCalledTimes(1)
+    await expect(nextTick()).rejects.toThrow('test')
+    await nextTick()
+    expect(calls).toEqual(['job2'])
   })
 
   test('should allow explicitly marked jobs to trigger itself', async () => {
@@ -391,22 +359,6 @@ describe('scheduler', () => {
     queueJob(job)
     await nextTick()
     expect(count).toBe(3)
-
-    // Post cb
-    const cb = () => {
-      if (count < 5) {
-        count++
-        queuePostFlushCb(cb)
-      }
-    }
-
-    queuePostFlushCb(cb)
-    flushPostFlushCbs()
-    expect(count).toBe(4)
-    flushPostFlushCbs()
-    expect(count).toBe(5)
-    flushPostFlushCbs()
-    expect(count).toBe(5)
   })
 
   test('recursive jobs can only be queued once non-recursively', async () => {
@@ -452,30 +404,25 @@ describe('scheduler', () => {
     expect(job2).toHaveBeenCalledTimes(2)
   })
 
-  test(`recursive post jobs can't be re-queued by other jobs`, () => {
-    let recurse = true
+  // #910
+  test('should not run stopped reactive effects', async () => {
+    const spy = vi.fn()
 
+    // simulate parent component that toggles child
     const job1 = () => {
-      if (recurse) {
-        // job2 is already queued, so this shouldn't do anything
-        queuePostFlushCb(job2)
-        recurse = false
-      }
+      job2.flags! |= SchedulerJobFlags.DISPOSED
     }
-    const job2 = vi.fn(() => {
-      if (recurse) {
-        queuePostFlushCb(job1)
-        queuePostFlushCb(job2)
-      }
-    })
+    // simulate child that's triggered by the same reactive change that
+    // triggers its toggle
+    const job2: SchedulerJob = () => spy()
+    expect(spy).toHaveBeenCalledTimes(0)
 
-    queuePostFlushCb(job2)
+    queueJob(job1)
+    queueJob(job2)
+    await nextTick()
 
-    flushPostFlushCbs()
-    flushPostFlushCbs()
-    flushPostFlushCbs()
-
-    expect(job2).toHaveBeenCalledTimes(2)
+    // should not be called
+    expect(spy).toHaveBeenCalledTimes(0)
   })
 
   test('nextTick should return promise', async () => {
@@ -486,6 +433,14 @@ describe('scheduler', () => {
     expect(p).toBeInstanceOf(Promise)
     expect(await p).toBe(1)
     expect(fn).toHaveBeenCalledTimes(1)
+  })
+
+  test('error in postFlush cb should not cause nextTick to stuck in rejected state forever', async () => {
+    queuePostFlushCb(() => {
+      throw new Error('error')
+    })
+    await expect(nextTick).rejects.toThrow('error')
+    await expect(nextTick()).resolves.toBe(undefined)
   })
 
   /** Dividing line, the above tests is directly copy from vue.js with some changes **/
@@ -515,19 +470,11 @@ describe('scheduler', () => {
     expect(calls).toEqual(['cb1', 'job1'])
   })
 
-  test('disposed job should not execute', async () => {
-    const job = vi.fn() as SchedulerJob
-    queueJob(job)
-    job.flags! |= SchedulerJobFlags.DISPOSED
-    await nextTick()
-    expect(job).toHaveBeenCalledTimes(0)
-  })
-
-  test('disposed post job should not execute', () => {
+  test('disposed post job should not execute', async () => {
     const cb = vi.fn() as SchedulerJob
     queuePostFlushCb(cb)
     cb.flags! |= SchedulerJobFlags.DISPOSED
-    flushPostFlushCbs()
+    await nextTick()
     expect(cb).toHaveBeenCalledTimes(0)
   })
 })

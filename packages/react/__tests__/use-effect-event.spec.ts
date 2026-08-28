@@ -6,7 +6,6 @@ import {
   useEffectEvent,
   nextTick,
 } from '../src'
-import { flushPostFlushCbs } from '../src/scheduler'
 
 // Mocks
 let app: Record<string, any>
@@ -85,13 +84,12 @@ describe('useEffectEvent', () => {
       return { count, setCount }
     })
     app.onLaunch()
-    flushPostFlushCbs()
+    await nextTick()
     expect(calls).toEqual(['effect:0'])
 
     app.setCount(42)
     await nextTick()
-    // Effect didn't re-run (empty deps), but if we flush again nothing new
-    flushPostFlushCbs()
+    // Effect didn't re-run (empty deps), so nothing new
     expect(calls).toEqual(['effect:0'])
   })
 

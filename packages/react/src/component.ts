@@ -1,5 +1,5 @@
 import type { SchedulerJob } from './scheduler'
-import { queueJob, flushPostFlushCbs, SchedulerJobFlags } from './scheduler'
+import { queueJob, SchedulerJobFlags } from './scheduler'
 import type { Bindings, ComponentInstance } from './instance'
 import { setCurrentComponent, unsetCurrentComponent } from './instance'
 import {
@@ -78,7 +78,6 @@ export enum PageLifecycle {
 
 export enum ComponentLifecycle {
   ATTACHED = 'attached',
-  READY = 'ready',
   MOVED = 'moved',
   DETACHED = 'detached',
   ERROR = 'error',
@@ -230,7 +229,7 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
         })
         if (data !== undefined) {
           // May call sub component's render synchronously, so should call after unsetCurrentComponent()
-          this.setData(data, flushPostFlushCbs)
+          this.setData(data)
         }
       }
     }
@@ -239,18 +238,6 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
 
     if (originAttached !== undefined) {
       originAttached.call(this)
-    }
-  }
-
-  const originReady =
-    options.lifetimes[ComponentLifecycle.READY] ||
-    options[ComponentLifecycle.READY]
-  options.lifetimes[ComponentLifecycle.READY] = function (
-    this: ComponentInstance,
-  ) {
-    flushPostFlushCbs()
-    if (originReady !== undefined) {
-      originReady.call(this)
     }
   }
 

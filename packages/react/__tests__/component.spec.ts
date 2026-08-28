@@ -6,7 +6,6 @@ import {
   useMemo,
   useState,
   useEffect,
-  useRenderEffect,
   useMove,
   useError,
   useShow,
@@ -26,7 +25,6 @@ import { currentComponent } from '../src/instance'
 
 // Mocks
 let component: Record<string, any>
-let renderCb: () => void
 // @ts-expect-error
 globalThis.Component = (options: Record<string, any>) => {
   component = {
@@ -55,12 +53,10 @@ globalThis.Component = (options: Record<string, any>) => {
     getPassiveEvent() {},
     setPassiveEvent() {},
     setInitialRenderingCache() {},
-    setData(data: Record<string, unknown>, callback: () => void) {
+    setData(data: Record<string, unknown>) {
       Object.keys(data).forEach((key) => {
         this.data[key] = data[key]
       })
-
-      renderCb = callback
     },
   }
 }
@@ -197,17 +193,12 @@ describe('component', () => {
       true,
     )
 
-    component.setData = function (
-      data: Record<string, unknown>,
-      callback: () => void,
-    ) {
+    component.setData = function (data: Record<string, unknown>) {
       expect(data).toEqual({ foo: 'foo' })
 
       Object.keys(data).forEach((key) => {
         this.data[key] = data[key]
       })
-
-      renderCb = callback
     }
     component.setFoo('foo')
     await nextTick()
@@ -235,21 +226,18 @@ describe('component', () => {
     })
     component.data.foo = ''
     component.lifetimes.attached.call(component)
-    component.lifetimes.ready.call(component)
-    renderCb()
+    await nextTick()
     expect(component.data.count).toBe(0)
     expect(fn).toHaveBeenCalledTimes(1)
 
     component.setCount(1)
     await nextTick()
-    renderCb()
     expect(component.data.count).toBe(1)
     expect(fn).toHaveBeenCalledTimes(1)
 
     component.data.foo = 'foo'
     component.observers.foo.call(component, component.data.foo)
     await nextTick()
-    renderCb()
     expect(component.data.count).toBe(1)
     expect(fn).toHaveBeenCalledTimes(2)
   })
@@ -264,13 +252,11 @@ describe('component', () => {
       return { count, setCount }
     })
     component.lifetimes.attached.call(component)
-    component.lifetimes.ready.call(component)
-    renderCb()
+    await nextTick()
     expect(fn).toHaveBeenCalledTimes(1)
 
     component.setCount(1)
     await nextTick()
-    renderCb()
     expect(fn).toHaveBeenCalledTimes(1)
   })
 
@@ -292,26 +278,23 @@ describe('component', () => {
       return { count, increment }
     })
     component.lifetimes.attached.call(component)
-    component.lifetimes.ready.call(component)
-    renderCb()
+    await nextTick()
     expect(fn).toHaveBeenCalledTimes(1)
     expect(dummy!).toBe(0)
 
     component.increment()
     await nextTick()
-    renderCb()
     expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy!).toBe(1)
 
     component.increment()
-    await nextTick()
     component.lifetimes.detached.call(component)
-    renderCb()
+    await nextTick()
     expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy!).toBe(1)
   })
 
-  test('useRenderEffect', async () => {
+  test('should only run useEffect once with multiple renders', async () => {
     let dummy: number
     const fn = vi.fn()
     defineComponent(() => {
@@ -321,7 +304,7 @@ describe('component', () => {
         setCount(count + 1)
       }
 
-      useRenderEffect(() => {
+      useEffect(() => {
         fn()
         dummy = count
       }, [count])
@@ -329,20 +312,23 @@ describe('component', () => {
       return { count, increment }
     })
     component.lifetimes.attached.call(component)
+    component.increment()
     await nextTick()
     expect(fn).toHaveBeenCalledTimes(1)
-    expect(dummy!).toBe(0)
-
-    component.increment()
-    await nextTick()
-    expect(fn).toHaveBeenCalledTimes(2)
     expect(dummy!).toBe(1)
+  })
 
-    component.increment()
+  test('useEffect disposed', async () => {
+    const fn = vi.fn()
+    defineComponent(() => {
+      useEffect(() => {
+        fn()
+      }, [])
+    })
+    component.lifetimes.attached.call(component)
     component.lifetimes.detached.call(component)
     await nextTick()
-    expect(fn).toHaveBeenCalledTimes(2)
-    expect(dummy!).toBe(1)
+    expect(fn).toHaveBeenCalledTimes(0)
   })
 
   test('props', async () => {
@@ -511,35 +497,6 @@ describe('component', () => {
     expect(fn).toHaveBeenCalledTimes(1)
   })
 
-  test('ready', () => {
-    const fn = vi.fn()
-    const effect1 = vi.fn()
-    const effect2 = vi.fn()
-    defineComponent({
-      lifetimes: { ready: fn },
-      render() {
-        useEffect(effect1, [])
-        useEffect(effect2, [])
-      },
-    })
-    component.lifetimes.attached.call(component)
-    component.lifetimes.ready.call(component)
-    expect(fn).toHaveBeenCalledTimes(1)
-    expect(effect1).toHaveBeenCalledTimes(1)
-    expect(effect2).toHaveBeenCalledTimes(1)
-  })
-
-  test('legacy ready', () => {
-    const fn = vi.fn()
-    defineComponent({
-      ready: fn,
-      render() {},
-    })
-    component.lifetimes.attached.call(component)
-    component.lifetimes.ready.call(component)
-    expect(fn).toHaveBeenCalledTimes(1)
-  })
-
   test('moved', async () => {
     const fn = vi.fn()
     let dummy1: number
@@ -592,26 +549,19 @@ describe('component', () => {
     const fn = vi.fn()
     const cleanup1 = vi.fn()
     const cleanup2 = vi.fn()
-    const cleanup3 = vi.fn()
-    const cleanup4 = vi.fn()
     defineComponent({
       lifetimes: { detached: fn },
       render() {
         useEffect(() => cleanup1, [])
         useEffect(() => cleanup2, [])
-        useRenderEffect(() => cleanup3, [])
-        useRenderEffect(() => cleanup4, [])
       },
     })
     component.lifetimes.attached.call(component)
     await nextTick()
-    component.lifetimes.ready.call(component)
     component.lifetimes.detached.call(component)
     expect(fn).toHaveBeenCalledTimes(1)
     expect(cleanup1).toHaveBeenCalledTimes(1)
     expect(cleanup2).toHaveBeenCalledTimes(1)
-    expect(cleanup3).toHaveBeenCalledTimes(1)
-    expect(cleanup4).toHaveBeenCalledTimes(1)
   })
 
   test('legacy detached', () => {

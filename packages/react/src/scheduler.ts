@@ -55,18 +55,37 @@ function queueJobWorker(
   return false
 }
 
+function doFlushJobs() {
+  try {
+    flushJobs()
+  } catch (error) {
+    currentFlushPromise = null
+    // If a nested post flush throws after queueing more work, defer the
+    // leftovers to a fresh microtask. In Rezor, post jobs never queue post
+    // jobs, so postJobs is empty here.
+    if (jobsLength) {
+      queueFlush()
+    }
+    throw error
+  }
+}
+
 function queueFlush() {
   if (!currentFlushPromise) {
-    // We don't flush post jobs on flushJobs's finally block, so we don't need `doFlushJobs` here.
-    currentFlushPromise = resolvedPromise.then(flushJobs)
+    currentFlushPromise = resolvedPromise.then(doFlushJobs)
   }
 }
 
 export function queuePostFlushCb(job: SchedulerJob): void {
   queueJobWorker(job, postJobs, postJobs.length)
+  queueFlush()
 }
 
-export function flushPostFlushCbs(): void {
+// Post jobs are only queued by useEffect(), and each one is a freshly created
+// function queued exactly once. So the recursion check would never fire and the
+// QUEUED flag never needs clearing — meaning a post job runs at most once in its
+// lifetime. Don't queue a reused job object here.
+function flushPostFlushCbs(): void {
   if (postJobs.length) {
     activePostJobs = postJobs
     postJobs = []
@@ -75,27 +94,20 @@ export function flushPostFlushCbs(): void {
       while (postFlushIndex < activePostJobs.length) {
         const cb = activePostJobs[postFlushIndex++]
         if (!(cb.flags! & SchedulerJobFlags.DISPOSED)) {
-          cb.flags! &= ~SchedulerJobFlags.QUEUED
           cb()
         }
       }
     } finally {
-      // If there was an error we still need to clear the QUEUED flags
-      while (postFlushIndex < activePostJobs.length) {
-        activePostJobs[postFlushIndex++].flags! &= ~SchedulerJobFlags.QUEUED
-      }
-
       activePostJobs = null
       postFlushIndex = 0
     }
   }
 }
 
-function flushJobs() {
-  let seen: CountMap | undefined
+function flushJobs(seen?: CountMap) {
   /* istanbul ignore else -- @preserve */
   if (__DEV__) {
-    seen = new Map()
+    seen ||= new Map()
   }
 
   try {
@@ -126,8 +138,16 @@ function flushJobs() {
 
     flushIndex = 0
     jobsLength = 0
+    jobs.length = 0
 
-    currentFlushPromise = null
+    flushPostFlushCbs()
+
+    // If new jobs have been added to either queue, keep flushing
+    if (jobsLength || postJobs.length) {
+      flushJobs(seen)
+    } else {
+      currentFlushPromise = null
+    }
   }
 }
 
@@ -137,7 +157,7 @@ function checkRecursiveUpdates(seen: CountMap, fn: SchedulerJob) {
   if (count > RECURSION_LIMIT) {
     warn(
       `Maximum recursive updates exceeded. ` +
-        `This usually means a state update is being triggered inside render(), ` +
+        `This usually means a state update is being triggered inside render() or useEffect(), ` +
         `causing an infinite loop.`,
     )
     return true

@@ -15,7 +15,6 @@ globalThis.App = (options: Record<string, any>) => {
 }
 
 let component: Record<string, any>
-let renderCb: () => void
 // @ts-expect-error
 globalThis.Component = (options: Record<string, any>) => {
   component = {
@@ -44,18 +43,16 @@ globalThis.Component = (options: Record<string, any>) => {
     getPassiveEvent() {},
     setPassiveEvent() {},
     setInitialRenderingCache() {},
-    setData(data: Record<string, unknown>, callback: () => void) {
+    setData(data: Record<string, unknown>) {
       Object.keys(data).forEach((key) => {
         this.data[key] = data[key]
       })
-
-      renderCb = callback
     },
   }
 }
 
 describe('useEffect', () => {
-  test('runs after render', () => {
+  test('runs after render', async () => {
     const effect1 = vi.fn()
     const effect2 = vi.fn()
     createApp(() => {
@@ -72,10 +69,41 @@ describe('useEffect', () => {
     expect(effect1).toHaveBeenCalledTimes(0)
     expect(effect2).toHaveBeenCalledTimes(0)
 
-    component.lifetimes.ready.call(component)
-    renderCb()
+    await nextTick()
     expect(effect1).toHaveBeenCalledTimes(1)
     expect(effect2).toHaveBeenCalledTimes(1)
+  })
+
+  test('runs after setData', async () => {
+    const calls: string[] = []
+    defineComponent(() => {
+      const [count, setCount] = useState(0)
+      useEffect(() => {
+        // setData renders synchronously, so the effect must observe the data
+        // it was rendered with, both on mount and on update
+        calls.push(`effect ${count}, data ${component.data.count}`)
+      }, [count])
+      return { count, setCount }
+    })
+
+    const originSetData = component.setData
+    component.setData = function (data: Record<string, unknown>) {
+      calls.push(`setData ${String(data.count)}`)
+      originSetData.call(this, data)
+    }
+
+    component.lifetimes.attached.call(component)
+    await nextTick()
+    expect(calls).toEqual(['setData 0', 'effect 0, data 0'])
+
+    component.setCount(1)
+    await nextTick()
+    expect(calls).toEqual([
+      'setData 0',
+      'effect 0, data 0',
+      'setData 1',
+      'effect 1, data 1',
+    ])
   })
 
   test('runs after every render when no deps', async () => {
@@ -86,18 +114,15 @@ describe('useEffect', () => {
       return { count, setCount }
     })
     component.lifetimes.attached.call(component)
-    component.lifetimes.ready.call(component)
-    renderCb()
+    await nextTick()
     expect(effect).toHaveBeenCalledTimes(1)
 
     component.setCount(1)
     await nextTick()
-    renderCb()
     expect(effect).toHaveBeenCalledTimes(2)
 
     component.setCount(2)
     await nextTick()
-    renderCb()
     expect(effect).toHaveBeenCalledTimes(3)
   })
 
@@ -109,13 +134,11 @@ describe('useEffect', () => {
       return { count, setCount }
     })
     component.lifetimes.attached.call(component)
-    component.lifetimes.ready.call(component)
-    renderCb()
+    await nextTick()
     expect(effect).toHaveBeenCalledTimes(1)
 
     component.setCount(1)
     await nextTick()
-    renderCb()
     expect(effect).toHaveBeenCalledTimes(1)
   })
 
@@ -127,19 +150,16 @@ describe('useEffect', () => {
       return { count, setCount }
     })
     component.lifetimes.attached.call(component)
-    component.lifetimes.ready.call(component)
-    renderCb()
+    await nextTick()
     expect(effect).toHaveBeenCalledTimes(1)
 
     component.setCount(1)
     await nextTick()
-    renderCb()
     expect(effect).toHaveBeenCalledTimes(2)
 
     // Same value — should not re-run (useState bails out)
     component.setCount(1)
     await nextTick()
-    renderCb()
     expect(effect).toHaveBeenCalledTimes(2)
   })
 
@@ -156,18 +176,15 @@ describe('useEffect', () => {
       return { count, setCount }
     })
     component.lifetimes.attached.call(component)
-    component.lifetimes.ready.call(component)
-    renderCb()
+    await nextTick()
     expect(calls).toEqual(['effect 0'])
 
     component.setCount(1)
     await nextTick()
-    renderCb()
     expect(calls).toEqual(['effect 0', 'cleanup 0', 'effect 1'])
 
     component.setCount(2)
     await nextTick()
-    renderCb()
     expect(calls).toEqual([
       'effect 0',
       'cleanup 0',
@@ -190,13 +207,11 @@ describe('useEffect', () => {
       return { count, setCount }
     })
     component.lifetimes.attached.call(component)
-    component.lifetimes.ready.call(component)
-    renderCb()
+    await nextTick()
     expect(calls).toEqual(['effect'])
 
     component.setCount(1)
     await nextTick()
-    renderCb()
     expect(calls).toEqual(['effect', 'cleanup', 'effect'])
   })
 
