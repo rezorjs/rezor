@@ -83,6 +83,44 @@ describe('scheduler', () => {
       await nextTick()
       expect(calls).toEqual(['job1', 'job2'])
     })
+
+    test('keeps the backing queue length bounded when splicing jobs after flush', async () => {
+      const splicedQueueLengths: number[] = []
+      const originalSplice = Array.prototype.splice
+      const spliceSpy = vi
+        .spyOn(Array.prototype, 'splice')
+        .mockImplementation(function (
+          this: unknown[],
+          ...args: [start: number, deleteCount?: number, ...items: unknown[]]
+        ) {
+          const job = args[2]
+          if (
+            args[1] === 0 &&
+            typeof job === 'function' &&
+            (job as SchedulerJob).order !== undefined
+          ) {
+            splicedQueueLengths.push(this.length)
+          }
+          return originalSplice.apply(this, args as any)
+        })
+
+      try {
+        for (let i = 0; i < 5; i++) {
+          queueJob(() => {}, i)
+        }
+        await nextTick()
+
+        for (let i = 0; i < 3; i++) {
+          queueJob(() => {}, 2)
+          queueJob(() => {}, 1)
+          await nextTick()
+        }
+      } finally {
+        spliceSpy.mockRestore()
+      }
+
+      expect(splicedQueueLengths).toEqual([1, 1, 1])
+    })
   })
 
   describe('queuePostFlushCb', () => {
@@ -476,5 +514,23 @@ describe('scheduler', () => {
     cb.flags! |= SchedulerJobFlags.DISPOSED
     await nextTick()
     expect(cb).toHaveBeenCalledTimes(0)
+  })
+
+  test('job insertion', async () => {
+    const calls: string[] = []
+    const job1 = () => {
+      calls.push('job1')
+    }
+    const job2 = () => {
+      calls.push('job2')
+    }
+    const job3 = () => {
+      calls.push('job3')
+    }
+    queueJob(job1)
+    queueJob(job2, 1)
+    queueJob(job3)
+    await nextTick()
+    expect(calls).toEqual(['job1', 'job3', 'job2'])
   })
 })

@@ -198,6 +198,16 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
       getAppBar: this.getAppBar && this.getAppBar.bind(this),
     }
 
+    let mounted = false
+    let pendingData: Record<string, unknown> | undefined
+    this.__v_setData = () => {
+      const data = pendingData
+      if (data) {
+        pendingData = undefined
+        this.setData(data)
+      }
+    }
+
     this.__v_render = () => {
       setCurrentComponent(this)
       resetHooksCursor(this)
@@ -213,8 +223,8 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
       trimHooksStore(this)
       trimLifecycleBuckets(this, componentLifeHooks)
 
+      pendingData = undefined
       if (bindings !== undefined) {
-        let data: Record<string, unknown> | undefined
         Object.keys(bindings).forEach((key) => {
           const value = bindings[key]
           if (isFunction(value) && !value.__v_data) {
@@ -223,14 +233,21 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
           }
 
           if (!hasOwn(this.data, key) || !Object.is(this.data[key], value)) {
-            data = data || {}
-            data[key] = value
+            pendingData = pendingData || {}
+            pendingData[key] = value
           }
         })
-        if (data !== undefined) {
-          // May call sub component's render synchronously, so should call after unsetCurrentComponent()
-          this.setData(data)
-        }
+      }
+      if (mounted) {
+        // Commit after every render of the tick, so multiple renders only call
+        // setData() once. If a later render job throws, the flush discards the
+        // rest of the queue and this pending commit is lost until the next
+        // render — an accepted trade-off, since a throwing render is a bug.
+        queueJob(this.__v_setData, 1)
+      } else {
+        mounted = true
+        // May call sub component's render synchronously, so should call after unsetCurrentComponent()
+        this.__v_setData()
       }
     }
 
@@ -247,6 +264,9 @@ export function defineComponent(optionsOrRender: any, config?: Config): string {
   options.lifetimes[ComponentLifecycle.DETACHED] = function (
     this: ComponentInstance,
   ) {
+    const setDataJob: SchedulerJob = this.__v_setData
+    setDataJob.flags! |= SchedulerJobFlags.DISPOSED
+
     const renderJob: SchedulerJob = this.__v_render
     renderJob.flags! |= SchedulerJobFlags.DISPOSED
 

@@ -262,6 +262,115 @@ describe('component', () => {
     expect(fn).toHaveBeenCalledTimes(1)
   })
 
+  test('should only call setData once with multiple renders', async () => {
+    defineComponent({
+      properties: {
+        user: {
+          type: Object,
+          value: {} as { id: string; verified: boolean; tabs: string[] },
+        },
+      },
+      render({ user }) {
+        const [prevUserId, setPrevUserId] = useState(user.id)
+        const [selectedTab, setSelectedTab] = useState(user.tabs[0])
+
+        const label = user.verified ? 'Verified' : ''
+
+        if (user.id !== prevUserId) {
+          setPrevUserId(user.id)
+          setSelectedTab(user.tabs[0])
+        }
+
+        return { label, selectedTab, setSelectedTab }
+      },
+    })
+
+    const fn = vi.fn()
+    const originSetData = component.setData
+    component.setData = function (data: Record<string, unknown>) {
+      fn()
+      originSetData.call(this, data)
+    }
+
+    component.data.user = {
+      id: '001',
+      verified: true,
+      tabs: ['posts', 'replies'],
+    }
+    component.lifetimes.attached.call(component)
+    expect(component.data.label).toBe('Verified')
+    expect(component.data.selectedTab).toBe('posts')
+    expect(fn).toHaveBeenCalledTimes(1)
+
+    component.setSelectedTab('replies')
+    await nextTick()
+    expect(component.data.selectedTab).toBe('replies')
+    expect(fn).toHaveBeenCalledTimes(2)
+
+    component.data.user = { id: '002', verified: false, tabs: ['posts'] }
+    component.observers.user.call(component, component.data.user)
+    await nextTick()
+    expect(component.data.label).toBe('')
+    expect(component.data.selectedTab).toBe('posts')
+    expect(fn).toHaveBeenCalledTimes(3)
+  })
+
+  test('should keep setData at tail of scheduler queue', async () => {
+    defineComponent(() => {
+      const [count, setCount] = useState(0)
+
+      if (count > 0 && count < 3) {
+        setCount(count + 1)
+      }
+
+      return { count, setCount }
+    })
+
+    const fn = vi.fn()
+    const originSetData = component.setData
+    component.setData = function (data: Record<string, unknown>) {
+      fn()
+      originSetData.call(this, data)
+    }
+
+    component.lifetimes.attached.call(component)
+    expect(component.data.count).toBe(0)
+    expect(fn).toHaveBeenCalledTimes(1)
+
+    component.setCount(1)
+    await nextTick()
+    expect(component.data.count).toBe(3)
+    expect(fn).toHaveBeenCalledTimes(2)
+  })
+
+  test('should dispose queued setData job after detached', async () => {
+    let count = 0
+    defineComponent(() => ({ count }))
+
+    const fn = vi.fn()
+    const originSetData = component.setData
+    component.setData = function (data: Record<string, unknown>) {
+      fn()
+      originSetData.call(this, data)
+    }
+
+    component.lifetimes.attached.call(component)
+    expect(fn).toHaveBeenCalledTimes(1)
+
+    count = 1
+    component.__v_render()
+    await nextTick()
+    expect(component.data.count).toBe(1)
+    expect(fn).toHaveBeenCalledTimes(2)
+
+    count = 2
+    component.__v_render()
+    component.lifetimes.detached.call(component)
+    await nextTick()
+    expect(component.data.count).toBe(1)
+    expect(fn).toHaveBeenCalledTimes(2)
+  })
+
   test('useEffect', async () => {
     let dummy: number
     const fn = vi.fn()
@@ -320,7 +429,7 @@ describe('component', () => {
     expect(dummy!).toBe(1)
   })
 
-  test('useEffect disposed', async () => {
+  test('should dispose queued useEffect job after detached', async () => {
     const fn = vi.fn()
     defineComponent(() => {
       useEffect(() => {

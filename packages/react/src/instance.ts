@@ -67,6 +67,7 @@ export type ComponentInstance = WechatMiniprogram.Component.InstanceProperties &
     __v_isInjectedExitStateHook?: () => true
     __v_listenPageScroll?: () => true
     __v_render: Render
+    __v_setData: () => void
     __v_hooks?: HooksStore
     __v_lifecycle?: LifecycleStore
     __v_props: Record<string, any>
