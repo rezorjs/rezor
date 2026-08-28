@@ -2,12 +2,12 @@ import { describe, beforeEach, test, expect, vi } from 'vitest'
 import {
   defineComponent,
   useState,
-  createContext,
-  useContext,
+  createGlobalContext,
+  useGlobalContext,
   nextTick,
 } from '../src'
 
-describe('useContext', () => {
+describe('useGlobalContext', () => {
   // Mocks
   let component: Record<string, any>
   beforeEach(() => {
@@ -49,9 +49,9 @@ describe('useContext', () => {
   })
 
   test('consumer reads default value when no provider', () => {
-    const ThemeContext = createContext('light')
+    const ThemeContext = createGlobalContext('light')
     defineComponent(() => {
-      const theme = useContext(ThemeContext)
+      const theme = useGlobalContext(ThemeContext)
       return { theme }
     })
     component.lifetimes.attached.call(component)
@@ -59,16 +59,16 @@ describe('useContext', () => {
   })
 
   test('provider sets value, consumer reads it', () => {
-    const ThemeContext = createContext('light')
+    const ThemeContext = createGlobalContext('light')
 
     defineComponent(() => {
-      useContext(ThemeContext, 'dark')
+      useGlobalContext(ThemeContext, 'dark')
     })
     const provider = component
     provider.lifetimes.attached.call(provider)
 
     defineComponent(() => {
-      const theme = useContext(ThemeContext)
+      const theme = useGlobalContext(ThemeContext)
       return { theme }
     })
     component.lifetimes.attached.call(component)
@@ -76,12 +76,12 @@ describe('useContext', () => {
   })
 
   test('provider value change triggers consumer re-render', async () => {
-    const ThemeContext = createContext('light')
+    const ThemeContext = createGlobalContext('light')
     const renderSpy = vi.fn()
 
     defineComponent(() => {
       const [theme, setTheme] = useState('dark')
-      useContext(ThemeContext, theme)
+      useGlobalContext(ThemeContext, theme)
       return { setTheme }
     })
     const provider = component
@@ -89,7 +89,7 @@ describe('useContext', () => {
 
     defineComponent(() => {
       renderSpy()
-      const theme = useContext(ThemeContext)
+      const theme = useGlobalContext(ThemeContext)
       return { theme }
     })
     const consumer = component
@@ -104,13 +104,13 @@ describe('useContext', () => {
   })
 
   test('provider Object.is bailout', async () => {
-    const ThemeContext = createContext('light')
+    const ThemeContext = createGlobalContext('light')
     const renderSpy = vi.fn()
 
     defineComponent(() => {
       const [count, setCount] = useState(0)
       const [theme, setTheme] = useState('dark')
-      useContext(ThemeContext, theme)
+      useGlobalContext(ThemeContext, theme)
       return { count, setCount, setTheme }
     })
     const provider = component
@@ -118,7 +118,7 @@ describe('useContext', () => {
 
     defineComponent(() => {
       renderSpy()
-      const theme = useContext(ThemeContext)
+      const theme = useGlobalContext(ThemeContext)
       return { theme }
     })
     component.lifetimes.attached.call(component)
@@ -131,12 +131,12 @@ describe('useContext', () => {
   })
 
   test('consumer unsubscribes on unmount', async () => {
-    const ThemeContext = createContext('light')
+    const ThemeContext = createGlobalContext('light')
     const renderSpy = vi.fn()
 
     defineComponent(() => {
       const [theme, setTheme] = useState('dark')
-      useContext(ThemeContext, theme)
+      useGlobalContext(ThemeContext, theme)
       return { setTheme }
     })
     const provider = component
@@ -144,7 +144,7 @@ describe('useContext', () => {
 
     defineComponent(() => {
       renderSpy()
-      const theme = useContext(ThemeContext)
+      const theme = useGlobalContext(ThemeContext)
       return { theme }
     })
     const consumer = component
@@ -163,16 +163,16 @@ describe('useContext', () => {
   })
 
   test('provider resets to default on unmount and notifies consumers', async () => {
-    const ThemeContext = createContext('light')
+    const ThemeContext = createGlobalContext('light')
 
     defineComponent(() => {
-      useContext(ThemeContext, 'dark')
+      useGlobalContext(ThemeContext, 'dark')
     })
     const provider = component
     provider.lifetimes.attached.call(provider)
 
     defineComponent(() => {
-      const theme = useContext(ThemeContext)
+      const theme = useGlobalContext(ThemeContext)
       return { theme }
     })
     const consumer = component
@@ -187,17 +187,17 @@ describe('useContext', () => {
 
   test('provider resets bailout', async () => {
     const fn = vi.fn()
-    const ThemeContext = createContext('light')
+    const ThemeContext = createGlobalContext('light')
 
     defineComponent(() => {
-      useContext(ThemeContext, 'light')
+      useGlobalContext(ThemeContext, 'light')
     })
     const provider = component
     provider.lifetimes.attached.call(provider)
 
     defineComponent(() => {
       fn()
-      const theme = useContext(ThemeContext)
+      const theme = useGlobalContext(ThemeContext)
       return { theme }
     })
     const consumer = component
@@ -212,23 +212,23 @@ describe('useContext', () => {
   })
 
   test('multiple providers warn and keep the first provider value', async () => {
-    const ThemeContext = createContext('light')
+    const ThemeContext = createGlobalContext('light')
 
     defineComponent(() => {
-      useContext(ThemeContext, 'outer')
+      useGlobalContext(ThemeContext, 'outer')
     })
     const outerProvider = component
     outerProvider.lifetimes.attached.call(outerProvider)
 
     defineComponent(() => {
-      useContext(ThemeContext, 'inner')
+      useGlobalContext(ThemeContext, 'inner')
     })
     const innerProvider = component
     innerProvider.lifetimes.attached.call(innerProvider)
-    expect('[Rezor] useContext() does not support').toHaveBeenWarned()
+    expect('[Rezor] useGlobalContext() does not support').toHaveBeenWarned()
 
     defineComponent(() => {
-      const theme = useContext(ThemeContext)
+      const theme = useGlobalContext(ThemeContext)
       return { theme }
     })
     const consumer = component
@@ -241,25 +241,25 @@ describe('useContext', () => {
   })
 
   test('ignored provider becomes active after current provider unmounts', async () => {
-    const ThemeContext = createContext('light')
+    const ThemeContext = createGlobalContext('light')
 
     defineComponent(() => {
-      useContext(ThemeContext, 'first')
+      useGlobalContext(ThemeContext, 'first')
     })
     const firstProvider = component
     firstProvider.lifetimes.attached.call(firstProvider)
 
     defineComponent(() => {
       const [theme, setTheme] = useState('')
-      useContext(ThemeContext, theme)
+      useGlobalContext(ThemeContext, theme)
       return { theme, setTheme }
     })
     const secondProvider = component
     secondProvider.lifetimes.attached.call(secondProvider)
-    expect('[Rezor] useContext() does not support').toHaveBeenWarned()
+    expect('[Rezor] useGlobalContext() does not support').toHaveBeenWarned()
 
     defineComponent(() => {
-      const theme = useContext(ThemeContext)
+      const theme = useGlobalContext(ThemeContext)
       return { theme }
     })
     const consumer = component
@@ -280,13 +280,13 @@ describe('useContext', () => {
   })
 
   test('multiple consumers subscribe to same context', async () => {
-    const ThemeContext = createContext('light')
+    const ThemeContext = createGlobalContext('light')
     const renderSpy1 = vi.fn()
     const renderSpy2 = vi.fn()
 
     defineComponent(() => {
       const [theme, setTheme] = useState('dark')
-      useContext(ThemeContext, theme)
+      useGlobalContext(ThemeContext, theme)
       return { setTheme }
     })
     const provider = component
@@ -294,7 +294,7 @@ describe('useContext', () => {
 
     defineComponent(() => {
       renderSpy1()
-      const theme = useContext(ThemeContext)
+      const theme = useGlobalContext(ThemeContext)
       return { theme }
     })
     const consumer1 = component
@@ -302,7 +302,7 @@ describe('useContext', () => {
 
     defineComponent(() => {
       renderSpy2()
-      const theme = useContext(ThemeContext)
+      const theme = useGlobalContext(ThemeContext)
       return { theme }
     })
     const consumer2 = component
@@ -322,8 +322,8 @@ describe('useContext', () => {
   })
 
   test('warning outside render', () => {
-    const ctx = createContext('default')
-    useContext(ctx)
-    expect('[Rezor] useContext() hook can only be').toHaveBeenWarned()
+    const ctx = createGlobalContext('default')
+    useGlobalContext(ctx)
+    expect('[Rezor] useGlobalContext() hook can only be').toHaveBeenWarned()
   })
 })

@@ -4,14 +4,14 @@ import { getHooksStore, isHookKind } from './store'
 import { queueJob } from './scheduler'
 import { warn } from './utils'
 
-export interface Context<T> {
+export interface GlobalContext<T> {
   defaultValue: T
   currentValue: T
   subscribers: Set<Function>
   provider: AppInstance | ComponentInstance | null
 }
 
-export function createContext<T>(defaultValue: T): Context<T> {
+export function createGlobalContext<T>(defaultValue: T): GlobalContext<T> {
   return {
     defaultValue,
     currentValue: defaultValue,
@@ -20,16 +20,19 @@ export function createContext<T>(defaultValue: T): Context<T> {
   }
 }
 
-function notifyContextSubscribers(context: Context<any>): void {
+function notifyContextSubscribers(context: GlobalContext<any>): void {
   context.subscribers.forEach((job) => {
     queueJob(job)
   })
 }
 
-export function useContext<T>(context: Context<T>, value: NoInfer<T>): void
-export function useContext<T>(context: Context<T>): T
-export function useContext<T>(
-  context: Context<T>,
+export function useGlobalContext<T>(
+  context: GlobalContext<T>,
+  value: NoInfer<T>,
+): void
+export function useGlobalContext<T>(context: GlobalContext<T>): T
+export function useGlobalContext<T>(
+  context: GlobalContext<T>,
   value?: NoInfer<T>,
 ): T | void {
   const currentInstance = getCurrentInstance()
@@ -60,7 +63,7 @@ export function useContext<T>(
         /* istanbul ignore else -- @preserve  */
         if (__DEV__) {
           warn(
-            'useContext() does not support multiple providers for the same context at the same time.',
+            'useGlobalContext() does not support multiple providers for the same context at the same time.',
           )
         }
 
@@ -97,7 +100,9 @@ export function useContext<T>(
 
   /* istanbul ignore else -- @preserve  */
   if (__DEV__) {
-    warn('useContext() hook can only be called during execution of render().')
+    warn(
+      'useGlobalContext() hook can only be called during execution of render().',
+    )
   }
 
   return context.currentValue
