@@ -1,4 +1,4 @@
-import { describe, test, expect, vi } from 'vitest'
+import { describe, beforeEach, test, expect, vi } from 'vitest'
 import {
   defineComponent,
   useState,
@@ -7,45 +7,47 @@ import {
   nextTick,
 } from '../src'
 
-// Mocks
-let component: Record<string, any>
-// @ts-expect-error
-globalThis.Component = (options: Record<string, any>) => {
-  component = {
-    ...options,
-    is: '',
-    id: '',
-    data: {},
-    dataset: {},
-    triggerEvent() {},
-    createSelectorQuery() {},
-    createIntersectionObserver() {},
-    createMediaQueryObserver() {},
-    selectComponent() {},
-    selectAllComponents() {},
-    selectOwnerComponent() {},
-    getRelationNodes() {},
-    groupSetData() {},
-    getTabBar() {},
-    getPageId() {},
-    animate() {},
-    clearAnimation() {},
-    getOpenerEventChannel() {},
-    applyAnimatedStyle() {},
-    clearAnimatedStyle() {},
-    setUpdatePerformanceListener() {},
-    getPassiveEvent() {},
-    setPassiveEvent() {},
-    setInitialRenderingCache() {},
-    setData(data: Record<string, unknown>) {
-      Object.keys(data).forEach((key) => {
-        this.data[key] = data[key]
-      })
-    },
-  }
-}
-
 describe('useContext', () => {
+  // Mocks
+  let component: Record<string, any>
+  beforeEach(() => {
+    // @ts-expect-error
+    globalThis.Component = (options: Record<string, any>) => {
+      component = {
+        ...options,
+        is: '',
+        id: '',
+        data: {},
+        dataset: {},
+        triggerEvent() {},
+        createSelectorQuery() {},
+        createIntersectionObserver() {},
+        createMediaQueryObserver() {},
+        selectComponent() {},
+        selectAllComponents() {},
+        selectOwnerComponent() {},
+        getRelationNodes() {},
+        groupSetData() {},
+        getTabBar() {},
+        getPageId() {},
+        animate() {},
+        clearAnimation() {},
+        getOpenerEventChannel() {},
+        applyAnimatedStyle() {},
+        clearAnimatedStyle() {},
+        setUpdatePerformanceListener() {},
+        getPassiveEvent() {},
+        setPassiveEvent() {},
+        setInitialRenderingCache() {},
+        setData(data: Record<string, unknown>) {
+          Object.keys(data).forEach((key) => {
+            this.data[key] = data[key]
+          })
+        },
+      }
+    }
+  })
+
   test('consumer reads default value when no provider', () => {
     const ThemeContext = createContext('light')
     defineComponent(() => {

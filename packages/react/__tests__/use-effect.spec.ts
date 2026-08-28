@@ -1,4 +1,4 @@
-import { describe, test, expect, vi } from 'vitest'
+import { describe, beforeEach, test, expect, vi } from 'vitest'
 import {
   createApp,
   defineComponent,
@@ -7,51 +7,53 @@ import {
   nextTick,
 } from '../src'
 
-// Mocks
-let app: Record<string, any>
-// @ts-expect-error
-globalThis.App = (options: Record<string, any>) => {
-  app = options
-}
-
-let component: Record<string, any>
-// @ts-expect-error
-globalThis.Component = (options: Record<string, any>) => {
-  component = {
-    ...options,
-    is: '',
-    id: '',
-    data: {},
-    dataset: {},
-    triggerEvent() {},
-    createSelectorQuery() {},
-    createIntersectionObserver() {},
-    createMediaQueryObserver() {},
-    selectComponent() {},
-    selectAllComponents() {},
-    selectOwnerComponent() {},
-    getRelationNodes() {},
-    groupSetData() {},
-    getTabBar() {},
-    getPageId() {},
-    animate() {},
-    clearAnimation() {},
-    getOpenerEventChannel() {},
-    applyAnimatedStyle() {},
-    clearAnimatedStyle() {},
-    setUpdatePerformanceListener() {},
-    getPassiveEvent() {},
-    setPassiveEvent() {},
-    setInitialRenderingCache() {},
-    setData(data: Record<string, unknown>) {
-      Object.keys(data).forEach((key) => {
-        this.data[key] = data[key]
-      })
-    },
-  }
-}
-
 describe('useEffect', () => {
+  // Mocks
+  let app: Record<string, any>
+  let component: Record<string, any>
+  beforeEach(() => {
+    // @ts-expect-error
+    globalThis.App = (options: Record<string, any>) => {
+      app = options
+    }
+
+    // @ts-expect-error
+    globalThis.Component = (options: Record<string, any>) => {
+      component = {
+        ...options,
+        is: '',
+        id: '',
+        data: {},
+        dataset: {},
+        triggerEvent() {},
+        createSelectorQuery() {},
+        createIntersectionObserver() {},
+        createMediaQueryObserver() {},
+        selectComponent() {},
+        selectAllComponents() {},
+        selectOwnerComponent() {},
+        getRelationNodes() {},
+        groupSetData() {},
+        getTabBar() {},
+        getPageId() {},
+        animate() {},
+        clearAnimation() {},
+        getOpenerEventChannel() {},
+        applyAnimatedStyle() {},
+        clearAnimatedStyle() {},
+        setUpdatePerformanceListener() {},
+        getPassiveEvent() {},
+        setPassiveEvent() {},
+        setInitialRenderingCache() {},
+        setData(data: Record<string, unknown>) {
+          Object.keys(data).forEach((key) => {
+            this.data[key] = data[key]
+          })
+        },
+      }
+    }
+  })
+
   test('runs after render', async () => {
     const effect1 = vi.fn()
     const effect2 = vi.fn()

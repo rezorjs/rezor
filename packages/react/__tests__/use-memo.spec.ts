@@ -1,14 +1,16 @@
-import { describe, test, expect, vi } from 'vitest'
+import { describe, beforeEach, test, expect, vi } from 'vitest'
 import { createApp, useMemo, useCallback, useState, nextTick } from '../src'
 
-// Mocks
-let app: Record<string, any>
-// @ts-expect-error
-globalThis.App = (options: Record<string, any>) => {
-  app = options
-}
-
 describe('useMemo', () => {
+  // Mocks
+  let app: Record<string, any>
+  beforeEach(() => {
+    // @ts-expect-error
+    globalThis.App = (options: Record<string, any>) => {
+      app = options
+    }
+  })
+
   test('computes value on first render', () => {
     const factory = vi.fn(() => 42)
     createApp(() => {
@@ -82,6 +84,15 @@ describe('useMemo', () => {
 })
 
 describe('useCallback', () => {
+  // Mocks
+  let app: Record<string, any>
+  beforeEach(() => {
+    // @ts-expect-error
+    globalThis.App = (options: Record<string, any>) => {
+      app = options
+    }
+  })
+
   test('returns same function when deps unchanged', async () => {
     createApp(() => {
       const [count, setCount] = useState(0)

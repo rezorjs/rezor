@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest'
+import { describe, beforeEach, test, expect } from 'vitest'
 import {
   createApp,
   useState,
@@ -7,14 +7,16 @@ import {
   nextTick,
 } from '../src'
 
-// Mocks
-let app: Record<string, any>
-// @ts-expect-error
-globalThis.App = (options: Record<string, any>) => {
-  app = options
-}
-
 describe('useEffectEvent', () => {
+  // Mocks
+  let app: Record<string, any>
+  beforeEach(() => {
+    // @ts-expect-error
+    globalThis.App = (options: Record<string, any>) => {
+      app = options
+    }
+  })
+
   test('returns a function that calls the latest callback', async () => {
     const calls: number[] = []
     createApp(() => {

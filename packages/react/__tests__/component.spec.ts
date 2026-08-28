@@ -1,4 +1,4 @@
-import { describe, test, expect, vi } from 'vitest'
+import { describe, beforeEach, test, expect, vi } from 'vitest'
 import {
   defineComponent,
   nextTick,
@@ -23,45 +23,47 @@ import {
 } from '../src'
 import { currentComponent } from '../src/instance'
 
-// Mocks
-let component: Record<string, any>
-// @ts-expect-error
-globalThis.Component = (options: Record<string, any>) => {
-  component = {
-    ...options,
-    is: '',
-    id: '',
-    data: {},
-    dataset: {},
-    triggerEvent() {},
-    createSelectorQuery() {},
-    createIntersectionObserver() {},
-    createMediaQueryObserver() {},
-    selectComponent() {},
-    selectAllComponents() {},
-    selectOwnerComponent() {},
-    getRelationNodes() {},
-    groupSetData() {},
-    getTabBar() {},
-    getPageId() {},
-    animate() {},
-    clearAnimation() {},
-    getOpenerEventChannel() {},
-    applyAnimatedStyle() {},
-    clearAnimatedStyle() {},
-    setUpdatePerformanceListener() {},
-    getPassiveEvent() {},
-    setPassiveEvent() {},
-    setInitialRenderingCache() {},
-    setData(data: Record<string, unknown>) {
-      Object.keys(data).forEach((key) => {
-        this.data[key] = data[key]
-      })
-    },
-  }
-}
-
 describe('component', () => {
+  // Mocks
+  let component: Record<string, any>
+  beforeEach(() => {
+    // @ts-expect-error
+    globalThis.Component = (options: Record<string, any>) => {
+      component = {
+        ...options,
+        is: '',
+        id: '',
+        data: {},
+        dataset: {},
+        triggerEvent() {},
+        createSelectorQuery() {},
+        createIntersectionObserver() {},
+        createMediaQueryObserver() {},
+        selectComponent() {},
+        selectAllComponents() {},
+        selectOwnerComponent() {},
+        getRelationNodes() {},
+        groupSetData() {},
+        getTabBar() {},
+        getPageId() {},
+        animate() {},
+        clearAnimation() {},
+        getOpenerEventChannel() {},
+        applyAnimatedStyle() {},
+        clearAnimatedStyle() {},
+        setUpdatePerformanceListener() {},
+        getPassiveEvent() {},
+        setPassiveEvent() {},
+        setInitialRenderingCache() {},
+        setData(data: Record<string, unknown>) {
+          Object.keys(data).forEach((key) => {
+            this.data[key] = data[key]
+          })
+        },
+      }
+    }
+  })
+
   test('binding', () => {
     defineComponent(() => {
       const und = undefined

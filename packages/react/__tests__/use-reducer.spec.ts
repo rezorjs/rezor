@@ -1,12 +1,5 @@
-import { describe, test, expect } from 'vitest'
+import { describe, beforeEach, test, expect } from 'vitest'
 import { createApp, useState, useReducer, nextTick } from '../src'
-
-// Mocks
-let app: Record<string, any>
-// @ts-expect-error
-globalThis.App = (options: Record<string, any>) => {
-  app = options
-}
 
 function counterReducer(
   state: { count: number },
@@ -21,6 +14,15 @@ function counterReducer(
 }
 
 describe('useReducer', () => {
+  // Mocks
+  let app: Record<string, any>
+  beforeEach(() => {
+    // @ts-expect-error
+    globalThis.App = (options: Record<string, any>) => {
+      app = options
+    }
+  })
+
   test('basic dispatch', async () => {
     createApp(() => {
       const [state, dispatch] = useReducer(counterReducer, { count: 0 })

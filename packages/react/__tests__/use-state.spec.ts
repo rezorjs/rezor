@@ -1,14 +1,16 @@
-import { describe, test, expect, vi } from 'vitest'
+import { describe, beforeEach, test, expect, vi } from 'vitest'
 import { createApp, useState, nextTick } from '../src'
 
-// Mocks
-let app: Record<string, any>
-// @ts-expect-error
-globalThis.App = (options: Record<string, any>) => {
-  app = options
-}
-
 describe('useState', () => {
+  // Mocks
+  let app: Record<string, any>
+  beforeEach(() => {
+    // @ts-expect-error
+    globalThis.App = (options: Record<string, any>) => {
+      app = options
+    }
+  })
+
   test('returns initial value', () => {
     createApp(() => {
       const [count] = useState(0)

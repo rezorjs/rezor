@@ -1,14 +1,16 @@
-import { describe, test, expect } from 'vitest'
+import { describe, beforeEach, test, expect } from 'vitest'
 import { createApp, useRef, useState, nextTick } from '../src'
 
-// Mocks
-let app: Record<string, any>
-// @ts-expect-error
-globalThis.App = (options: Record<string, any>) => {
-  app = options
-}
-
 describe('useRef', () => {
+  // Mocks
+  let app: Record<string, any>
+  beforeEach(() => {
+    // @ts-expect-error
+    globalThis.App = (options: Record<string, any>) => {
+      app = options
+    }
+  })
+
   test('returns ref object with initial value', () => {
     createApp(() => {
       const ref = useRef(0)
