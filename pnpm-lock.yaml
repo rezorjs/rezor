@@ -72,7 +72,7 @@ importers:
   packages/react:
     dependencies:
       miniprogram-api-typings:
-        specifier: ~5.2.1
+        specifier: ~5.2.3
         version: 5.2.3
 
 packages:
