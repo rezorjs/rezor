@@ -1,15 +1,12 @@
 import type { MockInstance } from 'vitest'
 import { vi, expect, beforeEach, afterEach } from 'vitest'
 
-interface CustomMatchers<R = unknown> {
-  toHaveBeenWarned: () => R
-  toHaveBeenWarnedLast: () => R
-  toHaveBeenWarnedTimes: (n: number) => R
-}
-
 declare module 'vitest' {
-  interface Assertion<T = any> extends CustomMatchers<T> {}
-  interface AsymmetricMatchersContaining extends CustomMatchers {}
+  interface Matchers<R> {
+    toHaveBeenWarned(): R
+    toHaveBeenWarnedLast(): R
+    toHaveBeenWarnedTimes(n: number): R
+  }
 }
 
 expect.extend({
@@ -65,7 +62,8 @@ expect.extend({
       asserted.add(received)
       return {
         pass: true,
-        message: () => `expected "${received}" to have been warned ${n} times.`,
+        message: () =>
+          `expected "${received}" not to have been warned ${n} times.`,
       }
     }
 
