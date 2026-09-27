@@ -302,6 +302,26 @@ describe('scheduler', () => {
       await nextTick()
       expect(calls).toEqual(['job1', 'job2', 'cb1', 'cb2'])
     })
+
+    test('jobs added during post flush are ordered correctly', async () => {
+      const calls: string[] = []
+
+      const job1: SchedulerJob = () => {
+        calls.push('job1')
+      }
+      const job2: SchedulerJob = () => {
+        calls.push('job2')
+      }
+
+      queuePostFlushCb(() => {
+        queueJob(job2, 1)
+        queueJob(job1)
+      })
+
+      await nextTick()
+
+      expect(calls).toEqual(['job1', 'job2'])
+    })
   })
 
   // #1595
@@ -477,7 +497,7 @@ describe('scheduler', () => {
     queuePostFlushCb(() => {
       throw new Error('error')
     })
-    await expect(nextTick).rejects.toThrow('error')
+    await expect(nextTick()).rejects.toThrow('error')
     await expect(nextTick()).resolves.toBe(undefined)
   })
 

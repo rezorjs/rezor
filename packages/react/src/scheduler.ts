@@ -98,9 +98,8 @@ function doFlushJobs() {
   } catch (error) {
     currentFlushPromise = null
     // If a nested post flush throws after queueing more work, defer the
-    // leftovers to a fresh microtask. In Rezor, post jobs never queue post
-    // jobs, so postJobs is empty here.
-    if (jobsLength) {
+    // leftovers to a fresh microtask.
+    if (jobsLength || postJobs.length) {
       queueFlush()
     }
     throw error
@@ -179,7 +178,11 @@ function flushJobs(seen?: CountMap) {
 
     flushPostFlushCbs()
 
-    // If new jobs have been added to either queue, keep flushing
+    // If new jobs have been added to either queue, keep flushing.
+    // An effect can call `context.triggerEvent()`, whose native handler calls
+    // `setData` and synchronously mounts another Rezor component, the child's
+    // initial render may queues its effect. In these cases, `postJobs` is not
+    // empty.
     if (jobsLength || postJobs.length) {
       flushJobs(seen)
     } else {
