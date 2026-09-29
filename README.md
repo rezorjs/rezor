@@ -1,4 +1,4 @@
-<p align="center"><a href="https://rezor.dev" target="_blank" rel="noopener noreferrer"><img width="100" src="https://rezor.org/logo.svg" alt="Rezor logo"></a></p>
+<p align="center"><a href="https://rezor.dev" target="_blank" rel="noopener noreferrer"><img width="100" src="https://rezor.dev/logo.svg" alt="Rezor logo"></a></p>
 
 <p align="center">
   <a href="https://github.com/rezorjs/rezor/actions"><img src="https://github.com/rezorjs/rezor/workflows/CI/badge.svg" alt="Actions Status"></a>
