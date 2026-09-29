@@ -38,7 +38,7 @@ features:
 :root {
   --vp-home-hero-name-color: transparent;
   --vp-home-hero-name-background: linear-gradient(90deg, #139fcd 25%, #7b61ff);
-  --vp-home-hero-image-background-image: radial-gradient(transparent, transparent 50%, #139fcd 50%, #139fcd);
+  --vp-home-hero-image-background-image: radial-gradient(#139fcd, #139fcd);
   --vp-home-hero-image-filter: blur(44px);
   --vp-button-brand-bg: #139fcd;
   --vp-button-brand-hover-bg: #108ab3;
@@ -55,5 +55,12 @@ features:
   :root {
     --vp-home-hero-image-filter: blur(68px);
   }
+}
+
+.VPImage.image-src {
+  width: auto;
+  height: auto;
+  border-radius: 50%;
+  background-color: var(--vp-c-bg);
 }
 </style>
