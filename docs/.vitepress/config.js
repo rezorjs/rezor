@@ -32,6 +32,10 @@ export default defineConfig({
         text: '快速上手',
         link: '/guide/quick-start',
       },
+      {
+        text: '基础',
+        items: [{ text: '创建小程序', link: '/guide/app' }],
+      },
     ],
     outline: {
       label: '本页目录',
