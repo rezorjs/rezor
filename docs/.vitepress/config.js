@@ -28,6 +28,10 @@ export default defineConfig({
         text: '简介',
         link: '/guide/',
       },
+      {
+        text: '快速上手',
+        link: '/guide/quick-start',
+      },
     ],
     outline: {
       label: '本页目录',
