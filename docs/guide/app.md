@@ -22,10 +22,6 @@ console.log(app.greeting) // Hello World!
 
 ## render
 
-::: tip 注意
-render 只能是同步函数。
-:::
-
 - **调用时机**
 
 `render` 会在 `onLaunch` 阶段被调用。返回的数据和方法也是在此时才会被合并到小程序实例上。
@@ -60,9 +56,13 @@ createApp({
 })
 ```
 
-- **`this` 的用法**
+- **同步函数**
 
-**`this` 在 `render` 中不可用**。这是为了避免混乱。
+`render` 必须是同步函数，Rezor 不支持异步 `render` 函数。
+
+- **this**
+
+`this` 在 `render` 中**不可用**，这是为了避免混乱。
 
 ## 生命周期
 
@@ -99,7 +99,7 @@ createApp({
 
 ## 与原生语法混用
 
-由于 `createApp` 是 `App` 的超集，所以你也能使用原生语法。
+因为 `createApp` 是 `App` 的超集，所以你也能使用原生语法。
 
 ```js [app.js]
 import { createApp, useAppShow } from 'rezor'
@@ -127,7 +127,7 @@ createApp({
 
 ## 简洁语法
 
-你如果不需要使用原生语法，也可以直接传递一个 `render` 函数给 `createApp`。
+如果你不需要使用原生语法，也可以直接传递一个 `render` 函数给 `createApp`。
 
 ```js [app.js]
 import { createApp } from 'rezor'
