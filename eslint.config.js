@@ -26,6 +26,7 @@ const config = [
       },
     },
     rules: {
+      '@typescript-eslint/no-shadow': 'error',
       'no-restricted-syntax': [
         'error',
         {

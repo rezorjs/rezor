@@ -62,7 +62,7 @@ export function createApp(optionsOrRender: any): void {
   const originOnLaunch = options[AppLifecycle.ON_LAUNCH]
   options[AppLifecycle.ON_LAUNCH] = function (
     this: AppInstance,
-    options: WechatMiniprogram.App.LaunchShowOption,
+    option: WechatMiniprogram.App.LaunchShowOption,
   ) {
     this.__v_render = () => {
       setCurrentApp(this)
@@ -71,7 +71,7 @@ export function createApp(optionsOrRender: any): void {
 
       let bindings: Bindings
       try {
-        bindings = render(options)
+        bindings = render(option)
       } finally {
         unsetCurrentApp()
       }
@@ -89,7 +89,7 @@ export function createApp(optionsOrRender: any): void {
     this.__v_render()
 
     if (originOnLaunch !== undefined) {
-      originOnLaunch.call(this, options)
+      originOnLaunch.call(this, option)
     }
   }
 

@@ -131,8 +131,8 @@ describe('component', () => {
 
     defineComponent(() => {
       const [count, setCount] = useState(0)
-      const plus = useMemo(() => dataFn((a: number, b: number) => a + b), [])
-      return { count, setCount, plus }
+      const _plus = useMemo(() => dataFn((a: number, b: number) => a + b), [])
+      return { count, setCount, plus: _plus }
     })
     component.lifetimes.attached.call(component)
     expect(component.data.count).toBe(0)
