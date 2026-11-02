@@ -37,6 +37,7 @@ export default defineConfig({
         items: [
           { text: '创建小程序', link: '/guide/app' },
           { text: '定义组件', link: '/guide/component' },
+          { text: '定义页面根组件', link: '/guide/root-component' },
         ],
       },
     ],
