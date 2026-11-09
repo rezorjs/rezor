@@ -18,6 +18,10 @@ Rezor 核心仅仅是一个轻量的运行时库，它既不涉及 Virtual DOM�
 
 与 React 一样，Rezor 的工作机制就是依赖 `render` 函数的重复执行。你调用 `setState` 之后 `render` 函数就会重跑，Rezor 会将每次 `render` 函数执行后返回的状态与事件处理函数同步给小程序组件实例。Rezor 也会收集 `render` 函数执行时注册的 Effect 或其他生命周期钩子函数，并在准确的时机触发它们。
 
+## 范围
+
+Rezor 没有 Concurrent Features，所以也不提供 `useTransition` `useOptimistic` 等 API。Rezor 更接近 React 18 之前的经典 React，但是 Rezor 也提供与 Concurrent Features 无关的现代化 React API，例如 `useEffectEvent` 等。
+
 ## 支持的平台
 
 目前 Rezor 仅支持微信小程序。虽然技术上 Rezor 可以支持其他小程序平台，但是由于时间跟精力的限制，我目前并没有这样的计划。
